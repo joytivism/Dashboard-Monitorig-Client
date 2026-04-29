@@ -25,13 +25,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex-1 w-full min-h-screen flex flex-col bg-bg">
 
       {/* ═══ NAVBAR ═══ */}
-      <header className="sticky top-0 z-[100] bg-white border-b border-border-main">
-        <div className="px-8 h-[80px] flex items-center justify-between relative">
+      <header className="sticky top-0 z-[100] bg-bg border-b border-border-main/30">
+        <div className="max-w-[1400px] mx-auto px-8 h-[80px] flex items-center justify-between relative">
           
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
             <Link href="/admin" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-text flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-lg bg-text flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
                 <span className="text-white text-[12px] font-black">A</span>
               </div>
               <span className="text-xl font-bold text-text tracking-tight uppercase tracking-[0.1em]">Admin</span>
@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Center: Pill Navigation */}
-          <nav className="hidden lg:flex items-center bg-white rounded-full p-1.5 border border-border-main shadow-sm absolute left-1/2 -translate-x-1/2">
+          <nav className="hidden lg:flex items-center bg-white rounded-full p-1.5 border border-border-main/50 shadow-sm absolute left-1/2 -translate-x-1/2">
             {menu.map(item => {
               const active = pathname === item.id;
               const Icon = item.icon;
@@ -62,13 +62,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Right: Icons + User Profile */}
           <div className="flex items-center gap-4">
-            <button className="relative w-10 h-10 rounded-full flex items-center justify-center bg-white border border-border-main text-text3 hover:text-text transition-all">
+            <button className="relative w-10 h-10 rounded-full flex items-center justify-center bg-white border border-border-main/50 text-text3 hover:text-text transition-all shadow-sm">
               <Bell className="w-[18px] h-[18px]" />
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rr rounded-full border-2 border-white" />
             </button>
             
             <div className="flex items-center gap-2">
-              <button onClick={handleLogout} className="w-10 h-10 rounded-full bg-text flex items-center justify-center border-2 border-border-main hover:border-accent transition-all">
+              <button onClick={handleLogout} className="w-10 h-10 rounded-full bg-text flex items-center justify-center border-2 border-border-main/50 hover:border-accent transition-all shadow-sm">
                 <span className="text-white text-[12px] font-black">AD</span>
               </button>
             </div>
@@ -77,7 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </header>
 
       {/* ═══ CONTENT ═══ */}
-      <main className="flex-1 px-6 md:px-8 py-8">
+      <main className="flex-1 max-w-[1400px] mx-auto w-full px-8 py-8">
         {children}
       </main>
 
