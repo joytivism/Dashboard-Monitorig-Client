@@ -23,8 +23,7 @@ import {
   History,
   X,
   ArrowRightLeft,
-  Info,
-  ShieldCheck
+  Info
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
