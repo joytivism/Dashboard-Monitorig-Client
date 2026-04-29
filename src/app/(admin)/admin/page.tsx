@@ -113,28 +113,21 @@ export default function AdminClientsPage() {
         </div>
       )}
 
-      {/* ═══ TOP ACTION BAR ═══ */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-2">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg font-bold">
-            AD
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-text tracking-tight">Admin Overview</h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-gg animate-pulse"/>
-              <span className="text-[11px] font-bold text-text3 uppercase tracking-wider">System Operational</span>
-            </div>
+      {/* ═══ TOP ACTION BAR (MINIMALIST) ═══ */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-2">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 px-5 h-12 bg-white rounded-full border border-border-main shadow-sm focus-within:border-accent transition-all max-w-md group">
+            <Search className="w-4 h-4 text-text3 group-focus-within:text-accent transition-colors" />
+            <input type="text" placeholder="Search brands, industries, or PIC..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-transparent text-[13px] font-bold text-text placeholder:text-text3 outline-none flex-1" />
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3 px-4 h-11 bg-white rounded-full border border-border-main shadow-sm focus-within:border-accent transition-all w-64">
-            <Search className="w-4 h-4 text-text3" />
-            <input type="text" placeholder="Search brands..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-transparent text-sm font-medium text-text placeholder:text-text3 outline-none flex-1" />
-          </div>
-          <button onClick={() => { setEditingClient({key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''}); setShowClientModal(true); }} className="flex items-center gap-2 bg-text text-white px-6 h-11 rounded-full text-sm font-bold shadow-main hover:bg-accent transition-all">
-            <Plus className="w-4 h-4" /> Add Brand
+        <div className="flex items-center gap-3 shrink-0">
+          <button onClick={exportToCSV} className="hidden sm:flex items-center gap-2 px-5 h-12 rounded-full border border-border-main bg-white text-[12px] font-bold text-text3 hover:text-text hover:bg-surface2 transition-all">
+            <Download className="w-4 h-4" /> Export CSV
+          </button>
+          <button onClick={() => { setEditingClient({key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''}); setShowClientModal(true); }} className="flex items-center gap-2 bg-text text-white px-8 h-12 rounded-full text-[13px] font-bold shadow-main hover:bg-accent transition-all">
+            <Plus className="w-4 h-4" /> Add New Brand
           </button>
         </div>
       </div>
