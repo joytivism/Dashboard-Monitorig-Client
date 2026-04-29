@@ -25,16 +25,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex-1 w-full min-h-screen flex flex-col bg-bg">
 
       {/* ═══ NAVBAR ═══ */}
-      <header className="sticky top-0 z-[100] bg-white/80 backdrop-blur-md border-b border-border-main/50">
+      <header className="sticky top-0 z-[100] bg-white border-b border-border-main">
         <div className="px-8 h-[80px] flex items-center justify-between relative">
           
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
             <Link href="/admin" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-text flex items-center justify-center group-hover:rotate-12 transition-transform">
-                <Plus className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg bg-text flex items-center justify-center group-hover:scale-105 transition-transform">
+                <span className="text-white text-[12px] font-black">A</span>
               </div>
-              <span className="text-xl font-bold text-text tracking-tight">RealSync</span>
+              <span className="text-xl font-bold text-text tracking-tight uppercase tracking-[0.1em]">Admin</span>
             </Link>
           </div>
 
@@ -68,12 +68,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
             
             <div className="flex items-center gap-2">
-              <button onClick={handleLogout} className="w-10 h-10 rounded-full overflow-hidden border-2 border-border-main hover:border-accent transition-all">
-                <img 
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" 
-                  alt="Admin" 
-                  className="w-full h-full object-cover"
-                />
+              <button onClick={handleLogout} className="w-10 h-10 rounded-full bg-text flex items-center justify-center border-2 border-border-main hover:border-accent transition-all">
+                <span className="text-white text-[12px] font-black">AD</span>
               </button>
             </div>
           </div>
