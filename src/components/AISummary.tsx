@@ -87,7 +87,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
             </div>
             <div>
               <h3 className="text-sm font-bold text-text">AI Strategy Insights</h3>
-              <p className="text-[11px] text-text3 font-medium">Powered by NVIDIA Nemotron</p>
+              <p className="text-[11px] text-text3 font-medium">Analisis Real-time Campaign</p>
             </div>
           </div>
 
