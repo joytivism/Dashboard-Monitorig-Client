@@ -2,11 +2,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
-import { Save, AlertCircle, CheckCircle2, Key, Cpu, Zap, Calendar, Plus, Trash2 } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle2, Key, Cpu, Zap, Calendar, Plus, Trash2, ShieldCheck, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminSettingsPage() {
-  const { AI_LOGS } = useDashboardData();
+  const { CLIENTS, DATA, ACTIVITY, PERIODS, AI_LOGS } = useDashboardData();
+  const curPeriod = PERIODS[PERIODS.length - 1] || '';
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{type:'success'|'error',text:string}|null>(null);
@@ -14,15 +15,7 @@ export default function AdminSettingsPage() {
   const [periods, setPeriods] = useState<{period_key:string, label:string}[]>([]);
   const [newP, setNewP] = useState({ key: '', label: '' });
 
-  useEffect(() => {
     (async () => {
-      const { data: s } = await supabase.from('system_settings').select('*');
-      const m = (s || []).reduce((a, b) => ({ ...a, [b.key]: b.value }), {} as any);
-      setCfg({
-        openrouter_key: m.openrouter_key || '',
-        ai_model: m.ai_model || 'google/gemini-flash-1.5'
-      });
-
       const { data: p } = await supabase.from('periods').select('*').order('period_key', { ascending: true });
       setPeriods(p || []);
     })();
@@ -60,21 +53,28 @@ export default function AdminSettingsPage() {
     cost: AI_LOGS?.reduce((s, l) => s + (l.cost || 0), 0) || 0
   }), [AI_LOGS]);
 
-  const save = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.from('system_settings').upsert([
-        { key: 'openrouter_key', value: cfg.openrouter_key },
-        { key: 'ai_model', value: cfg.ai_model }
-      ]);
-      if (error) throw error;
-      setToast({ type: 'success', text: 'Settings saved successfully!' });
-    } catch (e: any) {
-      setToast({ type: 'error', text: e.message });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const health = useMemo(() => {
+    if (!curPeriod) return [];
+    return CLIENTS.map(c => {
+      const perf = DATA.filter(d => d.c === c.key && d.p === curPeriod);
+      const acts = ACTIVITY.filter(a => a.c === c.key && a.d.startsWith(curPeriod));
+      return {
+        name: c.key,
+        hasPerf: perf.length > 0,
+        hasActs: acts.length > 0,
+        isHealthy: perf.length > 0 && acts.length > 0
+      };
+    });
+  }, [CLIENTS, DATA, ACTIVITY, curPeriod]);
+
+  const stats = useMemo(() => {
+    const missing = health.filter(h => !h.isHealthy).length;
+    return {
+      total: health.length,
+      missing,
+      pct: health.length > 0 ? Math.round(((health.length - missing) / health.length) * 100) : 0
+    };
+  }, [health]);
 
   useEffect(() => {
     if (toast) {
@@ -107,39 +107,57 @@ export default function AdminSettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Config */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-            <h2 className="text-lg font-bold text-text mb-6">API & AI Configuration</h2>
-            <div className="space-y-6">
+          <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main overflow-hidden">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
-                  <Key className="w-3.5 h-3.5"/>OpenRouter API Key
-                </label>
-                <input type="password" value={cfg.openrouter_key} onChange={e=>setCfg({...cfg,openrouter_key:e.target.value})}
-                  className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" placeholder="sk-or-v1-..."/>
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse"/>
-                  <span className="text-[11px] font-bold text-text3">Encrypted and stored in database</span>
+                <h2 className="text-lg font-bold text-text flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-gg"/> Data Health Checker
+                </h2>
+                <p className="text-xs font-medium text-text3 mt-1">Scanning coverage for {curPeriod || 'latest period'}</p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-black text-text">{stats.pct}%</div>
+                <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">Completeness</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="p-4 rounded-2xl bg-surface2 border border-border-main">
+                <div className="text-[10px] font-bold text-text3 uppercase mb-1">Total Brands</div>
+                <div className="text-xl font-bold text-text">{stats.total}</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-rr-bg border border-rr-border">
+                <div className="text-[10px] font-bold text-rr uppercase mb-1">Attention Required</div>
+                <div className="text-xl font-bold text-rr">{stats.missing}</div>
+              </div>
+              <div className="p-4 rounded-2xl bg-gg-bg border border-gg-border">
+                <div className="text-[10px] font-bold text-gg-text uppercase mb-1">Fully Healthy</div>
+                <div className="text-xl font-bold text-gg-text">{stats.total - stats.missing}</div>
+              </div>
+            </div>
+
+            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+              {health.map(h => (
+                <div key={h.name} className="flex items-center justify-between p-4 rounded-xl border border-border-main hover:bg-surface2 transition-all group">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-2 h-2 rounded-full ${h.isHealthy ? 'bg-gg' : 'bg-rr animate-pulse'}`}/>
+                    <div>
+                      <div className="text-sm font-bold text-text">{h.name}</div>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className={`text-[10px] font-bold flex items-center gap-1 ${h.hasPerf ? 'text-gg' : 'text-rr'}`}>
+                          {h.hasPerf ? <CheckCircle2 className="w-3 h-3"/> : <X className="w-3 h-3"/>} Performance
+                        </span>
+                        <span className={`text-[10px] font-bold flex items-center gap-1 ${h.hasActs ? 'text-gg' : 'text-rr'}`}>
+                          {h.hasActs ? <CheckCircle2 className="w-3 h-3"/> : <X className="w-3 h-3"/>} Activities
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={() => router.push(h.hasPerf ? `/admin/activities` : `/admin/performance`)} className="px-4 py-2 rounded-full bg-surface border border-border-main text-[11px] font-bold text-text3 hover:bg-text hover:text-white transition-all opacity-0 group-hover:opacity-100">
+                    Fix Data
+                  </button>
                 </div>
-              </div>
-              <div>
-                <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
-                  <Cpu className="w-3.5 h-3.5"/>Primary Model
-                </label>
-                <select value={cfg.ai_model} onChange={e=>setCfg({...cfg,ai_model:e.target.value})}
-                  className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all appearance-none cursor-pointer">
-                  <option value="google/gemini-flash-1.5">Gemini Flash 1.5 (Fastest)</option>
-                  <option value="google/gemini-pro-1.5">Gemini Pro 1.5 (Smartest)</option>
-                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-                  <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
-                  <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron 3 (Free)</option>
-                </select>
-              </div>
-              <div className="pt-6 border-t border-border-main flex justify-end">
-                <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-full text-sm font-bold shadow-main hover:bg-text2 transition-all">
-                  {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-                  Save settings
-                </button>
-              </div>
+              ))}
             </div>
           </div>
 
