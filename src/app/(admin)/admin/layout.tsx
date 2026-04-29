@@ -25,7 +25,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen" style={{ background: '#DAE5F0' }}>
       {/* Navbar - Bankio style */}
       <header className="sticky top-0 z-50 bg-white border-b border-black/[0.03]">
-        <div className="max-w-[1400px] mx-auto px-8 h-[68px] flex items-center justify-between">
+        <div className="px-8 h-[68px] flex items-center justify-between">
           
           {/* Left: Logo + Nav Links */}
           <div className="flex items-center gap-10">
@@ -77,12 +77,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </header>
 
       {/* Content */}
-      <main className="max-w-[1400px] mx-auto px-6 md:px-8 py-8">
+      <main className="px-6 md:px-8 py-8">
         {children}
       </main>
 
       {/* Footer */}
-      <div className="max-w-[1400px] mx-auto px-8 pb-10">
+      <div className="px-8 pb-10">
         <button onClick={() => router.push('/')} className="flex items-center gap-2 text-gray-400 hover:text-gray-600 text-[13px] font-semibold transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to Client View
