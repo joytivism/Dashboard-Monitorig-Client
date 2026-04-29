@@ -36,10 +36,15 @@ export default function AdminActivitiesPage() {
 
   useEffect(() => { if (toast) { const t = setTimeout(() => setToast(null), 3000); return () => clearTimeout(t); } }, [toast]);
 
-  const typeStyle = { p: { label: 'Promo', dot: 'bg-[#10B981]', text: 'text-[#10B981]' }, e: { label: 'Event', dot: 'bg-[#2563EB]', text: 'text-[#2563EB]' }, c: { label: 'Content', dot: 'bg-[#F59E0B]', text: 'text-[#F59E0B]' }, l: { label: 'Launch', dot: 'bg-[#EF4444]', text: 'text-[#EF4444]' } };
+  const typeStyle = { 
+    p: { label: 'Promo', badge: 'badge-gg' }, 
+    e: { label: 'Event', badge: 'badge-or' }, 
+    c: { label: 'Content', badge: 'badge-nn' }, 
+    l: { label: 'Launch', badge: 'badge-rr' } 
+  };
 
   const getAvatarColor = (key: string) => {
-    const colors = ['from-blue-500 to-blue-600', 'from-violet-500 to-purple-600', 'from-emerald-500 to-green-600', 'from-orange-400 to-red-500', 'from-pink-500 to-rose-600', 'from-cyan-500 to-teal-600'];
+    const colors = ['bg-or', 'bg-text', 'bg-tofu', 'bg-gd', 'bg-rr', 'bg-text2'];
     let hash = 0; for (let i = 0; i < key.length; i++) hash = key.charCodeAt(i) + ((hash << 5) - hash);
     return colors[Math.abs(hash) % colors.length];
   };
@@ -47,110 +52,111 @@ export default function AdminActivitiesPage() {
   return (
     <div className="space-y-8">
       {toast && (
-        <div className={`fixed top-20 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border ${toast.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+        <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-main border ${toast.type === 'success' ? 'bg-gg-bg border-gg-border text-gg-text' : 'bg-rr-bg border-rr-border text-rr-text'}`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-          <span className="text-[13px] font-semibold">{toast.text}</span>
+          <span className="text-[13px] font-bold">{toast.text}</span>
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[24px] font-extrabold text-[#111827]">Activity Logs 📋</h1>
-          <p className="text-[13px] font-medium text-[#9CA3AF] mt-1">Track promotions, events, and launches</p>
+          <h1 className="text-[28px] font-extrabold text-text tracking-tight">Activity Logs 📋</h1>
+          <p className="text-[14px] font-medium text-text3 mt-1">Track promotions, events, and launches</p>
         </div>
-        <button onClick={() => { setEditing({ id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' }); setShowModal(true); }} className="flex items-center gap-2 bg-[#2563EB] text-white px-5 py-2.5 rounded-xl text-[12px] font-semibold shadow-sm shadow-blue-500/20 hover:bg-[#1D4ED8] transition-all">
-          <Plus className="w-3.5 h-3.5" /> Add log
+        <button onClick={() => { setEditing({ id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' }); setShowModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-main hover:bg-text2 transition-all">
+          <Plus className="w-4 h-4" /> Add log
         </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#F3F4F6] overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[#F9FAFB]">
-              <th className="text-left py-3.5 px-6 text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Client</th>
-              <th className="text-left py-3.5 px-6 text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Type</th>
-              <th className="text-left py-3.5 px-6 text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Date</th>
-              <th className="text-left py-3.5 px-6 text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Note</th>
-              <th className="text-right py-3.5 px-6 text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ACTIVITIES.map((a, i) => {
-              const style = typeStyle[a.t];
-              return (
-                <tr key={i} className="border-b border-[#FAFAFA] hover:bg-[#FAFBFC] transition-colors group">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(a.c)} flex items-center justify-center`}>
-                        <span className="text-white text-[10px] font-black uppercase">{a.c.substring(0, 2)}</span>
+      <div className="bg-surface rounded-2xl border border-border-main overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border-main bg-surface2/50">
+                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Client</th>
+                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Type</th>
+                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Date</th>
+                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Note</th>
+                <th className="text-right py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ACTIVITIES.map((a, i) => {
+                const style = typeStyle[a.t];
+                return (
+                  <tr key={i} className="border-b border-border-main hover:bg-surface2 transition-colors group">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-9 h-9 rounded-xl ${getAvatarColor(a.c)} flex items-center justify-center shadow-sm shrink-0`}>
+                          <span className="text-white text-[11px] font-black uppercase">{a.c.substring(0, 2)}</span>
+                        </div>
+                        <span className="text-[14px] font-bold text-text">{a.c}</span>
                       </div>
-                      <span className="text-[13px] font-bold text-[#111827]">{a.c}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${style.dot}`} />
-                      <span className={`text-[12px] font-semibold ${style.text}`}>{style.label}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 text-[13px] font-medium text-[#6B7280]">{a.d}</td>
-                  <td className="py-4 px-6 text-[13px] font-medium text-[#374151] max-w-[300px] truncate">{a.n}</td>
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setEditing({ id: a.id || '', client_key: a.c, log_date: a.d, log_type: a.t, note: a.n }); setShowModal(true); }} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#EFF6FF] text-[#9CA3AF] hover:text-[#2563EB] transition-colors"><Edit3 className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => handleDelete(a.id || '')} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#FEF2F2] text-[#9CA3AF] hover:text-[#EF4444] transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {ACTIVITIES.length === 0 && <div className="py-16 text-center text-[13px] font-semibold text-[#9CA3AF]">No activity logs found</div>}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`badge ${style.badge}`}>{style.label}</span>
+                    </td>
+                    <td className="py-4 px-6 text-[13px] font-bold text-text2">{a.d}</td>
+                    <td className="py-4 px-6 text-[13px] font-medium text-text max-w-[300px] truncate">{a.n}</td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => { setEditing({ id: a.id || '', client_key: a.c, log_date: a.d, log_type: a.t, note: a.n }); setShowModal(true); }} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-text text-text3 hover:text-text transition-all"><Edit3 className="w-4 h-4" /></button>
+                        <button onClick={() => handleDelete(a.id || '')} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-rr hover:bg-rr-bg text-text3 hover:text-rr transition-all"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {ACTIVITIES.length === 0 && <div className="py-16 text-center text-[13px] font-bold text-text3">No activity logs found</div>}
       </div>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-black/20 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl shadow-black/10 w-full max-w-lg overflow-hidden border border-[#F3F4F6]">
-            <div className="p-6 border-b border-[#F3F4F6] flex items-center justify-between">
-              <h3 className="text-[16px] font-bold text-[#111827]">Log Activity</h3>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#F3F4F6] text-[#9CA3AF]"><X className="w-4 h-4" /></button>
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-text/20 backdrop-blur-sm">
+          <div className="bg-surface rounded-2xl shadow-main w-full max-w-lg overflow-hidden border border-border-main">
+            <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2">
+              <h3 className="text-[18px] font-extrabold text-text">Log Activity</h3>
+              <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface text-text3"><X className="w-5 h-5" /></button>
             </div>
-            <form onSubmit={handleSave} className="p-6 space-y-5">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSave} className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider block mb-1.5">Client</label>
-                  <select value={editing.client_key} onChange={e => setEditing({...editing, client_key: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-[#F3F4F6] bg-[#F9FAFB] text-[13px] font-semibold text-[#374151] outline-none" required>
+                  <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">Client</label>
+                  <select value={editing.client_key} onChange={e => setEditing({...editing, client_key: e.target.value})} className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" required>
                     <option value="">Choose</option>
                     {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider block mb-1.5">Date</label>
-                  <input type="date" value={editing.log_date} onChange={e => setEditing({...editing, log_date: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-[#F3F4F6] bg-[#F9FAFB] text-[13px] font-semibold text-[#374151] outline-none" required />
+                  <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">Date</label>
+                  <input type="date" value={editing.log_date} onChange={e => setEditing({...editing, log_date: e.target.value})} className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" required />
                 </div>
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider block mb-2">Type</label>
-                <div className="grid grid-cols-4 gap-2">
+                <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-3">Type</label>
+                <div className="grid grid-cols-4 gap-3">
                   {(['p', 'e', 'c', 'l'] as const).map(type => (
-                    <button key={type} type="button" onClick={() => setEditing({...editing, log_type: type})} className={`py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all ${editing.log_type === type ? 'bg-[#111827] text-white' : 'bg-[#F9FAFB] text-[#9CA3AF] border border-[#F3F4F6] hover:bg-[#F3F4F6]'}`}>
+                    <button key={type} type="button" onClick={() => setEditing({...editing, log_type: type})} className={`py-3 rounded-xl text-[11px] font-extrabold uppercase tracking-widest transition-all ${editing.log_type === type ? 'bg-text text-white shadow-sm' : 'bg-surface2 text-text3 border border-border-main hover:border-border-alt'}`}>
                       {type === 'p' ? 'Promo' : type === 'e' ? 'Event' : type === 'c' ? 'Content' : 'Launch'}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="text-[11px] font-semibold text-[#9CA3AF] uppercase tracking-wider block mb-1.5">Note</label>
-                <textarea value={editing.note} onChange={e => setEditing({...editing, note: e.target.value})} className="w-full p-4 rounded-xl border border-[#F3F4F6] bg-[#F9FAFB] text-[13px] font-medium text-[#374151] h-28 outline-none focus:bg-white focus:border-[#2563EB] transition-all" placeholder="Describe the activity..." required />
+                <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">Note</label>
+                <textarea value={editing.note} onChange={e => setEditing({...editing, note: e.target.value})} className="w-full p-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text h-28 outline-none focus:bg-surface focus:border-text transition-all" placeholder="Describe the activity..." required />
               </div>
-              <button type="submit" disabled={loading} className="w-full h-12 bg-[#2563EB] text-white rounded-xl font-semibold text-[13px] shadow-sm shadow-blue-500/20 hover:bg-[#1D4ED8] transition-all flex items-center justify-center gap-2">
-                {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                Save Log
-              </button>
+              <div className="pt-2">
+                <button type="submit" disabled={loading} className="w-full h-14 bg-text text-white rounded-xl font-extrabold text-[14px] shadow-main hover:bg-text2 transition-all flex items-center justify-center gap-2">
+                  {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                  Save Log
+                </button>
+              </div>
             </form>
           </div>
         </div>
