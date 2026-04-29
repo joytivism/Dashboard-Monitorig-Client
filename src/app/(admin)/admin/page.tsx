@@ -8,7 +8,7 @@ import {
   AlertCircle, CheckCircle2, Users, Database, Zap,
   Edit3, Trash2, X, Download, Plus, Search, ArrowUpRight, DollarSign
 } from 'lucide-react';
-import { fRp } from '@/lib/utils';
+import { fRp, clientWorst, LM as STATUS_LABEL_MAP } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 export default function AdminClientsPage() {
@@ -248,15 +248,23 @@ export default function AdminClientsPage() {
                   </td>
                   <td className="py-4 px-6 text-[13px] font-semibold text-text2">{cl.ind || '-'}</td>
                   <td className="py-4 px-6">
-                    <span className="text-sm font-medium text-text2">Data Active</span>
+                    {(() => {
+                      const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
+                      return (
+                        <span className={`badge badge-${wc}`}>
+                          <span className={`dot dot-${wc} bg-${wc}-text`}/> {STATUS_LABEL_MAP[wc] || 'Stabil'}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="py-4 px-6">
                     <span className="chip chip-nn">{cl.chs.length} channels</span>
                   </td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setEditingClient({ key: cl.key, name: cl.key, chs: cl.chs, industry: cl.ind, pic_name: cl.pic, brand_category: cl.cg, account_strategist: cl.as }); setShowClientModal(true); }} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-text text-text3 hover:text-text transition-all"><Edit3 className="w-4 h-4" /></button>
-                      <button onClick={() => handleDeleteClient(cl.key)} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-rr hover:bg-rr-bg text-text3 hover:text-rr transition-all"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => router.push(`/client/${cl.key}`)} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-accent hover:bg-accent-light text-text3 hover:text-accent transition-all" title="View as Client"><ArrowUpRight className="w-4 h-4" /></button>
+                      <button onClick={() => { setEditingClient({ key: cl.key, name: cl.key, chs: cl.chs, industry: cl.ind, pic_name: cl.pic, brand_category: cl.cg, account_strategist: cl.as }); setShowClientModal(true); }} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-text text-text3 hover:text-text transition-all" title="Edit Client"><Edit3 className="w-4 h-4" /></button>
+                      <button onClick={() => handleDeleteClient(cl.key)} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-rr hover:bg-rr-bg text-text3 hover:text-rr transition-all" title="Delete Client"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>

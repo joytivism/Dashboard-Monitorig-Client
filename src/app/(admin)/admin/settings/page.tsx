@@ -116,15 +116,18 @@ export default function AdminSettingsPage() {
             </h3>
             <div className="space-y-3">
               <div className="p-4 rounded-xl bg-gg-bg border border-gg-border">
-                <div className="text-[10px] font-semibold text-gg-text uppercase tracking-wide mb-1">Status</div>
-                <div className="text-base font-bold text-gg-text">Operational</div>
+                <div className="text-[10px] font-bold text-gg-text uppercase tracking-wider mb-1">Status</div>
+                <div className="text-base font-bold text-gg-text flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-gg animate-pulse" />
+                  Operational
+                </div>
               </div>
-              <div className="p-4 rounded-xl bg-surface2 border border-border-main">
-                <div className="text-[10px] font-semibold text-text3 uppercase tracking-wide mb-1">Tokens</div>
-                <div className="text-base font-bold text-text">{(ai.tk/1000).toFixed(1)}K</div>
+              <div className="p-4 rounded-xl bg-white border border-border-main">
+                <div className="text-[10px] font-bold text-text3 uppercase tracking-wider mb-1">Tokens (Current Period)</div>
+                <div className="text-base font-bold text-text">{(ai.tk / 1000).toFixed(1)}K <span className="text-[11px] font-medium text-text3 ml-1">tokens</span></div>
               </div>
-              <div className="p-4 rounded-xl bg-tofu-bg border border-tofu-border">
-                <div className="text-[10px] font-semibold text-tofu uppercase tracking-wide mb-1">Cost</div>
+              <div className="p-4 rounded-xl bg-white border border-border-main">
+                <div className="text-[10px] font-bold text-text3 uppercase tracking-wider mb-1">Estimated Cost</div>
                 <div className="text-base font-bold text-text">${ai.cost.toFixed(4)}</div>
               </div>
             </div>
