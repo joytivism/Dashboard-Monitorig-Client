@@ -1,26 +1,115 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #F4F6F8; /* A very soft, slightly cool light gray for premium SaaS depth */
+  --surface: #FFFFFF;
+  --surface2: #F8FAFC;
+  --surface3: #F1F5F9;
+  
+  --text: #0F172A;
+  --text2: #64748B;
+  --text3: #94A3B8;
+  
+  --border: #F1F5F9;
+  --border2: #E2E8F0;
+  
+  --accent: #3B82F6; /* Premium Blue Accent */
+  --accent-light: #EFF6FF;
+
+  /* Funnel / Status colors */
+  --tofu: #3B82F6;
+  --tofu-bg: #EFF6FF;
+  --tofu-border: #BFDBFE;
+  
+  --mofu: #F59E0B;
+  --mofu-bg: #FFFBEB;
+  --mofu-border: #FDE68A;
+  
+  --bofu: #22C55E;
+  --bofu-bg: #F0FDF4;
+  --bofu-border: #BBF7D0;
+
+  /* Status Colors */
+  --color-rr: #EF4444; --color-rr-bg: #FEF2F2; --color-rr-border: #FECACA; --color-rr-text: #B91C1C;
+  --color-or: #F97316; --color-or-bg: #FFF7ED; --color-or-border: #FED7AA; --color-or-text: #C2410C;
+  --color-yy: #F59E0B; --color-yy-bg: #FFFBEB; --color-yy-border: #FDE68A; --color-yy-text: #B45309;
+  --color-nn: #9CA3AF; --color-nn-bg: #F3F4F6; --color-nn-border: #E5E7EB; --color-nn-text: #4B5563;
+  --color-gg: #22C55E; --color-gg-bg: #F0FDF4; --color-gg-border: #BBF7D0; --color-gg-text: #15803D;
+  --color-gd: #16A34A; --color-gd-bg: #DCFCE7; --color-gd-border: #86EFAC; --color-gd-text: #166534;
+
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-surface3: var(--surface3);
+  
+  --color-text: var(--text);
+  --color-text2: var(--text2);
+  --color-text3: var(--text3);
+  
+  --color-border-main: var(--border);
+  --color-border-alt: var(--border2);
+  
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+
+  --color-rr: var(--color-rr); --color-rr-bg: var(--color-rr-bg); --color-rr-border: var(--color-rr-border); --color-rr-text: var(--color-rr-text);
+  --color-or: var(--color-or); --color-or-bg: var(--color-or-bg); --color-or-border: var(--color-or-border); --color-or-text: var(--color-or-text);
+  --color-yy: var(--color-yy); --color-yy-bg: var(--color-yy-bg); --color-yy-border: var(--color-yy-border); --color-yy-text: var(--color-yy-text);
+  --color-nn: var(--color-nn); --color-nn-bg: var(--color-nn-bg); --color-nn-border: var(--color-nn-border); --color-nn-text: var(--color-nn-text);
+  --color-gg: var(--color-gg); --color-gg-bg: var(--color-gg-bg); --color-gg-border: var(--color-gg-border); --color-gg-text: var(--color-gg-text);
+  --color-gd: var(--color-gd); --color-gd-bg: var(--color-gd-bg); --color-gd-border: var(--color-gd-border); --color-gd-text: var(--color-gd-text);
+
+  --color-tofu: var(--tofu); --color-tofu-bg: var(--tofu-bg); --color-tofu-border: var(--tofu-border);
+  --color-mofu: var(--mofu); --color-mofu-bg: var(--mofu-bg); --color-mofu-border: var(--mofu-border);
+  --color-bofu: var(--bofu); --color-bofu-bg: var(--bofu-bg); --color-bofu-border: var(--bofu-border);
+
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Premium floating shadow without border */
+  --shadow-main: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-bg text-text font-sans antialiased;
+    font-size: 14px;
+    line-height: 1.6;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+.dot { @apply w-[8px] h-[8px] rounded-full shrink-0 inline-block; }
+.dot-rr { @apply bg-rr; }
+.dot-or { @apply bg-or; }
+.dot-yy { @apply bg-yy; }
+.dot-nn { @apply bg-nn; }
+.dot-gg { @apply bg-gg; }
+.dot-gd { @apply bg-gd; }
+
+.badge { @apply inline-flex items-center gap-[5px] text-[11px] font-medium p-[4px_10px] rounded-full whitespace-nowrap; }
+.badge-rr { @apply bg-rr-bg text-rr-text; }
+.badge-or { @apply bg-or-bg text-or-text; }
+.badge-yy { @apply bg-yy-bg text-yy-text; }
+.badge-nn { @apply bg-nn-bg text-nn-text; }
+.badge-gg { @apply bg-gg-bg text-gg-text; }
+.badge-gd { @apply bg-gd-bg text-gd-text; }
+
+.chip { @apply inline-flex items-center text-[10px] font-bold p-[2px_6px] rounded-md whitespace-nowrap gap-[2px]; }
+.chip-rr { @apply bg-rr-bg text-rr-text; }
+.chip-or { @apply bg-or-bg text-or-text; }
+.chip-yy { @apply bg-yy-bg text-yy-text; }
+.chip-nn { @apply bg-surface2 text-text3; }
+.chip-gg { @apply bg-gg-bg text-gg-text; }
+.chip-gd { @apply bg-gd-bg text-gd-text; }
+
+.vt-ok { @apply bg-gg-bg text-gg-text text-[10px] p-[2px_6px] rounded-md inline-flex font-semibold; }
+.vt-lo { @apply bg-rr-bg text-rr-text text-[10px] p-[2px_6px] rounded-md inline-flex font-semibold; }

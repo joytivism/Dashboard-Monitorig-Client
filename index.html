@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Advertise — Command Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #F5F4F0;
+  --surface: #FFFFFF;
+  --surface2: #EFEDE8;
+  --surface3: #E8E6E0;
+  --text: #1C1B18;
+  --text2: #6B6A64;
+  --text3: #9B9A94;
+  --border: #E0DDD6;
+  --border2: #CCCAC2;
+  --accent: #1C1B18;
+
+  --tofu: #2563EB;
+  --tofu-bg: #EFF6FF;
+  --tofu-border: #BFDBFE;
+  --mofu: #D97706;
+  --mofu-bg: #FFFBEB;
+  --mofu-border: #FDE68A;
+  --bofu: #059669;
+  --bofu-bg: #ECFDF5;
+  --bofu-border: #A7F3D0;
+
+  --red: #DC2626; --red-bg: #FEF2F2; --red-border: #FECACA; --red-text: #991B1B;
+  --orange: #EA580C; --orange-bg: #FFF7ED; --orange-border: #FED7AA; --orange-text: #9A3412;
+  --yellow: #CA8A04; --yellow-bg: #FEFCE8; --yellow-border: #FEF08A; --yellow-text: #713F12;
+  --neutral-bg: #F5F4F0; --neutral-border: #E0DDD6; --neutral-text: #6B6A64;
+  --green: #16A34A; --green-bg: #F0FDF4; --green-border: #BBF7D0; --green-text: #14532D;
+  --dkgreen: #065F46; --dkgreen-bg: #D1FAE5; --dkgreen-border: #6EE7B7; --dkgreen-text: #022C22;
+
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'DM Mono', 'Fira Mono', monospace;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ─────────────────────────────── */
+.shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.main {
+  margin-left: 240px;
+  flex: 1;
+  padding: 32px 36px;
+  max-width: 1280px;
+}
+
+/* ── SIDEBAR ─────────────────────────────── */
+.sb-brand {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sb-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.sb-logo-mark {
+  width: 28px; height: 28px;
+  background: var(--text);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sb-logo-mark svg { width: 14px; height: 14px; }
+.sb-logo-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+.sb-tagline {
+  font-size: 11px;
+  color: var(--text3);
+  padding-left: 38px;
+}
+
+.sb-nav { flex: 1; overflow-y: auto; padding: 12px 10px 0; }
+
+.sb-section {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 10px 10px 4px;
+}
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 400;
+  transition: background .1s, color .1s;
+  margin-bottom: 1px;
+}
+.sb-item:hover { background: var(--surface2); color: var(--text); }
+.sb-item.active { background: var(--surface2); color: var(--text); font-weight: 500; }
+
+.sb-icon {
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+  opacity: .5;
+}
+.sb-item.active .sb-icon { opacity: 1; }
+
+.sb-client {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 1px;
+  transition: background .1s;
+}
+.sb-client:hover { background: var(--surface2); }
+.sb-client.active {
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+
+.sb-avatar {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text2);
+  flex-shrink: 0;
+  letter-spacing: .02em;
+}
+.sb-client.active .sb-avatar {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.sb-client-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sb-bottom {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+.sb-bottom-text { font-size: 11px; color: var(--text3); }
+.sb-bottom-name { font-size: 12px; font-weight: 500; color: var(--text2); margin-top: 2px; }
+
+/* ── STATUS DOTS ─────────────────────────── */
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.dot-rr { background: var(--red); }
+.dot-or { background: var(--orange); }
+.dot-yy { background: var(--yellow); }
+.dot-nn { background: var(--border2); }
+.dot-gg { background: var(--green); }
+.dot-gd { background: var(--dkgreen); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.badge-rr { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+.badge-or { background: var(--orange-bg); color: var(--orange-text); border: 1px solid var(--orange-border); }
+.badge-yy { background: var(--yellow-bg); color: var(--yellow-text); border: 1px solid var(--yellow-border); }
+.badge-nn { background: var(--neutral-bg); color: var(--neutral-text); border: 1px solid var(--neutral-border); }
+.badge-gg { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+.badge-gd { background: var(--dkgreen-bg); color: var(--dkgreen-text); border: 1px solid var(--dkgreen-border); }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.chip-rr { background: var(--red-bg); color: var(--red-text); }
+.chip-or { background: var(--orange-bg); color: var(--orange-text); }
+.chip-yy { background: var(--yellow-bg); color: var(--yellow-text); }
+.chip-nn { background: var(--surface2); color: var(--text3); }
+.chip-gg { background: var(--green-bg); color: var(--green-text); }
+.chip-gd { background: var(--dkgreen-bg); color: var(--dkgreen-text); }
+.vt-ok { background: var(--green-bg); color: var(--green-text); font-size: 10px; padding: 1px 5px; border-radius: 3px; display: inline-flex; }
+.vt-lo { background: var(--red-bg); color: var(--red-text); font-size: 10px; padding: 1px 5px; border-radius: 3px; display: inline-flex; }
+
+/* ── PAGE HEADER ─────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-title { font-size: 20px; font-weight: 600; color: var(--text); letter-spacing: -.02em; }
+.page-sub { font-size: 13px; color: var(--text3); margin-top: 3px; }
+
+.period-pills { display: flex; gap: 4px; }
+.period-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font);
+  transition: all .15s;
+}
+.period-pill:hover { border-color: var(--accent); color: var(--text); }
+.period-pill.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── LEGEND ──────────────────────────────── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+/* ── ALERT BOXES ─────────────────────────── */
+.alert {
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border: 1px solid;
+}
+.alert-danger { background: var(--red-bg); border-color: var(--red-border); }
+.alert-success { background: var(--green-bg); border-color: var(--green-border); }
+.alert-title { font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+.alert-danger .alert-title { color: var(--red-text); }
+.alert-success .alert-title { color: var(--green-text); }
+.alert-item { font-size: 12px; line-height: 1.7; }
+.alert-danger .alert-item { color: var(--red-text); }
+.alert-success .alert-item { color: var(--green-text); }
+
+/* ── METRIC CARDS ────────────────────────── */
+.g4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.mcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.mcard-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 6px;
+}
+.mcard-val {
+  font-size: 22px;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.mcard-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+/* ── SECTION LABEL ───────────────────────── */
+.slabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 10px;
+}
+
+/* ── TABLE ───────────────────────────────── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+thead th {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  letter-spacing: .03em;
+}
+tbody td {
+  font-size: 13px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { cursor: pointer; transition: background .1s; }
+tbody tr:hover td { background: #FAFAF8; }
+.td-name { font-weight: 500; }
+.td-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.td-mono { font-family: var(--mono); font-size: 12px; }
+.dots-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+
+/* ── BACK BUTTON ─────────────────────────── */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  margin-bottom: 20px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font);
+  font-weight: 500;
+  transition: color .1s;
+}
+.back-btn:hover { color: var(--text); }
+
+/* ── CLIENT HEADER ───────────────────────── */
+.cli-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.cli-av {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text2);
+  flex-shrink: 0;
+  letter-spacing: .02em;
+}
+.cli-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  letter-spacing: -.01em;
+}
+.cli-meta {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cli-meta-item { display: flex; align-items: center; gap: 4px; }
+.cli-meta-label { color: var(--text3); }
+.cli-meta-val { color: var(--text2); font-weight: 500; }
+
+/* ── FUNNEL ──────────────────────────────── */
+.funnel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.funnel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.funnel-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.funnel-card.tofu::before { background: var(--tofu); }
+.funnel-card.mofu::before { background: var(--mofu); }
+.funnel-card.bofu::before { background: var(--bofu); }
+
+.funnel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.funnel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.funnel-card.tofu .funnel-title { color: var(--tofu); }
+.funnel-card.mofu .funnel-title { color: var(--mofu); }
+.funnel-card.bofu .funnel-title { color: var(--bofu); }
+.funnel-source { font-size: 10px; color: var(--text3); }
+.funnel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text2);
+  padding: 4px 0;
+}
+.funnel-val {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+.funnel-empty { font-size: 11px; color: var(--text3); font-style: italic; padding: 6px 0; }
+
+/* ── CALC STRIP ──────────────────────────── */
+.calc-strip {
+  background: var(--surface);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.calc-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green-text);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.calc-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.calc-item { }
+.calc-label { font-size: 10px; color: var(--text3); margin-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
+.calc-val { font-size: 15px; font-weight: 600; font-family: var(--mono); color: var(--text); letter-spacing: -.01em; }
+.calc-formula { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* ── CHANNEL CARDS ───────────────────────── */
+.ch-section { margin-bottom: 20px; }
+.ch-type-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ch-type-indicator {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.ch-type-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+.ch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
+
+.ch-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.ch-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+}
+.ch-card.tofu-ch::before { background: var(--tofu); }
+.ch-card.mofu-ch::before { background: var(--mofu); }
+.ch-card.bofu-ch::before { background: var(--bofu); }
+.ch-card.flag { border-color: var(--red-border); box-shadow: 0 0 0 1px var(--red-border), var(--shadow); }
+.ch-card.good { border-color: var(--green-border); }
+
+.ch-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ch-card-name { font-size: 11px; font-weight: 600; color: var(--text2); }
+.ch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text2);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ch-row:last-child { border-bottom: none; }
+.ch-right { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.ch-val { color: var(--text); font-family: var(--mono); font-size: 11px; font-weight: 500; }
+
+/* ── TREND CHART ─────────────────────────── */
+.trend-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.trend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.trend-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.trend-count { font-size: 11px; color: var(--text3); }
+.trend-selectors { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.trend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font);
+  transition: all .15s;
+}
+.trend-btn:hover { border-color: var(--text2); }
+.trend-btn.on { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.trend-btn:disabled { opacity: .35; cursor: not-allowed; }
+.trend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.trend-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
+.trend-li { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+.trend-ls { width: 22px; height: 2.5px; border-radius: 2px; }
+
+/* ── ACTIVITY LOG ────────────────────────── */
+.activity-log {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.act-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.act-item:last-child { border-bottom: none; }
+.act-date { font-size: 11px; color: var(--text3); font-family: var(--mono); min-width: 52px; padding-top: 1px; }
+.act-badge { font-size: 10px; padding: 3px 8px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
+.act-promo { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+.act-event { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+.act-content { background: var(--yellow-bg); color: var(--yellow-text); border: 1px solid var(--yellow-border); }
+.act-launching { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+.act-note { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* ── RESPONSIVE ──────────────────────────── */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 16px; }
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+  .funnel { grid-template-columns: 1fr; }
+  .calc-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-logo-mark">
+        <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="5" height="5" rx="1" fill="white" opacity=".5"/>
+          <rect x="8" y="1" width="5" height="5" rx="1" fill="white"/>
+          <rect x="1" y="8" width="5" height="5" rx="1" fill="white"/>
+          <rect x="8" y="8" width="5" height="5" rx="1" fill="white" opacity=".5"/>
+        </svg>
+      </div>
+      <span class="sb-logo-name">Real Advertise</span>
+    </div>
+    <div class="sb-tagline">Command Center</div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section">Menu</div>
+    <div class="sb-item active" id="nav-overview" onclick="goOV()">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="currentColor">
+        <rect x="1" y="1" width="6" height="6" rx="1.5" opacity=".5"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" opacity=".5"/>
+      </svg>
+      Overview
+    </div>
+
+    <div class="sb-section" style="margin-top: 8px">Klien Pilot</div>
+    <div id="sb-clients"></div>
+  </div>
+
+  <div class="sb-bottom">
+    <div class="sb-bottom-text">Client Growth</div>
+    <div class="sb-bottom-name">Dica · Bara</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div id="view-overview"></div>
+  <div id="view-detail" style="display:none"></div>
+</main>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+const CH_DEF = {
+  shopee_store:  { l: 'Shopee Store',  stage: 'mofu', type: 'revenue'   },
+  shopee_ads:    { l: 'Shopee Ads',    stage: 'bofu', type: 'revenue'   },
+  cpas:          { l: 'CPAS',          stage: 'mofu', type: 'assist'    },
+  tiktok_store:  { l: 'TikTok Store',  stage: 'mofu', type: 'revenue'   },
+  tiktok_gmvmax: { l: 'GMV Max',       stage: 'bofu', type: 'revenue'   },
+  tiktok_ads:    { l: 'TikTok Ads',    stage: 'tofu', type: 'awareness' },
+  meta_ads:      { l: 'Meta Ads',      stage: 'tofu', type: 'awareness' },
+};
+
+const STAGE_COLOR = { tofu: '#2563EB', mofu: '#D97706', bofu: '#059669' };
+const STAGE_LABEL = { tofu: 'TOFU · Awareness', mofu: 'MOFU · Consideration', bofu: 'BOFU · Conversion' };
+
+const CLIENTS = [
+  { key: 'Kalisha', ind: 'Fashion', cg: 'Dica', at: 'Azhar', as: 'Alfath', pic: 'Ainun',
+    chs: ['shopee_store','shopee_ads','cpas','tiktok_store','tiktok_gmvmax','tiktok_ads','meta_ads'],
+    troas: { shopee_ads: 4, tiktok_gmvmax: 4 } },
+  { key: 'Raecca', ind: 'Fashion', cg: 'Dica', at: 'Azhar', as: 'Alfath', pic: 'Raka',
+    chs: ['shopee_store','shopee_ads','cpas','tiktok_store','tiktok_gmvmax','tiktok_ads','meta_ads'],
+    troas: { shopee_ads: 4, tiktok_gmvmax: 4 } },
+  { key: 'HTTP', ind: '—', cg: 'Dica', at: 'Azhar', as: 'Nunu', pic: 'Gemi',
+    chs: ['shopee_store','shopee_ads','cpas','tiktok_store','tiktok_gmvmax','tiktok_ads','meta_ads'],
+    troas: { shopee_ads: 4, tiktok_gmvmax: 4 } },
+  { key: 'Amerta', ind: '—', cg: 'Bara', at: 'Ilham', as: 'Ziyad', pic: 'Prima',
+    chs: ['shopee_store','shopee_ads','cpas','tiktok_store','tiktok_gmvmax','tiktok_ads'],
+    troas: { shopee_ads: 4, tiktok_gmvmax: 4 } },
+  { key: 'KREM', ind: 'Kecantikan', cg: 'Bara', at: 'Azhar', as: 'Ziyad', pic: 'Oktavia',
+    chs: ['shopee_store','shopee_ads','cpas','meta_ads'],
+    troas: { shopee_ads: 4 } },
+];
+
+const PERIODS = ['2026-02', '2026-03'];
+const PL = { '2026-02': 'Feb 2026', '2026-03': 'Mar 2026' };
+const TC = ['#2563EB', '#059669', '#DC2626', '#7C3AED'];
+const ORD = ['rr','or','yy','nn','gg','gd'];
+const LM = { rr: 'Turun >20%', or: 'Turun 10–20%', yy: 'Turun <10%', nn: 'Stabil', gg: 'Naik <20%', gd: 'Naik >20%' };
+
+const DATA = [
+  // KALISHA
+  { c:'Kalisha', ch:'shopee_store',   p:'2026-02', rev:6061060164,  sp:null,       ord:68809,  vis:880117 },
+  { c:'Kalisha', ch:'shopee_ads',     p:'2026-02', rev:5311336625,  sp:364257745,  ord:74656,  vis:null   },
+  { c:'Kalisha', ch:'cpas',           p:'2026-02', rev:2200000000,  sp:180000000,  ord:38000,  vis:420000 },
+  { c:'Kalisha', ch:'tiktok_store',   p:'2026-02', rev:8651234580,  sp:null,       ord:245288, vis:null   },
+  { c:'Kalisha', ch:'tiktok_gmvmax',  p:'2026-02', rev:15528791440, sp:1053853609, ord:388309, vis:null   },
+  { c:'Kalisha', ch:'tiktok_ads',     p:'2026-02', sp:85000000,  reach:1850000, impr:4200000, results:320000 },
+  { c:'Kalisha', ch:'meta_ads',       p:'2026-02', sp:120000000, reach:2400000, impr:5800000, results:48000  },
+  { c:'Kalisha', ch:'shopee_store',   p:'2026-03', rev:6856252658,  sp:null,       ord:76114,  vis:863954 },
+  { c:'Kalisha', ch:'shopee_ads',     p:'2026-03', rev:5925685299,  sp:387861763,  ord:83785,  vis:null   },
+  { c:'Kalisha', ch:'cpas',           p:'2026-03', rev:2480000000,  sp:192000000,  ord:42500,  vis:458000 },
+  { c:'Kalisha', ch:'tiktok_store',   p:'2026-03', rev:8220543210,  sp:null,       ord:207455, vis:null   },
+  { c:'Kalisha', ch:'tiktok_gmvmax',  p:'2026-03', rev:14810869751, sp:971836951,  ord:338567, vis:null   },
+  { c:'Kalisha', ch:'tiktok_ads',     p:'2026-03', sp:92000000,  reach:2100000, impr:5100000, results:380000 },
+  { c:'Kalisha', ch:'meta_ads',       p:'2026-03', sp:138000000, reach:2850000, impr:6900000, results:56000  },
+  // RAECCA
+  { c:'Raecca', ch:'shopee_store',    p:'2026-02', rev:3800000000,  sp:null,       ord:52000,  vis:620000 },
+  { c:'Raecca', ch:'shopee_ads',      p:'2026-02', rev:2200000000,  sp:280000000,  ord:38000,  vis:null   },
+  { c:'Raecca', ch:'cpas',            p:'2026-02', rev:980000000,   sp:95000000,   ord:16500,  vis:195000 },
+  { c:'Raecca', ch:'tiktok_store',    p:'2026-02', rev:1800000000,  sp:null,       ord:28000,  vis:null   },
+  { c:'Raecca', ch:'tiktok_gmvmax',   p:'2026-02', rev:4200000000,  sp:390000000,  ord:95000,  vis:null   },
+  { c:'Raecca', ch:'tiktok_ads',      p:'2026-02', sp:65000000,  reach:1200000, impr:2900000, results:180000 },
+  { c:'Raecca', ch:'meta_ads',        p:'2026-02', sp:88000000,  reach:1650000, impr:3800000, results:32000  },
+  { c:'Raecca', ch:'shopee_store',    p:'2026-03', rev:4100000000,  sp:null,       ord:58000,  vis:670000 },
+  { c:'Raecca', ch:'shopee_ads',      p:'2026-03', rev:2600000000,  sp:295000000,  ord:44000,  vis:null   },
+  { c:'Raecca', ch:'cpas',            p:'2026-03', rev:1050000000,  sp:98000000,   ord:18000,  vis:210000 },
+  { c:'Raecca', ch:'tiktok_store',    p:'2026-03', rev:1650000000,  sp:null,       ord:25000,  vis:null   },
+  { c:'Raecca', ch:'tiktok_gmvmax',   p:'2026-03', rev:3900000000,  sp:370000000,  ord:88000,  vis:null   },
+  { c:'Raecca', ch:'tiktok_ads',      p:'2026-03', sp:58000000,  reach:980000,  impr:2300000, results:145000 },
+  { c:'Raecca', ch:'meta_ads',        p:'2026-03', sp:75000000,  reach:1380000, impr:3200000, results:27000  },
+  // HTTP — turun
+  { c:'HTTP', ch:'shopee_store',      p:'2026-02', rev:1200000000,  sp:null,       ord:18000,  vis:240000 },
+  { c:'HTTP', ch:'shopee_ads',        p:'2026-02', rev:980000000,   sp:145000000,  ord:16500,  vis:null   },
+  { c:'HTTP', ch:'cpas',              p:'2026-02', rev:420000000,   sp:68000000,   ord:7200,   vis:88000  },
+  { c:'HTTP', ch:'tiktok_store',      p:'2026-02', rev:820000000,   sp:null,       ord:12000,  vis:null   },
+  { c:'HTTP', ch:'tiktok_gmvmax',     p:'2026-02', rev:2100000000,  sp:280000000,  ord:42000,  vis:null   },
+  { c:'HTTP', ch:'tiktok_ads',        p:'2026-02', sp:55000000,  reach:850000,  impr:1900000, results:120000 },
+  { c:'HTTP', ch:'meta_ads',          p:'2026-02', sp:95000000,  reach:1480000, impr:3400000, results:38000  },
+  { c:'HTTP', ch:'shopee_store',      p:'2026-03', rev:980000000,   sp:null,       ord:14200,  vis:195000 },
+  { c:'HTTP', ch:'shopee_ads',        p:'2026-03', rev:820000000,   sp:152000000,  ord:13800,  vis:null   },
+  { c:'HTTP', ch:'cpas',              p:'2026-03', rev:310000000,   sp:72000000,   ord:5400,   vis:65000  },
+  { c:'HTTP', ch:'tiktok_store',      p:'2026-03', rev:650000000,   sp:null,       ord:9800,   vis:null   },
+  { c:'HTTP', ch:'tiktok_gmvmax',     p:'2026-03', rev:1650000000,  sp:295000000,  ord:33000,  vis:null   },
+  { c:'HTTP', ch:'tiktok_ads',        p:'2026-03', sp:48000000,  reach:710000,  impr:1650000, results:95000  },
+  { c:'HTTP', ch:'meta_ads',          p:'2026-03', sp:82000000,  reach:1200000, impr:2800000, results:29000  },
+  // AMERTA — naik
+  { c:'Amerta', ch:'shopee_store',    p:'2026-02', rev:2100000000,  sp:null,       ord:34000,  vis:410000 },
+  { c:'Amerta', ch:'shopee_ads',      p:'2026-02', rev:1650000000,  sp:198000000,  ord:28500,  vis:null   },
+  { c:'Amerta', ch:'cpas',            p:'2026-02', rev:720000000,   sp:82000000,   ord:12800,  vis:158000 },
+  { c:'Amerta', ch:'tiktok_store',    p:'2026-02', rev:1280000000,  sp:null,       ord:21000,  vis:null   },
+  { c:'Amerta', ch:'tiktok_gmvmax',   p:'2026-02', rev:3400000000,  sp:312000000,  ord:72000,  vis:null   },
+  { c:'Amerta', ch:'tiktok_ads',      p:'2026-02', sp:72000000,  reach:1100000, impr:2500000, results:165000 },
+  { c:'Amerta', ch:'shopee_store',    p:'2026-03', rev:2380000000,  sp:null,       ord:38500,  vis:455000 },
+  { c:'Amerta', ch:'shopee_ads',      p:'2026-03', rev:1920000000,  sp:212000000,  ord:33000,  vis:null   },
+  { c:'Amerta', ch:'cpas',            p:'2026-03', rev:850000000,   sp:88000000,   ord:15000,  vis:182000 },
+  { c:'Amerta', ch:'tiktok_store',    p:'2026-03', rev:1480000000,  sp:null,       ord:24500,  vis:null   },
+  { c:'Amerta', ch:'tiktok_gmvmax',   p:'2026-03', rev:3850000000,  sp:328000000,  ord:82000,  vis:null   },
+  { c:'Amerta', ch:'tiktok_ads',      p:'2026-03', sp:88000000,  reach:1380000, impr:3100000, results:210000 },
+  // KREM
+  { c:'KREM', ch:'shopee_store',      p:'2026-02', rev:680000000,   sp:null,       ord:9200,   vis:125000 },
+  { c:'KREM', ch:'shopee_ads',        p:'2026-02', rev:520000000,   sp:88000000,   ord:8800,   vis:null   },
+  { c:'KREM', ch:'cpas',              p:'2026-02', rev:210000000,   sp:58000000,   ord:3500,   vis:42000  },
+  { c:'KREM', ch:'meta_ads',          p:'2026-02', sp:65000000,  reach:920000,  impr:2200000, results:28000  },
+  { c:'KREM', ch:'shopee_store',      p:'2026-03', rev:590000000,   sp:null,       ord:7800,   vis:108000 },
+  { c:'KREM', ch:'shopee_ads',        p:'2026-03', rev:445000000,   sp:92000000,   ord:7500,   vis:null   },
+  { c:'KREM', ch:'cpas',              p:'2026-03', rev:165000000,   sp:62000000,   ord:2800,   vis:32000  },
+  { c:'KREM', ch:'meta_ads',          p:'2026-03', sp:58000000,  reach:780000,  impr:1850000, results:22000  },
+];
+
+const ACTIVITY = [
+  { c:'Kalisha', d:'15 Mar 2026', t:'p', n:'Flash sale 50% koleksi hijab instan, target 10.000 orders dalam 24 jam' },
+  { c:'Kalisha', d:'05 Mar 2026', t:'l', n:'Launching koleksi Ramadan 2026, 25 SKU baru live di semua channel serentak' },
+  { c:'Kalisha', d:'20 Feb 2026', t:'c', n:'Kolaborasi 5 kreator TikTok untuk boost GMV Max, estimasi reach 3 juta' },
+  { c:'Kalisha', d:'10 Feb 2026', t:'e', n:'Campaign Valentine, bundle Bergo + inner spesial limited edition' },
+  { c:'Raecca',  d:'01 Mar 2026', t:'p', n:'Promo awal Ramadan, diskon 30% semua produk andalan' },
+  { c:'Raecca',  d:'10 Feb 2026', t:'l', n:'Launching koleksi baru, 15 SKU ready stock dengan campaign TikTok' },
+  { c:'HTTP',    d:'20 Mar 2026', t:'e', n:'Event offline Jakarta, boost campaign semua channel serentak' },
+  { c:'HTTP',    d:'15 Feb 2026', t:'c', n:'Konten video series 10 video TikTok, anggaran iklan ditingkatkan 40%' },
+  { c:'Amerta',  d:'12 Mar 2026', t:'p', n:'Promo Ramadan, bundle produk + free ongkir seluruh Indonesia' },
+  { c:'Amerta',  d:'01 Feb 2026', t:'l', n:'Launching varian baru, campaign TikTok GMV Max ditingkatkan' },
+  { c:'KREM',    d:'25 Mar 2026', t:'p', n:'Flash sale akhir bulan, diskon 40% SKU terpilih' },
+];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let curPeriod = '2026-03';
+let curClient = null;
+let chartInst = null;
+let activeTrend = ['revenue', 'roas'];
+
+// ══════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════
+function gd(c, ch, p) { return DATA.find(x => x.c===c && x.ch===ch && x.p===p) || null; }
+function prev(p) { const i = PERIODS.indexOf(p); return i > 0 ? PERIODS[i-1] : null; }
+function isAware(ch) { return CH_DEF[ch]?.type === 'awareness'; }
+function roas(d) { if (!d || !d.rev || !d.sp || d.sp===0) return null; return d.rev/d.sp; }
+function pct(c, p) { if (!p || p===0) return null; return (c-p)/p*100; }
+function popCls(v) {
+  if (v===null) return 'nn';
+  if (v<=-20) return 'rr'; if (v<=-10) return 'or'; if (v<0) return 'yy';
+  if (v===0) return 'nn'; if (v<=20) return 'gg'; return 'gd';
+}
+function chip(c, p) {
+  const v = pct(c, p);
+  if (v===null) return '';
+  return `<span class="chip chip-${popCls(v)}">${v>=0?'+':''}${Math.round(v)}%</span>`;
+}
+function badge(s) {
+  return `<span class="badge badge-${s}"><span class="dot dot-${s}"></span>${LM[s]}</span>`;
+}
+function fRp(n) {
+  if (!n && n!==0) return '—';
+  if (n>=1e12) return 'Rp ' + (n/1e12).toFixed(1) + 'T';
+  if (n>=1e9)  return 'Rp ' + (n/1e9).toFixed(1) + 'M';
+  if (n>=1e6)  return 'Rp ' + (n/1e6).toFixed(0) + 'jt';
+  return 'Rp ' + (n/1000).toFixed(0) + 'rb';
+}
+function fK(n) {
+  if (!n && n!==0) return '—';
+  if (n>=1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n>=1000) return (n/1000).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString('id-ID');
+}
+function fV(v, f) {
+  if (v===null || v===undefined) return '—';
+  if (f==='rp') return fRp(v);
+  if (f==='x') return v.toFixed(2) + 'x';
+  if (f==='pct') return v.toFixed(1) + '%';
+  if (f==='n') return Math.round(v).toLocaleString('id-ID');
+  if (f==='k') return fK(v);
+  return v;
+}
+
+function totals(c, p) {
+  const cl = CLIENTS.find(x => x.key===c);
+  let rev=0, sp=0, ord=0, vis=0, reach=0, impr=0;
+  cl.chs.forEach(ch => {
+    const d = gd(c, ch, p); if (!d) return;
+    if (isAware(ch)) { if(d.sp)sp+=d.sp; if(d.reach)reach+=d.reach; if(d.impr)impr+=d.impr; }
+    else { rev+=d.rev||0; ord+=d.ord||0; if(d.sp)sp+=d.sp; if(d.vis)vis+=d.vis; }
+  });
+  return { rev, sp, roas: sp>0?rev/sp:null, ord, vis: vis||null, reach: reach||null, impr: impr||null };
+}
+
+function chWorstKey(c, ch, p) {
+  const cur = gd(c, ch, p), prv = gd(c, ch, prev(p));
+  if (!cur || !prv) return 'nn';
+  const key = isAware(ch) ? (cur.reach ? 'reach' : 'impr') : 'rev';
+  return popCls(pct(cur[key], prv[key]));
+}
+
+function clientWorst(c, p) {
+  let wi = 5;
+  CLIENTS.find(x=>x.key===c)?.chs.forEach(ch => {
+    const i = ORD.indexOf(chWorstKey(c, ch, p));
+    if (i < wi) wi = i;
+  });
+  return ORD[wi];
+}
+
+// ══════════════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════════════
+function buildSidebar() {
+  const el = document.getElementById('sb-clients');
+  el.innerHTML = CLIENTS.map(cl => {
+    const wc = clientWorst(cl.key, curPeriod);
+    const initials = cl.key.slice(0,2).toUpperCase();
+    return `<div class="sb-client ${curClient===cl.key?'active':''}" onclick="goD('${cl.key}')">
+      <div class="sb-avatar">${initials}</div>
+      <span class="sb-client-name">${cl.key}</span>
+      <span class="dot dot-${wc}"></span>
+    </div>`;
+  }).join('');
+  document.getElementById('nav-overview').className = 'sb-item' + (curClient===null?' active':'');
+}
+
+// ══════════════════════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════════════════════
+function renderOverview() {
+  let tRev=0, tSp=0, tOrd=0, pRev=0, pSp=0;
+  CLIENTS.forEach(cl => {
+    const t=totals(cl.key,curPeriod), tp=totals(cl.key,prev(curPeriod));
+    tRev+=t.rev; tSp+=t.sp; tOrd+=t.ord; pRev+=tp.rev; pSp+=tp.sp;
+  });
+  const aRoas = tSp>0?tRev/tSp:null;
+  const paRoas = pSp>0?pRev/pSp:null;
+  const probs = CLIENTS.filter(cl => ['rr','or'].includes(clientWorst(cl.key, curPeriod)));
+  const wins  = CLIENTS.filter(cl => ['gg','gd'].includes(clientWorst(cl.key, curPeriod)));
+
+  const rows = CLIENTS.slice().sort((a,b) => {
+    return ORD.indexOf(clientWorst(a.key,curPeriod)) - ORD.indexOf(clientWorst(b.key,curPeriod));
+  }).map(cl => {
+    const t=totals(cl.key,curPeriod), tp=totals(cl.key,prev(curPeriod));
+    const wc = clientWorst(cl.key, curPeriod);
+    const dots = cl.chs.map(ch =>
+      `<span class="dot dot-${chWorstKey(cl.key,ch,curPeriod)}" title="${CH_DEF[ch]?.l}" style="display:inline-block;margin-right:3px"></span>`
+    ).join('');
+    return `<tr onclick="goD('${cl.key}')">
+      <td><div class="td-name">${cl.key}</div><div class="td-sub">${cl.ind} · CG: ${cl.cg}</div></td>
+      <td>${badge(wc)}</td>
+      <td><div class="dots-row">${dots}</div></td>
+      <td class="td-mono">${fRp(t.rev)} ${chip(t.rev,tp.rev)}</td>
+      <td class="td-mono">${t.roas?t.roas.toFixed(2)+'x':'—'} ${chip(t.roas,tp.roas)}</td>
+      <td class="td-mono">${fRp(t.sp)}</td>
+      <td style="font-size:12px;color:#6B6A64">${cl.cg}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('view-overview').innerHTML = `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Overview</div>
+        <div class="page-sub">${CLIENTS.length} klien pilot · input harian oleh Client Growth</div>
+      </div>
+      <div class="period-pills">
+        ${PERIODS.map(p => `<button class="period-pill${curPeriod===p?' active':''}" onclick="setP('${p}')">${PL[p]}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="legend">
+      ${ORD.map(s => `<span class="legend-item"><span class="dot dot-${s}"></span>${LM[s]}</span>`).join('')}
+    </div>
+
+    ${probs.length ? `<div class="alert alert-danger">
+      <div class="alert-title">${probs.length} klien butuh perhatian segera</div>
+      ${probs.map(cl => {
+        const t=totals(cl.key,curPeriod), tp=totals(cl.key,prev(curPeriod));
+        const v=pct(t.rev,tp.rev);
+        return `<div class="alert-item">${cl.key} — revenue ${v!==null?(v>=0?'+':'')+Math.round(v)+'%':'—'} · ${fRp(t.rev)} · CG: ${cl.cg}</div>`;
+      }).join('')}
+    </div>` : ''}
+
+    ${wins.length ? `<div class="alert alert-success">
+      <div class="alert-title">${wins.length} klien sedang tumbuh</div>
+      ${wins.map(cl => {
+        const t=totals(cl.key,curPeriod), tp=totals(cl.key,prev(curPeriod));
+        const v=pct(t.rev,tp.rev);
+        return `<div class="alert-item">${cl.key} — +${Math.round(v)}% revenue · ${fRp(t.rev)}</div>`;
+      }).join('')}
+    </div>` : ''}
+
+    <div class="g4">
+      <div class="mcard">
+        <div class="mcard-label">Total Klien</div>
+        <div class="mcard-val">${CLIENTS.length}</div>
+        <div class="mcard-sub">
+          ${CLIENTS.filter(x=>x.cg==='Dica').length} Dica ·
+          ${CLIENTS.filter(x=>x.cg==='Bara').length} Bara
+        </div>
+      </div>
+      <div class="mcard">
+        <div class="mcard-label">Total Revenue</div>
+        <div class="mcard-val">${fRp(tRev)}</div>
+        <div class="mcard-sub">${chip(tRev,pRev)} vs periode lalu</div>
+      </div>
+      <div class="mcard">
+        <div class="mcard-label">Blended ROAS</div>
+        <div class="mcard-val">${aRoas?aRoas.toFixed(2)+'x':'—'}</div>
+        <div class="mcard-sub">${chip(aRoas,paRoas)} vs periode lalu</div>
+      </div>
+      <div class="mcard">
+        <div class="mcard-label">Total Spend</div>
+        <div class="mcard-val">${fRp(tSp)}</div>
+        <div class="mcard-sub" style="font-size:11px;color:#9B9A94">incl. awareness channels</div>
+      </div>
+    </div>
+
+    <div class="slabel">Semua klien · klik baris untuk detail</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:22%">Klien</th>
+          <th style="width:14%">Status</th>
+          <th style="width:14%">Channel</th>
+          <th style="width:19%">Revenue</th>
+          <th style="width:13%">ROAS</th>
+          <th style="width:10%">Spend</th>
+          <th style="width:8%">CG</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// DETAIL
+// ══════════════════════════════════════════════════════════
+function renderDetail(key) {
+  const cl = CLIENTS.find(x => x.key===key); if (!cl) return;
+  const prv = prev(curPeriod);
+  const wc = clientWorst(key, curPeriod);
+  const probs = cl.chs.filter(ch => ['rr','or'].includes(chWorstKey(key,ch,curPeriod)));
+
+  // Funnel aggregates
+  let tofu_sp=0, tofu_reach=0, tofu_impr=0, tofu_res=0;
+  let pt_sp=0, pt_reach=0, pt_impr=0, pt_res=0;
+  let mofu_vis=0, mofu_ord=0, mofu_rev=0, pm_vis=0, pm_ord=0, pm_rev=0;
+  let bofu_rev=0, bofu_sp=0, bofu_ord=0, pb_rev=0, pb_sp=0, pb_ord=0;
+
+  cl.chs.forEach(ch => {
+    const c=gd(key,ch,curPeriod), p2=gd(key,ch,prv);
+    const stage = CH_DEF[ch]?.stage;
+    if (stage==='tofu' && c) { tofu_sp+=c.sp||0; tofu_reach+=c.reach||0; tofu_impr+=c.impr||0; tofu_res+=c.results||0; }
+    if (stage==='tofu' && p2){ pt_sp+=p2.sp||0; pt_reach+=p2.reach||0; pt_impr+=p2.impr||0; pt_res+=p2.results||0; }
+    if (stage==='mofu' && c) { mofu_vis+=c.vis||0; mofu_ord+=c.ord||0; mofu_rev+=c.rev||0; }
+    if (stage==='mofu' && p2){ pm_vis+=p2.vis||0; pm_ord+=p2.ord||0; pm_rev+=p2.rev||0; }
+    if (stage==='bofu' && c) { bofu_rev+=c.rev||0; bofu_sp+=c.sp||0; bofu_ord+=c.ord||0; }
+    if (stage==='bofu' && p2){ pb_rev+=p2.rev||0; pb_sp+=p2.sp||0; pb_ord+=p2.ord||0; }
+  });
+  const bRoas=bofu_sp>0?bofu_rev/bofu_sp:null, pbRoas=pb_sp>0?pb_rev/pb_sp:null;
+  const blCir=bofu_sp>0&&bofu_rev>0?bofu_sp/bofu_rev*100:null;
+  const blCpo=bofu_sp>0&&bofu_ord>0?bofu_sp/bofu_ord:null;
+  const blCr=mofu_vis>0&&mofu_ord>0?mofu_ord/mofu_vis*100:null;
+  const blAov=bofu_rev>0&&bofu_ord>0?bofu_rev/bofu_ord:null;
+
+  const totalOrd = bofu_ord + mofu_ord;
+  const prevTotalOrd = pb_ord + pm_ord;
+
+  // Channel cards
+  const chGroups = ['tofu','mofu','bofu'].map(stage => {
+    const chs = cl.chs.filter(ch => CH_DEF[ch]?.stage===stage);
+    if (!chs.length) return '';
+    const cards = chs.map(ch => {
+      const c=gd(key,ch,curPeriod), p2=gd(key,ch,prv);
+      const wch = chWorstKey(key,ch,curPeriod);
+      const cls = ['rr','or'].includes(wch)?'flag':['gg','gd'].includes(wch)?'good':'';
+      const aware = isAware(ch);
+      let rows = '';
+      if (aware) {
+        if(c?.sp)   rows += `<div class="ch-row"><span>Spend</span><div class="ch-right"><span class="ch-val">${fRp(c.sp)}</span>${chip(c.sp,p2?.sp)}</div></div>`;
+        if(c?.reach)rows += `<div class="ch-row"><span>Reach</span><div class="ch-right"><span class="ch-val">${fK(c.reach)}</span>${chip(c.reach,p2?.reach)}</div></div>`;
+        if(c?.impr) rows += `<div class="ch-row"><span>Impresi</span><div class="ch-right"><span class="ch-val">${fK(c.impr)}</span>${chip(c.impr,p2?.impr)}</div></div>`;
+        if(c?.results)rows+=`<div class="ch-row"><span>Results</span><div class="ch-right"><span class="ch-val">${fK(c.results)}</span>${chip(c.results,p2?.results)}</div></div>`;
+      } else {
+        if(c?.rev!==undefined) rows+=`<div class="ch-row"><span>Revenue</span><div class="ch-right"><span class="ch-val">${fRp(c?.rev)}</span>${chip(c?.rev,p2?.rev)}</div></div>`;
+        if(c?.sp)  rows+=`<div class="ch-row"><span>Spend</span><div class="ch-right"><span class="ch-val">${fRp(c?.sp)}</span>${chip(c?.sp,p2?.sp)}</div></div>`;
+        if(c?.ord) rows+=`<div class="ch-row"><span>Orders</span><div class="ch-right"><span class="ch-val">${(c.ord||0).toLocaleString('id-ID')}</span>${chip(c?.ord,p2?.ord)}</div></div>`;
+        if(c?.vis) rows+=`<div class="ch-row"><span>Visitors</span><div class="ch-right"><span class="ch-val">${fK(c?.vis)}</span>${chip(c?.vis,p2?.vis)}</div></div>`;
+        const r=roas(c), pr=roas(p2), tr=cl.troas[ch];
+        if(r!==null){
+          let vt=''; if(tr){const vp=(r-tr)/tr*100;vt=`<span class="${vp>=0?'vt-ok':'vt-lo'}">${vp>=0?'+':''}${vp.toFixed(0)}%tgt</span>`;}
+          rows+=`<div class="ch-row"><span>ROAS</span><div class="ch-right"><span class="ch-val">${r.toFixed(2)}x</span>${vt}</div></div>`;
+        }
+      }
+      return `<div class="ch-card ${cls} ${stage}-ch">
+        <div class="ch-card-head"><span class="ch-card-name">${CH_DEF[ch]?.l}</span><span class="dot dot-${wch}"></span></div>
+        ${rows || '<div style="font-size:11px;color:#9B9A94">—</div>'}
+      </div>`;
+    }).join('');
+    return `<div class="ch-section">
+      <div class="ch-type-header">
+        <div class="ch-type-indicator" style="background:${STAGE_COLOR[stage]}"></div>
+        <div class="ch-type-label">${STAGE_LABEL[stage]}</div>
+      </div>
+      <div class="ch-grid">${cards}</div>
+    </div>`;
+  }).join('');
+
+  // Trend selectors
+  const TM = [
+    {k:'revenue',l:'Revenue',f:'rp'},
+    {k:'roas',l:'ROAS',f:'x'},
+    {k:'spend',l:'Spend',f:'rp'},
+    {k:'reach',l:'Reach',f:'k'},
+  ];
+  const trendSelHtml = TM.map((m,i) => {
+    const isOn = activeTrend.includes(m.k);
+    const maxed = !isOn && activeTrend.length >= 3;
+    const col = isOn ? TC[activeTrend.indexOf(m.k)] : 'transparent';
+    return `<button class="trend-btn${isOn?' on':''}${maxed?' disabled':''}" onclick="togTrend('${m.k}')" ${maxed?'disabled':''}>
+      <span class="trend-swatch" style="background:${isOn?col:'#CCCAC2'};border:1px solid ${isOn?col:'#CCCAC2'}"></span>
+      ${m.l}
+    </button>`;
+  }).join('');
+
+  // Activity
+  const actHtml = ACTIVITY.filter(a => a.c===key).map(a => {
+    const cls = {p:'act-promo',e:'act-event',c:'act-content',l:'act-launching'}[a.t];
+    const lbl = {p:'Promo',e:'Event',c:'Content',l:'Launching'}[a.t];
+    return `<div class="act-item">
+      <span class="act-date">${a.d}</span>
+      <span class="act-badge ${cls}">${lbl}</span>
+      <span class="act-note">${a.n}</span>
+    </div>`;
+  }).join('') || `<div class="act-item"><span class="act-note" style="color:#9B9A94">Belum ada activity log untuk klien ini.</span></div>`;
+
+  document.getElementById('view-detail').innerHTML = `
+    <button class="back-btn" onclick="goOV()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Kembali ke Overview
+    </button>
+
+    <div class="cli-head">
+      <div class="cli-av">${key.slice(0,2).toUpperCase()}</div>
+      <div>
+        <div class="cli-name">${key} ${badge(wc)}</div>
+        <div class="cli-meta">
+          <span class="cli-meta-item"><span class="cli-meta-label">Client Growth:</span> <span class="cli-meta-val">${cl.cg}</span></span>
+          <span class="cli-meta-item"><span class="cli-meta-label">Adv TikTok:</span> <span class="cli-meta-val">${cl.at}</span></span>
+          <span class="cli-meta-item"><span class="cli-meta-label">Adv Shopee:</span> <span class="cli-meta-val">${cl.as}</span></span>
+          <span class="cli-meta-item"><span class="cli-meta-label">PIC Klien:</span> <span class="cli-meta-val">${cl.pic}</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="period-pills" style="margin-bottom:20px">
+      ${PERIODS.map(p=>`<button class="period-pill${curPeriod===p?' active':''}" onclick="setPD('${p}','${key}')">${PL[p]}</button>`).join('')}
+    </div>
+
+    ${probs.length ? `<div class="alert alert-danger">
+      <div class="alert-title">${probs.length} channel butuh perhatian · ${PL[curPeriod]}</div>
+      ${probs.map(ch=>{
+        const c=gd(key,ch,curPeriod),p2=gd(key,ch,prv);
+        const aware=isAware(ch);const mk=aware?'reach':'rev';
+        const v=pct(c?.[mk],p2?.[mk]);
+        const r=roas(c); const tr=cl.troas[ch];
+        return `<div class="alert-item">${CH_DEF[ch]?.l}: ${aware?'reach':'revenue'} ${v!==null?(v>=0?'+':'')+Math.round(v)+'%':'—'}${!aware&&r?' · ROAS '+r.toFixed(2)+'x':''}${tr&&!aware?' (target '+tr+'x)':''}</div>`;
+      }).join('')}
+    </div>` : ''}
+
+    <div class="g4">
+      <div class="mcard"><div class="mcard-label">Total Revenue</div><div class="mcard-val">${fRp(bofu_rev+mofu_rev)}</div><div class="mcard-sub">${chip(bofu_rev+mofu_rev,pb_rev+pm_rev)} vs lalu</div></div>
+      <div class="mcard"><div class="mcard-label">Total Spend</div><div class="mcard-val">${fRp(bofu_sp+tofu_sp)}</div><div class="mcard-sub" style="color:#9B9A94">incl. awareness</div></div>
+      <div class="mcard"><div class="mcard-label">ROAS (BOFU)</div><div class="mcard-val">${bRoas?bRoas.toFixed(2)+'x':'—'}</div><div class="mcard-sub">${chip(bRoas,pbRoas)} vs lalu</div></div>
+      <div class="mcard"><div class="mcard-label">Total Orders</div><div class="mcard-val">${totalOrd.toLocaleString('id-ID')}</div><div class="mcard-sub">${chip(totalOrd,prevTotalOrd)} vs lalu</div></div>
+    </div>
+
+    <div class="slabel" style="margin-bottom:12px">Full Funnel · ${PL[curPeriod]}</div>
+    <div class="funnel">
+      <div class="funnel-card tofu">
+        <div class="funnel-head">
+          <span class="funnel-title">TOFU · Awareness</span>
+          <span class="funnel-source">Meta + TikTok Ads</span>
+        </div>
+        ${tofu_reach ? `<div class="funnel-row"><span>Total Reach</span><div class="funnel-val">${fK(tofu_reach)} ${chip(tofu_reach,pt_reach)}</div></div>` : ''}
+        ${tofu_impr  ? `<div class="funnel-row"><span>Total Impresi</span><div class="funnel-val">${fK(tofu_impr)} ${chip(tofu_impr,pt_impr)}</div></div>` : ''}
+        ${tofu_res   ? `<div class="funnel-row"><span>Total Results</span><div class="funnel-val">${fK(tofu_res)} ${chip(tofu_res,pt_res)}</div></div>` : ''}
+        ${tofu_sp    ? `<div class="funnel-row"><span>Spend Awareness</span><div class="funnel-val">${fRp(tofu_sp)} ${chip(tofu_sp,pt_sp)}</div></div>` : `<div class="funnel-empty">Belum ada channel awareness</div>`}
+      </div>
+      <div class="funnel-card mofu">
+        <div class="funnel-head">
+          <span class="funnel-title">MOFU · Consideration</span>
+          <span class="funnel-source">Store + CPAS</span>
+        </div>
+        ${mofu_vis ? `<div class="funnel-row"><span>Total Visitors</span><div class="funnel-val">${fK(mofu_vis)} ${chip(mofu_vis,pm_vis)}</div></div>` : `<div class="funnel-empty">Visitors belum diinput</div>`}
+        <div class="funnel-row"><span>Total Orders</span><div class="funnel-val">${mofu_ord.toLocaleString('id-ID')} ${chip(mofu_ord,pm_ord)}</div></div>
+        <div class="funnel-row"><span>Revenue Toko</span><div class="funnel-val">${fRp(mofu_rev)} ${chip(mofu_rev,pm_rev)}</div></div>
+        ${mofu_vis&&mofu_ord ? `<div class="funnel-row"><span>CR Toko</span><div class="funnel-val">${(mofu_ord/mofu_vis*100).toFixed(2)}%</div></div>` : ''}
+      </div>
+      <div class="funnel-card bofu">
+        <div class="funnel-head">
+          <span class="funnel-title">BOFU · Conversion</span>
+          <span class="funnel-source">Paid Ads + GMV Max</span>
+        </div>
+        <div class="funnel-row"><span>Revenue Ads</span><div class="funnel-val">${fRp(bofu_rev)} ${chip(bofu_rev,pb_rev)}</div></div>
+        <div class="funnel-row"><span>Ad Spend</span><div class="funnel-val">${fRp(bofu_sp)} ${chip(bofu_sp,pb_sp)}</div></div>
+        <div class="funnel-row"><span>ROAS</span><div class="funnel-val">${bRoas?bRoas.toFixed(2)+'x':'—'} ${chip(bRoas,pbRoas)}</div></div>
+        ${blCir ? `<div class="funnel-row"><span>CIR</span><div class="funnel-val">${blCir.toFixed(1)}%</div></div>` : ''}
+      </div>
+    </div>
+
+    <div class="calc-strip">
+      <div class="calc-header">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10H2z" stroke="#059669" stroke-width="1.2" fill="none" rx="2"/><path d="M5 7h4M7 5v4" stroke="#059669" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Metrik kalkulasi otomatis dari 4 input
+      </div>
+      <div class="calc-grid">
+        <div class="calc-item"><div class="calc-label">ROAS</div><div class="calc-val">${bRoas?bRoas.toFixed(2)+'x':'—'}</div><div class="calc-formula">rev ÷ spend</div></div>
+        <div class="calc-item"><div class="calc-label">CIR</div><div class="calc-val">${blCir?blCir.toFixed(1)+'%':'—'}</div><div class="calc-formula">spend ÷ rev</div></div>
+        <div class="calc-item"><div class="calc-label">CPO</div><div class="calc-val">${blCpo?fRp(blCpo):'—'}</div><div class="calc-formula">spend ÷ orders</div></div>
+        <div class="calc-item"><div class="calc-label">CR</div><div class="calc-val">${blCr?blCr.toFixed(2)+'%':'—'}</div><div class="calc-formula">orders ÷ visitors</div></div>
+        <div class="calc-item"><div class="calc-label">AOV</div><div class="calc-val">${blAov?fRp(blAov):'—'}</div><div class="calc-formula">rev ÷ orders</div></div>
+      </div>
+    </div>
+
+    <div class="slabel">Performa per Channel · ${PL[curPeriod]}</div>
+    ${chGroups}
+
+    <div class="trend-wrap">
+      <div class="trend-header">
+        <span class="trend-title">Tren Periode · pilih maks. 3 metrik</span>
+        <span class="trend-count">${activeTrend.length}/3 aktif</span>
+      </div>
+      <div id="trend-sel" class="trend-selectors">${trendSelHtml}</div>
+      <div id="trend-legend" class="trend-legend"></div>
+      <div style="position:relative;height:220px"><canvas id="trend-chart"></canvas></div>
+    </div>
+
+    <div class="slabel">Activity Log</div>
+    <div class="activity-log">${actHtml}</div>
+    <div style="height:40px"></div>`;
+
+  setTimeout(() => buildChart(key), 80);
+}
+
+// ══════════════════════════════════════════════════════════
+// CHART
+// ══════════════════════════════════════════════════════════
+function buildChart(key) {
+  const cv = document.getElementById('trend-chart'); if (!cv) return;
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const cl = CLIENTS.find(x => x.key===key); if (!cl) return;
+  const TM = [
+    {k:'revenue',l:'Revenue',f:'rp'},
+    {k:'roas',   l:'ROAS',   f:'x' },
+    {k:'spend',  l:'Spend',  f:'rp'},
+    {k:'reach',  l:'Reach',  f:'k' },
+  ];
+  const ds = activeTrend.map((mk, i) => {
+    const tm = TM.find(x => x.k===mk);
+    const data = PERIODS.map(p => {
+      let v = 0;
+      if (mk==='roas') {
+        const t = totals(key, p); v = t.roas || 0;
+      } else if (mk==='reach') {
+        cl.chs.filter(isAware).forEach(ch => { const d=gd(key,ch,p); if(d?.reach) v+=d.reach; });
+      } else {
+        cl.chs.forEach(ch => {
+          const d = gd(key,ch,p); if(!d) return;
+          if (mk==='spend') { if(d.sp) v+=d.sp; }
+          else if (!isAware(ch) && d[mk]) v += d[mk];
+        });
+      }
+      return Math.round(v*100)/100;
+    });
+    return {
+      label: tm.l, data,
+      borderColor: TC[i], backgroundColor: 'transparent',
+      pointBackgroundColor: TC[i], pointRadius: 5, pointHoverRadius: 7,
+      borderWidth: 2.5, tension: 0.3, yAxisID: 'y'+i
+    };
+  });
+  const scales = {
+    x: { grid: { color: 'rgba(0,0,0,.05)', drawBorder: false }, ticks: { color: '#9B9A94', font: { size: 12, family: 'DM Sans' } } }
+  };
+  activeTrend.forEach((_,i) => { scales['y'+i] = { display: false }; });
+
+  chartInst = new Chart(cv, {
+    type: 'line',
+    data: { labels: PERIODS.map(p => PL[p]), datasets: ds },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1C1B18', titleColor: '#fff', bodyColor: 'rgba(255,255,255,.75)',
+          padding: 10, cornerRadius: 8, titleFont: { family: 'DM Sans', size: 12 },
+          bodyFont: { family: 'DM Mono', size: 12 },
+          callbacks: {
+            label: ctx => {
+              const mk = activeTrend[ctx.datasetIndex];
+              const TM2 = [{k:'revenue',f:'rp'},{k:'roas',f:'x'},{k:'spend',f:'rp'},{k:'reach',f:'k'}];
+              const tm = TM2.find(x=>x.k===mk);
+              return '  ' + ctx.dataset.label + ': ' + fV(ctx.raw, tm?.f||'n');
+            }
+          }
+        }
+      },
+      scales
+    }
+  });
+
+  // Build legend
+  const leg = document.getElementById('trend-legend');
+  if (leg) {
+    leg.innerHTML = activeTrend.map((mk,i) => {
+      const lbl = {revenue:'Revenue',roas:'ROAS',spend:'Spend',reach:'Reach'}[mk];
+      return `<span class="trend-li"><span class="trend-ls" style="background:${TC[i]}"></span>${lbl}</span>`;
+    }).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+function goOV() {
+  curClient = null;
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  document.getElementById('view-overview').style.display = '';
+  document.getElementById('view-detail').style.display = 'none';
+  buildSidebar();
+  renderOverview();
+}
+
+function goD(key) {
+  curClient = key;
+  document.getElementById('view-overview').style.display = 'none';
+  document.getElementById('view-detail').style.display = '';
+  buildSidebar();
+  renderDetail(key);
+}
+
+function setP(p) {
+  curPeriod = p;
+  if (curClient) renderDetail(curClient);
+  else renderOverview();
+  buildSidebar();
+}
+
+function setPD(p, key) {
+  curPeriod = p;
+  renderDetail(key);
+  buildSidebar();
+}
+
+function togTrend(k) {
+  const i = activeTrend.indexOf(k);
+  if (i>=0) { if (activeTrend.length<=1) return; activeTrend.splice(i,1); }
+  else { if (activeTrend.length>=3) return; activeTrend.push(k); }
+  const TM = [{k:'revenue',l:'Revenue'},{k:'roas',l:'ROAS'},{k:'spend',l:'Spend'},{k:'reach',l:'Reach'}];
+  document.getElementById('trend-sel').innerHTML = TM.map((m,j) => {
+    const isOn = activeTrend.includes(m.k);
+    const maxed = !isOn && activeTrend.length>=3;
+    const col = isOn ? TC[activeTrend.indexOf(m.k)] : 'transparent';
+    return `<button class="trend-btn${isOn?' on':''}${maxed?' disabled':''}" onclick="togTrend('${m.k}')" ${maxed?'disabled':''}>
+      <span class="trend-swatch" style="background:${isOn?col:'#CCCAC2'};border:1px solid ${isOn?col:'#CCCAC2'}"></span>
+      ${m.l}
+    </button>`;
+  }).join('');
+  buildChart(curClient);
+}
+
+// INIT
+buildSidebar();
+renderOverview();
+</script>
+</body>
+</html>
