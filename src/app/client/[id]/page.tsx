@@ -76,11 +76,11 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
 
   const MetricCard = ({ title, value, icon: Icon, growthNode, lastMonthStr, color = 'accent' }: any) => {
     const colorClasses: Record<string, string> = {
-      accent: 'bg-accent/10 text-accent',
-      green: 'bg-green-50 text-green-500',
-      blue: 'bg-blue-50 text-blue-500',
-      red: 'bg-red-50 text-red-500',
-      yellow: 'bg-yellow-50 text-yellow-500',
+      accent: 'bg-accent-light text-accent',
+      green: 'bg-gg-bg text-gg',
+      blue: 'bg-tofu-bg text-tofu',
+      red: 'bg-rr-bg text-rr',
+      yellow: 'bg-mofu-bg text-mofu',
     };
     return (
     <div className="bg-white rounded-[24px] p-6 shadow-main">
@@ -245,91 +245,100 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         <h2 className="text-xl font-bold text-text">Funnel Performance</h2>
       </div>
       
-      <div className="bg-white rounded-[24px] p-8 md:p-12 shadow-main flex flex-col items-center max-w-4xl mx-auto relative">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
         
         {/* TOFU Bar */}
-        <div className="w-full relative group">
-          <div className="bg-gradient-to-r from-blue-50 to-white border border-blue-100 rounded-2xl p-6 md:p-8 flex items-center justify-between shadow-sm hover:shadow-md transition-all relative z-10">
-            <div className="flex items-center gap-6">
-              <div className="w-14 h-14 rounded-2xl bg-white text-blue-600 flex items-center justify-center shadow-sm border border-blue-100">
-                 <Megaphone className="w-7 h-7" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-1.5">TOFU • Awareness</div>
-                <div className="text-3xl font-bold text-text tracking-tight">{tofu_reach > 0 ? fK(tofu_reach) : '—'} <span className="text-base font-medium text-text3 ml-1">Reach</span></div>
-                <div className="flex gap-4 mt-3 text-sm font-medium text-text2">
-                   <span>Ad Spend: <strong className="text-accent">{fRp(tofu_sp)}</strong></span>
-                   <span>Impresi: <strong className="text-text">{fK(tofu_impr)}</strong></span>
-                </div>
-              </div>
+        <div className="bg-white rounded-[24px] p-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] transition-transform duration-300 hover:-translate-y-1 relative group">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-tofu-bg text-tofu flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)]">
+               <Megaphone className="w-6 h-6" />
             </div>
-            <div className="hidden sm:block text-right">
-               <div className="text-xs font-medium text-text3 uppercase mb-1">Cost per Reach</div>
-               <div className="text-lg font-bold text-text">{tofu_reach > 0 && tofu_sp > 0 ? fRp(tofu_sp / tofu_reach) : '—'}</div>
+            <div>
+              <div className="text-[11px] font-extrabold text-tofu uppercase tracking-widest">TOFU</div>
+              <div className="text-sm font-semibold text-text3">Awareness</div>
             </div>
           </div>
           
-          {/* Drop-off to MOFU */}
-          <div className="flex flex-col items-center justify-center -my-2 relative z-0 h-16">
-            <div className="w-px h-full bg-gradient-to-b from-blue-200 to-yellow-200 absolute top-0 left-1/2 -translate-x-1/2 z-0"></div>
-            <div className="bg-white text-text2 text-[11px] font-bold px-4 py-1.5 rounded-full border border-border-main z-20 shadow-sm flex items-center gap-2">
-              <span>Konversi ke Visit</span>
-              <span className="text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-md">{tofu_reach > 0 ? ((mofu_vis / (tofu_reach || 1)) * 100).toFixed(2) : 0}%</span>
+          <div className="space-y-6">
+            <div>
+              <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">Total Reach</div>
+              <div className="text-3xl font-bold text-text tracking-tight">{tofu_reach > 0 ? fK(tofu_reach) : '—'}</div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 pt-5 mt-2 border-t border-border-main/50">
+              <div><span className="text-[10px] font-bold text-text3 block mb-1 uppercase tracking-wider">Impresi</span><span className="font-semibold text-sm text-text">{tofu_impr > 0 ? fK(tofu_impr) : '0'}</span></div>
+              <div><span className="text-[10px] font-bold text-text3 block mb-1 uppercase tracking-wider">Cost/Reach</span><span className="font-semibold text-sm text-text">{tofu_reach > 0 && tofu_sp > 0 ? fRp(tofu_sp / tofu_reach) : '—'}</span></div>
+            </div>
+            
+            <div className="flex justify-between items-center bg-surface2 rounded-xl p-4 mt-4">
+              <span className="text-xs font-semibold text-text2">Ad Spend</span>
+              <span className="font-bold text-tofu">{tofu_sp > 0 ? fRp(tofu_sp) : 'Rp 0'}</span>
             </div>
           </div>
         </div>
 
         {/* MOFU Bar */}
-        <div className="w-11/12 md:w-[85%] relative group">
-          <div className="bg-gradient-to-r from-yellow-50 to-white border border-yellow-100 rounded-2xl p-6 md:p-8 flex items-center justify-between shadow-sm hover:shadow-md transition-all relative z-10">
-            <div className="flex items-center gap-6">
-              <div className="w-14 h-14 rounded-2xl bg-white text-yellow-600 flex items-center justify-center shadow-sm border border-yellow-100">
-                 <Store className="w-7 h-7" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-1.5">MOFU • Consideration</div>
-                <div className="text-3xl font-bold text-text tracking-tight">{mofu_vis > 0 ? fK(mofu_vis) : '—'} <span className="text-base font-medium text-text3 ml-1">Visitors</span></div>
-                <div className="flex gap-4 mt-3 text-sm font-medium text-text2">
-                   <span>Shop Rev: <strong className="text-green-600">{fRp(mofu_rev)}</strong></span>
-                   <span>Orders: <strong className="text-text">{fK(mofu_ord)}</strong></span>
-                </div>
-              </div>
+        <div className="bg-white rounded-[24px] p-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] transition-transform duration-300 hover:-translate-y-1 relative group">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-mofu-bg text-mofu flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)]">
+               <Store className="w-6 h-6" />
             </div>
-            <div className="hidden sm:block text-right">
-               <div className="text-xs font-medium text-text3 uppercase mb-1">Conv. Rate</div>
-               <div className="text-lg font-bold text-text">{mofu_vis > 0 ? ((mofu_ord / mofu_vis) * 100).toFixed(2) : 0}%</div>
+            <div>
+              <div className="text-[11px] font-extrabold text-mofu uppercase tracking-widest">MOFU</div>
+              <div className="text-sm font-semibold text-text3">Consideration</div>
             </div>
           </div>
           
-          {/* Drop-off to BOFU */}
-          <div className="flex flex-col items-center justify-center -my-2 relative z-0 h-16">
-            <div className="w-px h-full bg-gradient-to-b from-yellow-200 to-green-200 absolute top-0 left-1/2 -translate-x-1/2 z-0"></div>
-            <div className="bg-white text-text2 text-[11px] font-bold px-4 py-1.5 rounded-full border border-border-main z-20 shadow-sm flex items-center gap-2">
-              <span>Checkout Rate</span>
-              <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded-md">{mofu_vis > 0 ? ((bofu_ord / (mofu_vis || 1)) * 100).toFixed(2) : 0}%</span>
+          <div className="space-y-6">
+            <div>
+              <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">Total Visitors</div>
+              <div className="text-3xl font-bold text-text tracking-tight flex items-baseline gap-2">
+                {mofu_vis > 0 ? fK(mofu_vis) : '—'}
+                <span className="text-[11px] font-bold text-mofu bg-mofu-bg px-2 py-0.5 rounded-md relative -top-1">CVR: {tofu_reach > 0 ? ((mofu_vis / (tofu_reach || 1)) * 100).toFixed(2) : 0}%</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 pt-5 mt-2 border-t border-border-main/50">
+              <div><span className="text-[10px] font-bold text-text3 block mb-1 uppercase tracking-wider">Orders</span><span className="font-semibold text-sm text-text">{mofu_ord > 0 ? fK(mofu_ord) : '0'}</span></div>
+              <div><span className="text-[10px] font-bold text-text3 block mb-1 uppercase tracking-wider">Conv. Rate</span><span className="font-semibold text-sm text-text">{mofu_vis > 0 ? ((mofu_ord / mofu_vis) * 100).toFixed(2) : 0}%</span></div>
+            </div>
+            
+            <div className="flex justify-between items-center bg-surface2 rounded-xl p-4 mt-4">
+              <span className="text-xs font-semibold text-text2">Shop Revenue</span>
+              <span className="font-bold text-gg">{mofu_rev > 0 ? fRp(mofu_rev) : 'Rp 0'}</span>
             </div>
           </div>
         </div>
 
         {/* BOFU Bar */}
-        <div className="w-5/6 md:w-[70%] relative group">
-          <div className="bg-gradient-to-r from-green-50 to-white border border-green-100 rounded-2xl p-6 md:p-8 flex items-center justify-between shadow-sm hover:shadow-md transition-all relative z-10">
-            <div className="flex items-center gap-6">
-              <div className="w-14 h-14 rounded-2xl bg-white text-green-600 flex items-center justify-center shadow-sm border border-green-100">
-                 <Target className="w-7 h-7" />
-              </div>
-              <div>
-                <div className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1.5">BOFU • Conversion</div>
-                <div className="text-3xl font-bold text-text tracking-tight">{bofu_ord > 0 ? fK(bofu_ord) : '—'} <span className="text-base font-medium text-text3 ml-1">Ad Orders</span></div>
-                <div className="flex gap-4 mt-3 text-sm font-medium text-text2">
-                   <span>Ad Spend: <strong className="text-text">{fRp(bofu_sp)}</strong></span>
-                   <span>Ad Rev: <strong className="text-green-600">{fRp(bofu_rev)}</strong></span>
-                </div>
+        <div className="bg-white rounded-[24px] p-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] transition-transform duration-300 hover:-translate-y-1 relative group">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-bofu-bg text-bofu flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] border border-border-main/50">
+               <Target className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-[11px] font-extrabold text-bofu uppercase tracking-widest">BOFU</div>
+              <div className="text-sm font-semibold text-text3">Conversion</div>
+            </div>
+          </div>
+          
+          <div className="space-y-6">
+            <div>
+              <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">Total Ad Orders</div>
+              <div className="text-3xl font-bold text-text tracking-tight flex items-baseline gap-2">
+                {bofu_ord > 0 ? fK(bofu_ord) : '—'}
+                <span className="text-[11px] font-bold text-bofu bg-bofu-bg border border-border-main/50 px-2 py-0.5 rounded-md relative -top-1">CHK: {mofu_vis > 0 ? ((bofu_ord / (mofu_vis || 1)) * 100).toFixed(2) : 0}%</span>
               </div>
             </div>
-            <div className="hidden sm:block text-right">
-               <div className="text-xs font-medium text-text3 uppercase mb-1">ROAS</div>
-               <div className="text-lg font-bold text-text">{bRoas ? bRoas.toFixed(2) + 'x' : '—'}</div>
+            
+            <div className="grid grid-cols-2 gap-4 pt-5 mt-2 border-t border-border-main/50">
+              <div><span className="text-[10px] font-bold text-text3 block mb-1 uppercase tracking-wider">Ad Spend</span><span className="font-semibold text-sm text-text">{bofu_sp > 0 ? fRp(bofu_sp) : 'Rp 0'}</span></div>
+              <div><span className="text-[10px] font-bold text-text3 block mb-1 uppercase tracking-wider">ROAS</span><span className="font-semibold text-sm text-text">{bRoas ? bRoas.toFixed(2) + 'x' : '—'}</span></div>
+            </div>
+            
+            <div className="flex justify-between items-center bg-surface2 rounded-xl p-4 mt-4">
+              <span className="text-xs font-semibold text-text2">Ad Revenue</span>
+              <span className="font-bold text-gg">{bofu_rev > 0 ? fRp(bofu_rev) : 'Rp 0'}</span>
             </div>
           </div>
         </div>

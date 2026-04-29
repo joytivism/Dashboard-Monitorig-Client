@@ -32,10 +32,10 @@ interface TrendChartProps {
 }
 
 const TM = [
-  { k: 'revenue', l: 'Revenue', f: 'rp', color: '#22C55E', activeClass: 'bg-green-500 text-white border-green-500' },
-  { k: 'roas', l: 'ROAS', f: 'x', color: '#EF4444', activeClass: 'bg-red-500 text-white border-red-500' },
-  { k: 'spend', l: 'Spend', f: 'rp', color: '#3B82F6', activeClass: 'bg-blue-500 text-white border-blue-500' },
-  { k: 'reach', l: 'Reach', f: 'k', color: '#9CA3AF', activeClass: 'bg-gray-400 text-white border-gray-400' },
+  { k: 'revenue', l: 'Revenue', f: 'rp', color: '#00a1a6', activeClass: 'bg-[#00a1a6] text-white border-[#00a1a6]' },
+  { k: 'roas', l: 'ROAS', f: 'x', color: '#e50000', activeClass: 'bg-[#e50000] text-white border-[#e50000]' },
+  { k: 'spend', l: 'Spend', f: 'rp', color: '#ff6301', activeClass: 'bg-[#ff6301] text-white border-[#ff6301]' },
+  { k: 'reach', l: 'Reach', f: 'k', color: '#737373', activeClass: 'bg-[#737373] text-white border-[#737373]' },
 ];
 
 export default function TrendChart({ clientKey }: TrendChartProps) {
@@ -130,7 +130,7 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
       grid: { display: false, drawBorder: false },
       border: { display: false },
       ticks: { 
-        color: '#EF4444', 
+        color: '#e50000', 
         font: { size: 11, family: 'Inter' },
         callback: function(value: any) { return value + 'x'; }
       }

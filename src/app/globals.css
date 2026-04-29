@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #F4F6F8; /* A very soft, slightly cool light gray for premium SaaS depth */
-  --surface: #FFFFFF;
+  --bg: #F4F6F8; /* Keep soft gray for contrast against white cards */
+  --surface: #ffffff; /* Putih */
   --surface2: #F8FAFC;
   --surface3: #F1F5F9;
   
-  --text: #0F172A;
-  --text2: #64748B;
-  --text3: #94A3B8;
+  --text: #000000; /* Hitam */
+  --text2: #404040; /* Dark gray for secondary text */
+  --text3: #737373; /* Medium gray */
   
-  --border: #F1F5F9;
-  --border2: #E2E8F0;
+  --border: #E5E5E5;
+  --border2: #D4D4D4;
   
-  --accent: #3B82F6; /* Premium Blue Accent */
-  --accent-light: #EFF6FF;
+  --accent: #ff6301; /* Orange as main accent */
+  --accent-light: #fff0e5; /* Very light orange */
 
   /* Funnel / Status colors */
-  --tofu: #3B82F6;
-  --tofu-bg: #EFF6FF;
-  --tofu-border: #BFDBFE;
+  --tofu: #00a1a6; /* Tosca */
+  --tofu-bg: #e5f5f6;
+  --tofu-border: #b2e3e4;
   
-  --mofu: #F59E0B;
-  --mofu-bg: #FFFBEB;
-  --mofu-border: #FDE68A;
+  --mofu: #ff6301; /* Orange */
+  --mofu-bg: #fff0e5;
+  --mofu-border: #ffceb2;
   
-  --bofu: #22C55E;
-  --bofu-bg: #F0FDF4;
-  --bofu-border: #BBF7D0;
+  --bofu: #000000; /* Hitam */
+  --bofu-bg: #f2f2f2;
+  --bofu-border: #cccccc;
 
   /* Status Colors */
-  --color-rr: #EF4444; --color-rr-bg: #FEF2F2; --color-rr-border: #FECACA; --color-rr-text: #B91C1C;
-  --color-or: #F97316; --color-or-bg: #FFF7ED; --color-or-border: #FED7AA; --color-or-text: #C2410C;
-  --color-yy: #F59E0B; --color-yy-bg: #FFFBEB; --color-yy-border: #FDE68A; --color-yy-text: #B45309;
-  --color-nn: #9CA3AF; --color-nn-bg: #F3F4F6; --color-nn-border: #E5E7EB; --color-nn-text: #4B5563;
-  --color-gg: #22C55E; --color-gg-bg: #F0FDF4; --color-gg-border: #BBF7D0; --color-gg-text: #15803D;
-  --color-gd: #16A34A; --color-gd-bg: #DCFCE7; --color-gd-border: #86EFAC; --color-gd-text: #166534;
+  --color-rr: #e50000; --color-rr-bg: #fce5e5; --color-rr-border: #f2b2b2; --color-rr-text: #b20000; /* Merah */
+  --color-or: #ff6301; --color-or-bg: #fff0e5; --color-or-border: #ffceb2; --color-or-text: #cc4f00; /* Orange */
+  --color-yy: #ff6301; --color-yy-bg: #fff0e5; --color-yy-border: #ffceb2; --color-yy-text: #cc4f00; /* Orange (fallback for yellow) */
+  --color-nn: #737373; --color-nn-bg: #f2f2f2; --color-nn-border: #cccccc; --color-nn-text: #404040;
+  --color-gg: #00a1a6; --color-gg-bg: #e5f5f6; --color-gg-border: #b2e3e4; --color-gg-text: #008084; /* Tosca (fallback for green) */
+  --color-gd: #008084; --color-gd-bg: #ccf0f1; --color-gd-border: #99e0e2; --color-gd-text: #006063; /* Darker Tosca */
 
   --radius: 12px;
   --radius-lg: 20px;

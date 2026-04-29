@@ -46,11 +46,11 @@ function OverviewContent() {
 
   const MetricCard = ({ title, value, icon: Icon, growth, lastMonth, growthSuffix = '%', color = 'accent' }: any) => {
     const colorClasses: Record<string, string> = {
-      accent: 'bg-accent/10 text-accent',
-      green: 'bg-green-50 text-green-500',
-      blue: 'bg-blue-50 text-blue-500',
-      red: 'bg-red-50 text-red-500',
-      yellow: 'bg-yellow-50 text-yellow-500',
+      accent: 'bg-accent-light text-accent',
+      green: 'bg-gg-bg text-gg',
+      blue: 'bg-tofu-bg text-tofu',
+      red: 'bg-rr-bg text-rr',
+      yellow: 'bg-mofu-bg text-mofu',
     };
     return (
     <div className="bg-white rounded-[24px] p-6 shadow-main">
