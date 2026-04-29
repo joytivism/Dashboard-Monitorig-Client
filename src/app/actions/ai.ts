@@ -11,19 +11,23 @@ export async function generateAISummary(clientName: string, metrics: any) {
     });
   }
 
+  // Membersihkan data agar tidak ada angka aneh
+  const roas = parseFloat(metrics.roas) || 0;
+  const growth = parseFloat(metrics.growth) || 0;
+
   const prompt = `
-    Diberikan data performa untuk klien "${clientName}":
-    - Reach: ${metrics.reach}, Spend: ${metrics.spend}, Revenue: ${metrics.revenue}, ROAS: ${metrics.roas}x
-    - CVR: ${metrics.cvr}%, Checkout: ${metrics.chk}%, Trend: ${metrics.growth}%
-
-    Tugas: Analisis performa ini dan berikan output dalam format JSON MURNI. 
-    HANYA KELUARKAN JSON. JANGAN ADA TEKS LAIN. JANGAN ADA MARKDOWN.
-
+    Role: Senior Digital Marketing Specialist.
+    Analisis data klien "${clientName}":
+    - Reach: ${metrics.reach}, Spend: ${metrics.spend}, Revenue: ${metrics.revenue}
+    - ROAS: ${roas}x, Trend: ${growth}%
+    
+    Tugas: Berikan analisis singkat dalam format JSON.
+    
     Format JSON:
     {
-      "status": "positive" (jika roas > target 4x) atau "negative" (jika roas < 3x) atau "neutral",
-      "summary": "Teks analisis singkat (1-2 kalimat) bahasa Indonesia.",
-      "actions": ["Tindakan 1", "Tindakan 2"]
+      "status": "${roas >= 4 ? 'positive' : roas < 2 ? 'negative' : 'neutral'}",
+      "summary": "Tulis 1-2 kalimat analisis dalam Bahasa Indonesia yang santai tapi profesional.",
+      "actions": ["Tindakan konkret 1", "Tindakan konkret 2"]
     }
   `;
 
@@ -37,45 +41,43 @@ export async function generateAISummary(clientName: string, metrics: any) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", 
+        "model": "google/gemini-2.0-flash-lite-preview-02-05:free", 
         "messages": [
           { "role": "user", "content": prompt }
         ],
-        "temperature": 0.1, // Rendah agar lebih konsisten
-        "response_format": { "type": "json_object" } // Memaksa format JSON
+        "temperature": 0.5,
+        "response_format": { "type": "json_object" }
       })
     });
 
     const data = await response.json();
     let raw = data.choices?.[0]?.message?.content || "";
     
-    // Pembersihan teks jika ada tag <thought> atau lainnya
-    raw = raw.replace(/<thought>[\s\S]*?<\/thought>/g, '');
-    
+    // Ekstraksi JSON
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       try {
         const validated = JSON.parse(jsonMatch[0]);
-        // Pastikan key yang dibutuhkan ada
         if (validated.summary && validated.actions) {
           return JSON.stringify(validated);
         }
       } catch (e) {}
     }
     
-    // Jika masih gagal tapi ada teks, bungkus teks tersebut ke JSON
-    return JSON.stringify({
-      status: metrics.growth >= 0 ? "positive" : "negative",
-      summary: raw.substring(0, 150).replace(/[{}"]/g, '') || "Performa sedang dipantau. Pastikan budget iklan teralokasi dengan optimal.",
-      actions: ["Pantau metrics secara harian", "Optimasi bid pada campaign utama"]
-    });
+    throw new Error("Invalid AI response format");
 
   } catch (error) {
     console.error("AI Action Error:", error);
+    // Fallback yang lebih dinamis berdasarkan angka
     return JSON.stringify({
-      status: "negative",
-      summary: "Koneksi ke AI terputus. Silakan coba beberapa saat lagi.",
-      actions: ["Cek koneksi internet", "Klik tombol refresh AI"]
+      status: roas >= 3 ? "positive" : "negative",
+      summary: roas > 0 
+        ? `Performa ROAS berada di angka ${roas}x. Perlu pemantauan lebih lanjut pada efisiensi biaya iklan.`
+        : "Data performa belum mencukupi untuk analisis mendalam bulan ini.",
+      actions: [
+        "Cek alokasi budget pada campaign dengan ROAS tertinggi",
+        "Evaluasi kreatif konten yang memiliki CTR rendah"
+      ]
     });
   }
 }
