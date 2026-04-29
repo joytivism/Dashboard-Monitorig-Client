@@ -8,7 +8,7 @@ import { fRp, totals } from '@/lib/utils';
 import { 
   Save, AlertCircle, CheckCircle2, RefreshCw, Plus, Users, TrendingUp, Settings2, 
   Search, Edit3, Trash2, Zap, Layers, ChevronRight, History, X, ArrowRightLeft, 
-  Info, ShieldCheck, Calendar, Download, ListTodo, Activity
+  Info, ShieldCheck, Calendar, Download, ListTodo, Activity, Key, Cpu
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -40,6 +40,22 @@ export default function AdminPage() {
   });
 
   const [newPeriod, setNewPeriod] = useState({ key: '', label: '' });
+
+  // System Settings State
+  const [sysSettings, setSysSettings] = useState({ openrouter_key: '', ai_model: 'google/gemini-flash-1.5' });
+
+  // Load Settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data } = await supabase.from('system_settings').select('*');
+      const mapped = (data || []).reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as any);
+      setSysSettings({ 
+        openrouter_key: mapped.openrouter_key || '', 
+        ai_model: mapped.ai_model || 'google/gemini-flash-1.5' 
+      });
+    };
+    if (activeTab === 'system') fetchSettings();
+  }, [activeTab]);
 
   // --- DERIVED DATA ---
   const completeness = useMemo(() => {
@@ -82,6 +98,62 @@ export default function AdminPage() {
       if (error) throw error;
       setToast({ type: 'success', text: `Berhasil update ${payloads.length} channel!` });
       router.refresh();
+    } catch (err: any) { setToast({ type: 'error', text: err.message }); }
+    finally { setLoading(false); }
+  };
+
+  const handleSaveClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingClient.key) return;
+    setLoading(true);
+    try {
+      const { error: cErr } = await supabase.from('clients').upsert({ 
+        client_key: editingClient.key, 
+        name: editingClient.name || editingClient.key,
+        industry: editingClient.industry,
+        pic_name: editingClient.pic_name,
+        brand_category: editingClient.brand_category,
+        account_strategist: editingClient.account_strategist
+      });
+      if (cErr) throw cErr;
+
+      await supabase.from('client_channels').delete().eq('client_key', editingClient.key);
+      if (editingClient.chs.length > 0) {
+        const { error: chErr } = await supabase.from('client_channels').insert(
+          editingClient.chs.map(ch => ({ client_key: editingClient.key, channel_key: ch }))
+        );
+        if (chErr) throw chErr;
+      }
+
+      setToast({ type: 'success', text: 'Data klien & metadata berhasil disimpan!' });
+      setShowClientModal(false);
+      router.refresh();
+    } catch (err: any) { setToast({ type: 'error', text: err.message }); }
+    finally { setLoading(false); }
+  };
+
+  const handleDeleteClient = async (key: string) => {
+    if (!confirm(`Hapus klien ${key}? Semua data performa & channel akan ikut terhapus.`)) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('clients').delete().eq('client_key', key);
+      if (error) throw error;
+      setToast({ type: 'success', text: 'Klien berhasil dihapus!' });
+      router.refresh();
+    } catch (err: any) { setToast({ type: 'error', text: err.message }); }
+    finally { setLoading(false); }
+  };
+
+  const handleSaveSettings = async () => {
+    setLoading(true);
+    try {
+      const payloads = [
+        { key: 'openrouter_key', value: sysSettings.openrouter_key },
+        { key: 'ai_model', value: sysSettings.ai_model }
+      ];
+      const { error } = await supabase.from('system_settings').upsert(payloads);
+      if (error) throw error;
+      setToast({ type: 'success', text: 'Sistem berhasil diupdate!' });
     } catch (err: any) { setToast({ type: 'error', text: err.message }); }
     finally { setLoading(false); }
   };
@@ -170,7 +242,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* VIEW: OVERVIEW (Clients Table + Completeness) */}
+      {/* VIEW: OVERVIEW */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -230,7 +302,15 @@ export default function AdminPage() {
                         </div>
                       </td>
                       <td className="py-5 px-4 text-right">
-                        <button className="p-2 hover:bg-accent-light text-text3 hover:text-accent rounded-lg"><Edit3 className="w-4 h-4" /></button>
+                        <div className="flex justify-end gap-1">
+                          <button onClick={() => { 
+                            setEditingClient({
+                              key: cl.key, name: cl.key, chs: cl.chs, industry: cl.ind, pic_name: cl.pic, brand_category: cl.cg, account_strategist: cl.as
+                            }); 
+                            setShowClientModal(true); 
+                          }} className="p-2 hover:bg-accent-light text-text3 hover:text-accent rounded-lg"><Edit3 className="w-4 h-4" /></button>
+                          <button onClick={() => handleDeleteClient(cl.key)} className="p-2 hover:bg-rr-bg text-text3 hover:text-rr rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -247,7 +327,6 @@ export default function AdminPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-base font-bold text-text">Batch Performance Entry</h2>
-              <p className="text-[11px] text-text3 font-medium mt-1">Input data semua channel klien sekaligus dalam satu halaman.</p>
             </div>
             <div className="flex items-center gap-4">
               <select value={pClient} onChange={e => setPClient(e.target.value)} className="h-10 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold outline-none">
@@ -270,7 +349,6 @@ export default function AdminPage() {
                       <th className="pb-4 px-2">Spend</th>
                       <th className="pb-4 px-2">Revenue</th>
                       <th className="pb-4 px-2">Orders</th>
-                      <th className="pb-4 px-2">Reach</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -280,7 +358,6 @@ export default function AdminPage() {
                         <td className="py-4 px-2"><input type="number" value={bulkData[ch]?.spend} onChange={e => setBulkData({...bulkData, [ch]: {...bulkData[ch], spend: e.target.value}})} className="w-24 h-9 px-3 rounded-lg border border-border-main text-xs font-bold" /></td>
                         <td className="py-4 px-2"><input type="number" value={bulkData[ch]?.revenue} onChange={e => setBulkData({...bulkData, [ch]: {...bulkData[ch], revenue: e.target.value}})} className="w-28 h-9 px-3 rounded-lg border border-border-main text-xs font-bold" /></td>
                         <td className="py-4 px-2"><input type="number" value={bulkData[ch]?.orders} onChange={e => setBulkData({...bulkData, [ch]: {...bulkData[ch], orders: e.target.value}})} className="w-20 h-9 px-3 rounded-lg border border-border-main text-xs font-bold" /></td>
-                        <td className="py-4 px-2"><input type="number" value={bulkData[ch]?.reach} onChange={e => setBulkData({...bulkData, [ch]: {...bulkData[ch], reach: e.target.value}})} className="w-24 h-9 px-3 rounded-lg border border-border-main text-xs font-bold" /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -301,77 +378,103 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* VIEW: ACTIVITY MANAGER */}
-      {activeTab === 'activities' && (
-        <div className="bg-white rounded-[24px] p-8 shadow-main border border-border-main/50 animate-in fade-in">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-base font-bold text-text">Activity Log Manager</h2>
-            <button onClick={() => { setEditingActivity({id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: ''}); setShowActivityModal(true); }} className="bg-accent text-white px-5 py-2 rounded-full text-xs font-bold">Log New Event</button>
+      {/* VIEW: SYSTEM SETTINGS */}
+      {activeTab === 'system' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in">
+          <div className="lg:col-span-8 bg-white rounded-[24px] p-8 shadow-main border border-border-main/50">
+            <h2 className="text-base font-bold text-text mb-2">API Configuration</h2>
+            <p className="text-[12px] font-medium text-text3 mb-8">Kelola kunci API dan pemilihan model AI sistem.</p>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="flex items-center gap-2 text-[11px] font-bold text-text3 uppercase mb-2 ml-1">
+                  <Key className="w-3.5 h-3.5" />
+                  OpenRouter API Key
+                </label>
+                <input 
+                  type="password" 
+                  value={sysSettings.openrouter_key} 
+                  onChange={e => setSysSettings({...sysSettings, openrouter_key: e.target.value})}
+                  className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-medium focus:border-accent outline-none" 
+                  placeholder="sk-or-v1-..." 
+                />
+                <p className="text-[10px] text-text3 mt-2 ml-1 italic">Kunci ini digunakan untuk generate insight AI secara global.</p>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-[11px] font-bold text-text3 uppercase mb-2 ml-1">
+                  <Cpu className="w-3.5 h-3.5" />
+                  Default AI Model
+                </label>
+                <select 
+                  value={sysSettings.ai_model} 
+                  onChange={e => setSysSettings({...sysSettings, ai_model: e.target.value})}
+                  className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold focus:border-accent outline-none"
+                >
+                  <option value="google/gemini-flash-1.5">Google Gemini Flash 1.5 (Recommended)</option>
+                  <option value="google/gemini-pro-1.5">Google Gemini Pro 1.5</option>
+                  <option value="openai/gpt-4o-mini">OpenAI GPT-4o Mini</option>
+                  <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+                  <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron 3 (Free)</option>
+                </select>
+              </div>
+
+              <div className="pt-6 border-t border-border-main flex justify-end">
+                <button onClick={handleSaveSettings} disabled={loading} className="flex items-center gap-2 bg-accent text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-accent/20">
+                  {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Save System Config
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-[10px] font-bold text-text3 uppercase border-b border-border-main">
-                  <th className="pb-4 px-4">Klien</th>
-                  <th className="pb-4 px-4">Tanggal</th>
-                  <th className="pb-4 px-4">Tipe</th>
-                  <th className="pb-4 px-4">Catatan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ACTIVITIES.map(a => (
-                  <tr key={a.id} className="hover:bg-surface2">
-                    <td className="py-4 px-4 font-bold text-xs">{a.c}</td>
-                    <td className="py-4 px-4 text-xs font-medium">{a.dLabel}</td>
-                    <td className="py-4 px-4"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${a.t === 'p' ? 'bg-accent-light text-accent' : 'bg-surface2 text-text2'}`}>{a.t}</span></td>
-                    <td className="py-4 px-4 text-xs font-medium text-text2 italic">"{a.n}"</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          <div className="lg:col-span-4 bg-white rounded-[24px] p-8 shadow-main border border-border-main/50">
+            <h3 className="text-sm font-bold text-text mb-6">AI Health Check</h3>
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-gd-bg/30 border border-gd-border/50">
+                <div className="text-[10px] font-bold text-gd uppercase mb-1">Status</div>
+                <div className="text-sm font-bold text-text">Operational</div>
+              </div>
+              <div className="p-4 rounded-xl bg-surface2 border border-border-main">
+                <div className="text-[10px] font-bold text-text3 uppercase mb-1">Total Token Usage</div>
+                <div className="text-sm font-bold text-text">{(aiStats.totalTokens/1000).toFixed(1)}K Tokens</div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* VIEW: SYSTEM & AI MONITOR */}
-      {activeTab === 'system' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-[24px] p-8 shadow-main border border-border-main/50 animate-in fade-in">
-            <h2 className="text-base font-bold text-text mb-6">AI Usage Monitoring</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="p-4 bg-surface2 rounded-2xl border border-border-main">
-                <div className="text-[10px] font-bold text-text3 uppercase mb-1">Estimated Cost (USD)</div>
-                <div className="text-xl font-bold text-text">${aiStats.totalCost.toFixed(5)}</div>
-              </div>
-              <div className="p-4 bg-surface2 rounded-2xl border border-border-main">
-                <div className="text-[10px] font-bold text-text3 uppercase mb-1">Total Requests</div>
-                <div className="text-xl font-bold text-text">{AI_LOGS?.length || 0}</div>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="text-[10px] font-bold text-text3 uppercase border-b border-border-main">
-                    <th className="pb-4">Klien</th>
-                    <th className="pb-4">Model</th>
-                    <th className="pb-4">Waktu</th>
-                    <th className="pb-4">Tokens</th>
-                    <th className="pb-4 text-right">Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {AI_LOGS?.slice(0, 10).map(l => (
-                    <tr key={l.id} className="text-[11px] font-medium border-b border-border-main/10">
-                      <td className="py-3 font-bold">{l.c}</td>
-                      <td className="py-3 text-text3">{l.m}</td>
-                      <td className="py-3">{new Date(l.d).toLocaleString()}</td>
-                      <td className="py-3 font-bold">{l.tk}</td>
-                      <td className="py-3 text-right text-gg font-bold">${l.cost?.toFixed(6)}</td>
+      {/* VIEW: ACTIVITIES */}
+      {activeTab === 'activities' && (
+        <div className="bg-white rounded-[24px] p-8 shadow-main border border-border-main/50 animate-in fade-in">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-base font-bold text-text">Marketing Activity Logs</h2>
+            <button onClick={() => { setEditingActivity({ id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' }); setShowActivityModal(true); }} className="bg-accent text-white px-5 py-2 rounded-full text-xs font-bold shadow-lg shadow-accent/20">Add Log</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="text-[10px] font-bold text-text3 uppercase tracking-wider border-b border-border-main">
+                  <th className="pb-4 px-2">Date</th>
+                  <th className="pb-4 px-2">Client</th>
+                  <th className="pb-4 px-2">Type</th>
+                  <th className="pb-4 px-2">Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ACTIVITIES.map((a, i) => {
+                   const cls = { p: 'bg-gg-bg text-gg', e: 'bg-tofu-bg text-tofu', c: 'bg-mofu-bg text-mofu', l: 'bg-rr-bg text-rr' }[a.t];
+                   return (
+                    <tr key={i} className="border-b border-border-main/10 hover:bg-surface2 transition-colors">
+                      <td className="py-4 px-2 text-xs font-mono">{a.d}</td>
+                      <td className="py-4 px-2 text-xs font-bold">{a.c}</td>
+                      <td className="py-4 px-2"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${cls}`}>{a.t}</span></td>
+                      <td className="py-4 px-2 text-xs font-medium text-text2">{a.n}</td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                   );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -379,46 +482,86 @@ export default function AdminPage() {
       {/* MODAL: ACTIVITY */}
       {showActivityModal && (
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white rounded-[24px] shadow-main w-full max-w-md overflow-hidden">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-lg overflow-hidden">
             <div className="p-8 border-b border-border-main bg-surface2/30 flex items-center justify-between">
-              <h3 className="text-base font-bold text-text">Log Marketing Activity</h3>
+              <h3 className="text-base font-bold text-text">Log New Activity</h3>
               <button onClick={() => setShowActivityModal(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSaveActivity} className="p-8 space-y-4">
-              <div>
-                <label className="text-[11px] font-bold text-text3 uppercase ml-1">Client</label>
-                <select value={editingActivity.client_key} onChange={e => setEditingActivity({...editingActivity, client_key: e.target.value})} className="w-full h-10 px-4 rounded-xl border border-border-main text-sm font-bold outline-none" required>
-                  <option value="">-- Pilih --</option>
-                  {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase ml-1">Date</label>
-                  <input type="date" value={editingActivity.log_date} onChange={e => setEditingActivity({...editingActivity, log_date: e.target.value})} className="w-full h-10 px-4 rounded-xl border border-border-main text-sm font-bold" required />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase ml-1">Type</label>
-                  <select value={editingActivity.log_type} onChange={e => setEditingActivity({...editingActivity, log_type: e.target.value as any})} className="w-full h-10 px-4 rounded-xl border border-border-main text-sm font-bold">
-                    <option value="p">Promo</option>
-                    <option value="e">Event</option>
-                    <option value="c">Content</option>
-                    <option value="l">Launching</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="text-[11px] font-bold text-text3 uppercase ml-1">Note</label>
-                <textarea value={editingActivity.note} onChange={e => setEditingActivity({...editingActivity, note: e.target.value})} className="w-full p-4 rounded-xl border border-border-main text-sm font-medium h-24" placeholder="Contoh: Launching Koleksi Lebaran" required />
-              </div>
-              <button type="submit" disabled={loading} className="w-full h-11 bg-accent text-white rounded-full font-bold text-sm shadow-lg shadow-accent/20">Save Activity</button>
+              <select value={editingActivity.client_key} onChange={e => setEditingActivity({...editingActivity, client_key: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold" required>
+                <option value="">-- Pilih Klien --</option>
+                {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
+              </select>
+              <input type="date" value={editingActivity.log_date} onChange={e => setEditingActivity({...editingActivity, log_date: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold" required />
+              <select value={editingActivity.log_type} onChange={e => setEditingActivity({...editingActivity, log_type: e.target.value as any})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold">
+                <option value="p">Promo</option>
+                <option value="e">Event</option>
+                <option value="c">Content</option>
+                <option value="l">Launching</option>
+              </select>
+              <textarea value={editingActivity.note} onChange={e => setEditingActivity({...editingActivity, note: e.target.value})} className="w-full p-4 rounded-xl border border-border-main bg-surface2 text-sm font-medium h-32" placeholder="Catatan aktivitas..." required />
+              <button type="submit" disabled={loading} className="w-full h-12 bg-accent text-white rounded-full font-bold text-sm">Save Log</button>
             </form>
           </div>
         </div>
       )}
 
-      {/* REUSE OLD MODALS FOR PERIOD & CLIENT IF NEEDED (Omitted for brevity but assumed still working) */}
+      {/* MODAL: CLIENT */}
+      {showClientModal && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-2xl overflow-hidden">
+            <div className="p-8 border-b border-border-main bg-surface2/30 flex items-center justify-between">
+              <h3 className="text-base font-bold text-text">Client Metadata Configuration</h3>
+              <button onClick={() => setShowClientModal(false)}><X className="w-5 h-5" /></button>
+            </div>
+            <form onSubmit={handleSaveClient} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase block mb-1.5 ml-1">Client Key</label>
+                  <input type="text" value={editingClient.key} onChange={e => setEditingClient({...editingClient, key: e.target.value})} disabled={!!editingClient.key && CLIENTS.some(c => c.key === editingClient.key)} className="w-full h-11 px-4 rounded-xl border border-border-main text-sm font-bold" placeholder="brand_id" required />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase block mb-1.5 ml-1">Industry</label>
+                  <input type="text" value={editingClient.industry} onChange={e => setEditingClient({...editingClient, industry: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main text-sm font-bold" placeholder="Retail / Fashion" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase block mb-1.5 ml-1">PIC Name</label>
+                  <input type="text" value={editingClient.pic_name} onChange={e => setEditingClient({...editingClient, pic_name: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main text-sm font-bold" placeholder="Nama PIC" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase block mb-1.5 ml-1">Strategist</label>
+                  <input type="text" value={editingClient.account_strategist} onChange={e => setEditingClient({...editingClient, account_strategist: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main text-sm font-bold" placeholder="Nama Strategist" />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-text3 uppercase ml-1 block">Active Channels</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {Object.keys(CH_DEF).map(ch => {
+                    const active = editingClient.chs.includes(ch);
+                    return (
+                      <button key={ch} type="button" onClick={() => {
+                        const next = active ? editingClient.chs.filter(x => x !== ch) : [...editingClient.chs, ch];
+                        setEditingClient({...editingClient, chs: next});
+                      }} className={`p-3 rounded-xl border text-[10px] font-bold uppercase transition-all flex items-center gap-2 ${active ? 'border-accent bg-accent-light text-accent' : 'border-border-main bg-white text-text3'}`}>
+                        <div className={`w-2 h-2 rounded-full ${active ? 'bg-accent' : 'bg-border-alt'}`} />
+                        {CH_DEF[ch]?.l}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading} className="w-full h-12 bg-accent text-white rounded-full font-bold text-sm shadow-lg shadow-accent/20">Save Client Config</button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
 }
+
+const ShieldCheck = (props: any) => (
+  <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+);

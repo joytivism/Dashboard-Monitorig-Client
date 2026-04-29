@@ -2,9 +2,14 @@
 import { supabase } from '@/lib/supabase';
 
 export async function generateAISummary(clientName: string, metrics: any) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  // Fetch settings from DB
+  const { data: dbSettings } = await supabase.from('system_settings').select('*');
+  const settings = (dbSettings || []).reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as any);
 
-  if (!apiKey || apiKey === 'your_openrouter_key_here' || !apiKey) {
+  const apiKey = settings.openrouter_key || process.env.OPENROUTER_API_KEY;
+  const model = settings.ai_model || "google/gemini-flash-1.5";
+
+  if (!apiKey || apiKey === 'your_openrouter_key_here') {
     return JSON.stringify({
       status: "warning",
       summary: "API Key OpenRouter tidak terdeteksi di server.",
@@ -39,7 +44,7 @@ export async function generateAISummary(clientName: string, metrics: any) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        "model": "nvidia/nemotron-3-super-120b-a12b:free", 
+        "model": model, 
         "messages": [
           { "role": "user", "content": prompt }
         ],
