@@ -24,7 +24,6 @@ import {
   X,
   ArrowRightLeft,
   Info,
-  ShieldCheck,
   Calendar
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
