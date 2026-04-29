@@ -3,32 +3,29 @@
 export async function generateAISummary(clientName: string, metrics: any) {
   const apiKey = process.env.OPENROUTER_API_KEY;
 
-  if (!apiKey || apiKey === 'your_openrouter_key_here') {
+  if (!apiKey || apiKey === 'your_openrouter_key_here' || !apiKey) {
     return JSON.stringify({
       status: "warning",
-      summary: "API Key OpenRouter belum diatur.",
-      actions: ["Masukkan key di .env.local atau Vercel Environment Variables."]
+      summary: "API Key OpenRouter tidak terdeteksi di server.",
+      actions: ["Cek Environment Variables di Dashboard Vercel."]
     });
   }
 
-  // Membersihkan data agar tidak ada angka aneh
   const roas = parseFloat(metrics.roas) || 0;
   const growth = parseFloat(metrics.growth) || 0;
 
   const prompt = `
-    Role: Senior Digital Marketing Specialist.
-    Analisis data klien "${clientName}":
-    - Reach: ${metrics.reach}, Spend: ${metrics.spend}, Revenue: ${metrics.revenue}
-    - ROAS: ${roas}x, Trend: ${growth}%
+    Analisis data iklan klien "${clientName}":
+    - Spend: ${metrics.spend}, Revenue: ${metrics.revenue}, ROAS: ${roas}x, Trend: ${growth}%
     
-    Tugas: Berikan analisis singkat dalam format JSON.
-    
-    Format JSON:
+    Berikan jawaban dalam format JSON saja:
     {
-      "status": "${roas >= 4 ? 'positive' : roas < 2 ? 'negative' : 'neutral'}",
-      "summary": "Tulis 1-2 kalimat analisis dalam Bahasa Indonesia yang santai tapi profesional.",
+      "status": "${roas >= 4 ? 'positive' : roas < 3 ? 'negative' : 'neutral'}",
+      "summary": "1-2 kalimat analisis strategis Bahasa Indonesia.",
       "actions": ["Tindakan konkret 1", "Tindakan konkret 2"]
     }
+    
+    PENTING: Hanya keluarkan objek JSON. Tanpa kata pembuka, tanpa markdown.
   `;
 
   try {
@@ -45,38 +42,46 @@ export async function generateAISummary(clientName: string, metrics: any) {
         "messages": [
           { "role": "user", "content": prompt }
         ],
-        "temperature": 0.5,
-        "response_format": { "type": "json_object" }
+        "temperature": 0.7
+        // Menghapus response_format karena sering menyebabkan error 400 di model tertentu
       })
     });
 
     const data = await response.json();
+    
+    // Cek jika API mengembalikan error (misal: Quota exceeded atau Invalid Key)
+    if (data.error) {
+      throw new Error(data.error.message || "API Error");
+    }
+
     let raw = data.choices?.[0]?.message?.content || "";
     
-    // Ekstraksi JSON
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
+    // Ekstraksi JSON yang lebih kuat
+    const start = raw.indexOf('{');
+    const end = raw.lastIndexOf('}');
+    
+    if (start !== -1 && end !== -1) {
+      const jsonStr = raw.substring(start, end + 1);
       try {
-        const validated = JSON.parse(jsonMatch[0]);
-        if (validated.summary && validated.actions) {
-          return JSON.stringify(validated);
-        }
-      } catch (e) {}
+        const validated = JSON.parse(jsonStr);
+        if (validated.summary) return JSON.stringify(validated);
+      } catch (e) {
+        console.error("JSON Parse Error:", e);
+      }
     }
     
-    throw new Error("Invalid AI response format");
+    throw new Error("Could not find valid JSON in response");
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("AI Action Error:", error);
-    // Fallback yang lebih dinamis berdasarkan angka
+    
+    // Fallback yang tetap memberikan info tapi jujur kalau ada kendala
     return JSON.stringify({
       status: roas >= 3 ? "positive" : "negative",
-      summary: roas > 0 
-        ? `Performa ROAS berada di angka ${roas}x. Perlu pemantauan lebih lanjut pada efisiensi biaya iklan.`
-        : "Data performa belum mencukupi untuk analisis mendalam bulan ini.",
+      summary: `Analisis otomatis untuk ${clientName} sedang mengalami kendala teknis (${error.message || 'API Error'}). Namun berdasarkan data, ROAS saat ini berada di angka ${roas}x.`,
       actions: [
-        "Cek alokasi budget pada campaign dengan ROAS tertinggi",
-        "Evaluasi kreatif konten yang memiliki CTR rendah"
+        "Evaluasi efektivitas biaya iklan secara manual",
+        "Pastikan API Key di Vercel sudah benar dan memiliki kuota"
       ]
     });
   }
