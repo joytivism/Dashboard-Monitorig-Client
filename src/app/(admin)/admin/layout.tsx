@@ -82,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </main>
 
       {/* ═══ FOOTER ═══ */}
-      <div className="px-8 pb-8">
+      <div className="max-w-[1400px] mx-auto w-full px-8 pb-12">
         <button onClick={() => router.push('/')} className="flex items-center gap-2 text-text3 hover:text-text2 text-[13px] font-semibold transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to Client View
