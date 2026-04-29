@@ -22,8 +22,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#DAE5F0' }}>
-      {/* Navbar - Bankio style */}
+    <div className="flex-1 w-full min-h-screen flex flex-col" style={{ background: '#DAE5F0' }}>
+      {/* Navbar */}
       <header className="sticky top-0 z-50 bg-white border-b border-black/[0.03]">
         <div className="px-8 h-[68px] flex items-center justify-between">
           
@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="bg-transparent text-[13px] font-medium text-gray-700 placeholder:text-gray-300 outline-none flex-1"
               />
             </div>
-            <button onClick={handleLogout} className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-300 hover:text-gray-500">
+            <button onClick={handleLogout} className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-300 hover:text-gray-500" title="Logout">
               <LogOut className="w-5 h-5" />
             </button>
             <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
@@ -76,8 +76,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </header>
 
-      {/* Content */}
-      <main className="px-6 md:px-8 py-8">
+      {/* Content - grows to fill */}
+      <main className="flex-1 p-6 md:p-8">
         {children}
       </main>
 

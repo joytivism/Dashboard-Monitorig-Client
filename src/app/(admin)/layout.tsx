@@ -61,5 +61,5 @@ export default function AdminGroupLayout({
   }
 
   // No sidebar, no extra header — just pass children directly to the inner admin layout
-  return <>{children}</>;
+  return <div className="flex-1 w-full flex flex-col">{children}</div>;
 }
