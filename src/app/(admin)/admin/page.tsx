@@ -6,8 +6,9 @@ import { supabase } from '@/lib/supabase';
 import { CH_DEF } from '@/lib/data';
 import { 
   AlertCircle, CheckCircle2, Users, Database, Zap, BarChart3,
-  Edit3, Trash2, X, Download, Plus, Search, ArrowUpRight
+  Edit3, Trash2, X, Download, Plus, Search, ArrowUpRight, DollarSign
 } from 'lucide-react';
+import { fRp } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 export default function AdminClientsPage() {
@@ -50,6 +51,16 @@ export default function AdminClientsPage() {
     const totalCost = AI_LOGS?.reduce((sum, l) => sum + (l.cost || 0), 0) || 0;
     return { totalTokens, totalCost, count: AI_LOGS?.length || 0 };
   }, [AI_LOGS]);
+
+  const curPeriod = PERIODS[PERIODS.length - 1];
+  const prevPeriod = PERIODS.length > 1 ? PERIODS[PERIODS.length - 2] : null;
+
+  const spendStats = useMemo(() => {
+    if (!DATA || DATA.length === 0) return { current: 0, previous: 0 };
+    const current = DATA.filter(d => d.p === curPeriod).reduce((sum, d) => sum + (d.sp || 0), 0);
+    const previous = prevPeriod ? DATA.filter(d => d.p === prevPeriod).reduce((sum, d) => sum + (d.sp || 0), 0) : 0;
+    return { current, previous };
+  }, [DATA, curPeriod, prevPeriod]);
 
   const filteredClients = useMemo(() => {
     if (!searchTerm) return CLIENTS;
@@ -163,25 +174,18 @@ export default function AdminClientsPage() {
         <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gg-bg flex items-center justify-center border border-gg-border"><BarChart3 className="w-5 h-5 text-gg-text" /></div>
-              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Completeness</span>
+              <div className="w-12 h-12 rounded-full bg-gg-bg flex items-center justify-center border border-gg-border"><DollarSign className="w-5 h-5 text-gg-text" /></div>
+              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Managed Spend</span>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-[48px] font-extrabold text-text leading-none tracking-tight">
-              {CLIENTS.length > 0 ? Math.round((completenessStats.full / CLIENTS.length) * 100) : 0}%
-            </span>
-            {completenessStats.full > 0 && <span className="badge badge-gg">+{completenessStats.full}</span>}
+            <span className="text-3xl font-bold text-text tracking-tight">{fRp(spendStats.current)}</span>
           </div>
-          <div className="flex gap-1 mt-4 h-2 rounded-full overflow-hidden bg-surface2">
-            <div className="bg-gg" style={{ width: `${CLIENTS.length > 0 ? (completenessStats.full / CLIENTS.length) * 100 : 0}%` }} />
-            <div className="bg-or" style={{ width: `${CLIENTS.length > 0 ? (completenessStats.partial / CLIENTS.length) * 100 : 0}%` }} />
-            <div className="bg-rr" style={{ width: `${CLIENTS.length > 0 ? (completenessStats.empty / CLIENTS.length) * 100 : 0}%` }} />
+          <div className="text-[12px] font-medium text-text3 mt-4">
+            Bulan lalu: <span className="text-text2">{fRp(spendStats.previous)}</span>
           </div>
           <div className="flex gap-4 mt-3 text-[10px] font-bold text-text3">
-            <span className="flex items-center gap-1"><span className="dot dot-gg" /> Complete</span>
-            <span className="flex items-center gap-1"><span className="dot dot-or" /> Partial</span>
-            <span className="flex items-center gap-1"><span className="dot dot-rr" /> Empty</span>
+            <span className="flex items-center gap-1"><span className="dot dot-gg" /> Active this month</span>
           </div>
         </div>
 
