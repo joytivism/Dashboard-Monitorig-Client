@@ -154,16 +154,14 @@ export default function AdminClientsPage() {
       {/* ═══ STAT CARDS ═══ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center border border-border-alt"><Users className="w-5 h-5 text-text2" /></div>
-              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Total brands</span>
-            </div>
+          <div className="flex justify-between items-start mb-6">
+            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">Total brands</div>
+            <div className="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center border border-border-alt"><Users className="w-5 h-5 text-text2" /></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 mb-4">
             <span className="text-3xl font-bold text-text tracking-tight">{CLIENTS.length}</span>
           </div>
-          <div className="flex items-center gap-2 mt-4">
+          <div className="flex items-center gap-2">
             {CLIENTS.slice(0, 4).map(c => (
               <span key={c.key} className={`w-3 h-3 rounded-full ${getAvatarColor(c.key)}`} title={c.key} />
             ))}
@@ -172,49 +170,45 @@ export default function AdminClientsPage() {
         </div>
 
         <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gg-bg flex items-center justify-center border border-gg-border"><DollarSign className="w-5 h-5 text-gg-text" /></div>
-              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Managed Spend</span>
-            </div>
+          <div className="flex justify-between items-start mb-6">
+            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">Managed Spend</div>
+            <div className="w-12 h-12 rounded-full bg-gg-bg flex items-center justify-center border border-gg-border"><DollarSign className="w-5 h-5 text-gg-text" /></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 mb-4">
             <span className="text-3xl font-bold text-text tracking-tight">{fRp(spendStats.current)}</span>
           </div>
-          <div className="text-[12px] font-medium text-text3 mt-4">
+          <div className="text-[12px] font-medium text-text3">
             Bulan lalu: <span className="text-text2">{fRp(spendStats.previous)}</span>
           </div>
-          <div className="flex gap-4 mt-3 text-[10px] font-bold text-text3">
+          <div className="flex gap-4 mt-2 text-[10px] font-bold text-text3">
             <span className="flex items-center gap-1"><span className="dot dot-gg" /> Active this month</span>
           </div>
         </div>
 
         <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-or-bg flex items-center justify-center border border-or-border"><Database className="w-5 h-5 text-or-text" /></div>
-              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Total records</span>
-            </div>
+          <div className="flex justify-between items-start mb-6">
+            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">Total records</div>
+            <div className="w-12 h-12 rounded-full bg-or-bg flex items-center justify-center border border-or-border"><Database className="w-5 h-5 text-or-text" /></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 mb-4">
             <span className="text-3xl font-bold text-text tracking-tight">{DATA.length}</span>
           </div>
-          <div className="text-[12px] font-bold text-text3 mt-4">{PERIODS.length} periods tracked</div>
+          <div className="text-[12px] font-medium text-text3">{PERIODS.length} periods tracked</div>
         </div>
 
         <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex justify-between items-start mb-6">
+            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">AI usage</div>
             <div className="flex items-center gap-3">
+              <button onClick={() => router.push('/admin/settings')} className="text-[11px] font-bold text-text2 hover:text-text transition-colors mt-1">Settings &rarr;</button>
               <div className="w-12 h-12 rounded-full bg-tofu-bg flex items-center justify-center border border-tofu-border"><Zap className="w-5 h-5 text-tofu" /></div>
-              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">AI usage</span>
             </div>
-            <button onClick={() => router.push('/admin/settings')} className="text-[11px] font-bold text-text2 hover:text-text transition-colors">Settings &rarr;</button>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 mb-4">
             <span className="text-3xl font-bold text-text tracking-tight">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
             <span className="text-[18px] font-bold text-text3">K tk</span>
           </div>
-          <div className="text-[12px] font-bold text-text3 mt-4">Est. cost: <span className="text-text">${aiStats.totalCost.toFixed(4)}</span></div>
+          <div className="text-[12px] font-medium text-text3">Est. cost: <span className="text-text">${aiStats.totalCost.toFixed(4)}</span></div>
         </div>
       </div>
 
