@@ -26,8 +26,10 @@ export interface DataEntry {
 }
 
 export interface ActivityEntry {
+  id?: string;
   c: string;
   d: string;
+  dLabel?: string;
   t: 'p' | 'e' | 'c' | 'l';
   n: string;
 }
@@ -38,13 +40,15 @@ export async function getDashboardData() {
     { data: channels },
     { data: periods },
     { data: performance },
-    { data: activities }
+    { data: activities },
+    { data: aiUsage }
   ] = await Promise.all([
     supabase.from('clients').select('*'),
     supabase.from('client_channels').select('*'),
     supabase.from('periods').select('*').order('period_key', { ascending: true }),
     supabase.from('channel_performance').select('*'),
-    supabase.from('activity_logs').select('*').order('log_date', { ascending: false })
+    supabase.from('activity_logs').select('*').order('log_date', { ascending: false }),
+    supabase.from('ai_usage_logs').select('*').order('usage_date', { ascending: false })
   ]);
 
   // Transform Clients
@@ -83,8 +87,10 @@ export async function getDashboardData() {
 
   // Transform Activity
   const ACTIVITY: ActivityEntry[] = (activities || []).map(a => ({
+    id: a.id,
     c: a.client_key,
-    d: new Date(a.log_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+    d: a.log_date,
+    dLabel: new Date(a.log_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
     t: a.log_type as 'p' | 'e' | 'c' | 'l',
     n: a.note
   }));
@@ -95,7 +101,16 @@ export async function getDashboardData() {
     return acc;
   }, {} as Record<string, string>);
 
-  return { CLIENTS, DATA, ACTIVITY, PERIODS, PL };
+  const AI_LOGS = (aiUsage || []).map(l => ({
+    id: l.id,
+    c: l.client_key,
+    m: l.model_name,
+    d: l.usage_date,
+    tk: l.tokens_used,
+    cost: l.estimated_cost
+  }));
+
+  return { CLIENTS, DATA, ACTIVITY, PERIODS, PL, AI_LOGS };
 }
 
 // Re-export constants
