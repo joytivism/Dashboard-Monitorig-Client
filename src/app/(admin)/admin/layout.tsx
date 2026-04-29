@@ -3,14 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, ArrowLeft, LogOut } from 'lucide-react';
+import { Bell, Settings, LogOut, ArrowLeft } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
   const menu = [
-    { id: '/admin', label: 'All' },
+    { id: '/admin', label: 'Dashboard' },
     { id: '/admin/performance', label: 'Performance' },
     { id: '/admin/activities', label: 'Activities' },
     { id: '/admin/settings', label: 'Settings' },
@@ -22,31 +22,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="flex-1 w-full min-h-screen flex flex-col" style={{ background: '#DAE5F0' }}>
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-white border-b border-black/[0.03]">
-        <div className="px-8 h-[68px] flex items-center justify-between">
+    <div className="flex-1 w-full min-h-screen flex flex-col bg-white">
+
+      {/* ═══ NAVBAR ═══ */}
+      <header className="sticky top-0 z-50 bg-white">
+        <div className="px-8 h-[72px] flex items-center justify-between">
           
-          {/* Left: Logo + Nav Links */}
-          <div className="flex items-center gap-10">
-            <Link href="/admin" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center">
-                <span className="text-white text-[11px] font-black">RA</span>
+          {/* Left: Logo + Pill Nav */}
+          <div className="flex items-center gap-8">
+            <Link href="/admin" className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-[#2563EB] flex items-center justify-center">
+                <span className="text-white text-[13px] font-black tracking-tight">RA</span>
               </div>
-              <span className="text-[16px] font-extrabold text-gray-900">Command Center</span>
+              <span className="text-[17px] font-extrabold text-[#111827] hidden sm:inline">Command Center</span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1">
+            {/* Pill Navigation */}
+            <nav className="hidden md:flex items-center bg-[#F3F4F6] rounded-full p-1">
               {menu.map(item => {
                 const active = pathname === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => router.push(item.id)}
-                    className={`px-4 py-2 text-[14px] font-semibold transition-all duration-200 ${
+                    className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all duration-300 ${
                       active 
-                        ? 'text-gray-900' 
-                        : 'text-gray-400 hover:text-gray-600'
+                        ? 'bg-[#111827] text-white shadow-sm' 
+                        : 'text-[#6B7280] hover:text-[#111827]'
                     }`}
                   >
                     {item.label}
@@ -56,48 +58,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </nav>
           </div>
 
-          {/* Right: Search + Icons + Avatar */}
-          <div className="flex items-center gap-5">
-            <div className="hidden lg:flex items-center gap-2 bg-gray-50 rounded-xl px-4 h-10 w-[220px] border border-gray-100">
-              <Search className="w-4 h-4 text-gray-300" />
-              <input 
-                type="text" 
-                placeholder="Search" 
-                className="bg-transparent text-[13px] font-medium text-gray-700 placeholder:text-gray-300 outline-none flex-1"
-              />
-            </div>
-            <button onClick={handleLogout} className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-300 hover:text-gray-500" title="Logout">
-              <LogOut className="w-5 h-5" />
+          {/* Right: Icons + Avatar */}
+          <div className="flex items-center gap-3">
+            <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#F3F4F6] transition-colors text-[#9CA3AF]">
+              <Bell className="w-[18px] h-[18px]" />
             </button>
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-              <span className="text-white text-[12px] font-black">AD</span>
+            <button onClick={handleLogout} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#F3F4F6] transition-colors text-[#9CA3AF]" title="Logout">
+              <LogOut className="w-[18px] h-[18px]" />
+            </button>
+            <div className="flex items-center gap-3 ml-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#2563EB] to-[#7C3AED] flex items-center justify-center">
+                <span className="text-white text-[12px] font-black">AD</span>
+              </div>
+              <div className="hidden lg:block text-right">
+                <div className="text-[13px] font-bold text-[#111827]">Real Advertise</div>
+                <div className="text-[11px] font-medium text-[#9CA3AF]">Admin</div>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Content - grows to fill */}
-      <main className="flex-1 p-6 md:p-8">
+      {/* ═══ CONTENT ═══ */}
+      <main className="flex-1 px-6 md:px-8 py-6">
         {children}
       </main>
 
-      {/* Footer */}
-      <div className="px-8 pb-10">
-        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-gray-400 hover:text-gray-600 text-[13px] font-semibold transition-colors">
+      {/* ═══ FOOTER ═══ */}
+      <div className="px-8 pb-8">
+        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-[#9CA3AF] hover:text-[#6B7280] text-[13px] font-semibold transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to Client View
         </button>
       </div>
 
-      {/* Mobile Nav */}
-      <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] bg-white border border-black/[0.04] rounded-[20px] p-2 shadow-2xl shadow-black/10 flex justify-around items-center">
+      {/* ═══ MOBILE NAV ═══ */}
+      <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] bg-white border border-[#F3F4F6] rounded-full p-1.5 shadow-xl shadow-black/5 flex items-center gap-1">
         {menu.map(item => {
           const active = pathname === item.id;
           return (
             <button 
               key={item.id} 
               onClick={() => router.push(item.id)}
-              className={`px-4 py-3 rounded-2xl text-[11px] font-bold transition-all ${active ? 'text-gray-900 bg-gray-100' : 'text-gray-400'}`}
+              className={`px-4 py-2.5 rounded-full text-[11px] font-bold transition-all ${active ? 'bg-[#111827] text-white' : 'text-[#9CA3AF]'}`}
             >
               {item.label}
             </button>
