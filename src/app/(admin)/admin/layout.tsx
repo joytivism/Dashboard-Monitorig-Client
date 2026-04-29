@@ -3,17 +3,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Settings, LogOut, ArrowLeft } from 'lucide-react';
+import { Bell, Settings, LogOut, ArrowLeft, Home, FileText, BarChart3, Database, Plus } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
   const menu = [
-    { id: '/admin', label: 'Dashboard' },
-    { id: '/admin/performance', label: 'Performance' },
-    { id: '/admin/activities', label: 'Activities' },
-    { id: '/admin/settings', label: 'Settings' },
+    { id: '/admin', label: 'Home', icon: Home },
+    { id: '/admin/performance', label: 'Analytics', icon: BarChart3 },
+    { id: '/admin/activities', label: 'Documents', icon: FileText },
+    { id: '/admin/settings', label: 'Database', icon: Database },
   ];
 
   const handleLogout = () => {
@@ -25,55 +25,56 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex-1 w-full min-h-screen flex flex-col bg-bg">
 
       {/* ═══ NAVBAR ═══ */}
-      <header className="sticky top-0 z-50 bg-surface border-b border-border-main">
-        <div className="px-8 h-[72px] flex items-center justify-between">
+      <header className="sticky top-0 z-[100] bg-white/80 backdrop-blur-md border-b border-border-main/50">
+        <div className="px-8 h-[80px] flex items-center justify-between relative">
           
-          {/* Left: Logo + Pill Nav */}
-          <div className="flex items-center gap-8">
-            <Link href="/admin" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-                <span className="text-white text-[13px] font-black tracking-tight">RA</span>
+          {/* Left: Logo */}
+          <div className="flex items-center gap-3">
+            <Link href="/admin" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 rounded-lg bg-text flex items-center justify-center group-hover:rotate-12 transition-transform">
+                <Plus className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-text hidden sm:inline">Command Center</span>
+              <span className="text-xl font-bold text-text tracking-tight">RealSync</span>
             </Link>
-
-            {/* Pill Navigation */}
-            <nav className="hidden md:flex items-center bg-surface2 rounded-full p-1 border border-border-main/50">
-              {menu.map(item => {
-                const active = pathname === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => router.push(item.id)}
-                    className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all duration-300 ${
-                      active 
-                        ? 'bg-text text-white shadow-sm' 
-                        : 'text-text3 hover:text-text'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </nav>
           </div>
 
-          {/* Right: Icons + Avatar */}
-          <div className="flex items-center gap-3">
-            <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface2 transition-colors text-text3 hover:text-text">
+          {/* Center: Pill Navigation */}
+          <nav className="hidden lg:flex items-center bg-white rounded-full p-1.5 border border-border-main shadow-sm absolute left-1/2 -translate-x-1/2">
+            {menu.map(item => {
+              const active = pathname === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => router.push(item.id)}
+                  className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[13px] font-bold transition-all duration-300 ${
+                    active 
+                      ? 'bg-text text-white shadow-lg' 
+                      : 'text-text3 hover:text-text hover:bg-surface2'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Right: Icons + User Profile */}
+          <div className="flex items-center gap-4">
+            <button className="relative w-10 h-10 rounded-full flex items-center justify-center bg-white border border-border-main text-text3 hover:text-text transition-all">
               <Bell className="w-[18px] h-[18px]" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rr rounded-full border-2 border-white" />
             </button>
-            <button onClick={handleLogout} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface2 transition-colors text-text3 hover:text-rr" title="Logout">
-              <LogOut className="w-[18px] h-[18px]" />
-            </button>
-            <div className="flex items-center gap-3 ml-2 pl-2 border-l border-border-main">
-              <div className="w-10 h-10 rounded-full bg-text flex items-center justify-center">
-                <span className="text-white text-[12px] font-black">AD</span>
-              </div>
-              <div className="hidden lg:block text-left">
-                <div className="text-[13px] font-bold text-text leading-tight">Real Advertise</div>
-                <div className="text-[11px] font-medium text-text3">System Admin</div>
-              </div>
+            
+            <div className="flex items-center gap-2">
+              <button onClick={handleLogout} className="w-10 h-10 rounded-full overflow-hidden border-2 border-border-main hover:border-accent transition-all">
+                <img 
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" 
+                  alt="Admin" 
+                  className="w-full h-full object-cover"
+                />
+              </button>
             </div>
           </div>
         </div>
