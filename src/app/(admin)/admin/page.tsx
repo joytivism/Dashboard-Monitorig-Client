@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
-import { CH_DEF, LM, totals } from '@/lib/data';
-import { fRp } from '@/lib/utils';
+import { CH_DEF, LM } from '@/lib/data';
+import { fRp, totals } from '@/lib/utils';
 import { 
   Save, 
   AlertCircle, 
