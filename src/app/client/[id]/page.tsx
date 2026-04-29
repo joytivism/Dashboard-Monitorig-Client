@@ -26,7 +26,8 @@ import {
 import AISummary from '@/components/AISummary';
 
 function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id: rawId } = use(params);
+  const id = decodeURIComponent(rawId);
   const searchParams = useSearchParams();
   const { CLIENTS, DATA, ACTIVITY, PERIODS, PL } = useDashboardData();
   const curPeriod = searchParams.get('period') || '2026-03';
