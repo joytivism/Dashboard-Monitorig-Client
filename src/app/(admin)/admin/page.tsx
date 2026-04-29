@@ -151,64 +151,79 @@ export default function AdminClientsPage() {
         </div>
       </div>
 
-      {/* ═══ STAT CARDS ═══ */}
+      {/* ═══ STAT CARDS (REDESIGN) ═══ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex justify-between items-start mb-6">
-            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">Total brands</div>
-            <div className="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center border border-border-alt"><Users className="w-5 h-5 text-text2" /></div>
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
+          <div className="w-11 h-11 rounded-2xl bg-surface flex items-center justify-center border border-border-main shadow-sm mb-6">
+            <Users className="w-5 h-5 text-text" />
           </div>
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-3xl font-bold text-text tracking-tight">{CLIENTS.length}</span>
+          <div className="flex-1">
+            <div className="text-3xl font-bold text-text tracking-tight leading-none mb-2">{CLIENTS.length}</div>
+            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">Total Brands</div>
           </div>
-          <div className="flex items-center gap-2">
-            {CLIENTS.slice(0, 4).map(c => (
-              <span key={c.key} className={`w-3 h-3 rounded-full ${getAvatarColor(c.key)}`} title={c.key} />
-            ))}
-            {CLIENTS.length > 4 && <span className="text-[11px] font-bold text-text3">+{CLIENTS.length - 4}</span>}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex justify-between items-start mb-6">
-            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">Managed Spend</div>
-            <div className="w-12 h-12 rounded-full bg-gg-bg flex items-center justify-center border border-gg-border"><DollarSign className="w-5 h-5 text-gg-text" /></div>
-          </div>
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-3xl font-bold text-text tracking-tight">{fRp(spendStats.current)}</span>
-          </div>
-          <div className="text-[12px] font-medium text-text3">
-            Bulan lalu: <span className="text-text2">{fRp(spendStats.previous)}</span>
-          </div>
-          <div className="flex gap-4 mt-2 text-[10px] font-bold text-text3">
-            <span className="flex items-center gap-1"><span className="dot dot-gg" /> Active this month</span>
+          <div className="mt-5 pt-4 border-t border-border-main/60 flex items-center gap-2">
+            <div className="flex items-center -space-x-1.5">
+              {CLIENTS.slice(0, 4).map(c => (
+                <span key={c.key} className={`w-4 h-4 rounded-full border border-white ${getAvatarColor(c.key)}`} title={c.key} />
+              ))}
+            </div>
+            {CLIENTS.length > 4 && <span className="text-[11px] font-bold text-text3 ml-1">+{CLIENTS.length - 4} active</span>}
           </div>
         </div>
 
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex justify-between items-start mb-6">
-            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">Total records</div>
-            <div className="w-12 h-12 rounded-full bg-or-bg flex items-center justify-center border border-or-border"><Database className="w-5 h-5 text-or-text" /></div>
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
+          <div className="w-11 h-11 rounded-2xl bg-gg-bg flex items-center justify-center border border-gg-border shadow-sm mb-6">
+            <DollarSign className="w-5 h-5 text-gg" />
           </div>
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-3xl font-bold text-text tracking-tight">{DATA.length}</span>
+          <div className="flex-1">
+            <div className="text-3xl font-bold text-text tracking-tight leading-none mb-2">{fRp(spendStats.current)}</div>
+            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">Managed Spend</div>
           </div>
-          <div className="text-[12px] font-medium text-text3">{PERIODS.length} periods tracked</div>
-        </div>
-
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <div className="flex justify-between items-start mb-6">
-            <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide mt-1">AI usage</div>
-            <div className="flex items-center gap-3">
-              <button onClick={() => router.push('/admin/settings')} className="text-[11px] font-bold text-text2 hover:text-text transition-colors mt-1">Settings &rarr;</button>
-              <div className="w-12 h-12 rounded-full bg-tofu-bg flex items-center justify-center border border-tofu-border"><Zap className="w-5 h-5 text-tofu" /></div>
+          <div className="mt-5 pt-4 border-t border-border-main/60 flex items-center justify-between">
+            <div className="text-[11px] font-medium text-text3">
+              Last: <span className="text-text2 font-bold">{fRp(spendStats.previous)}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-gg shadow-[0_0_8px_rgba(23,201,100,0.6)] animate-pulse" />
+              <span className="text-[10px] font-bold text-gg uppercase tracking-wide">Live</span>
             </div>
           </div>
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-3xl font-bold text-text tracking-tight">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
-            <span className="text-[18px] font-bold text-text3">K tk</span>
+        </div>
+
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
+          <div className="w-11 h-11 rounded-2xl bg-or-bg flex items-center justify-center border border-or-border shadow-sm mb-6">
+            <Database className="w-5 h-5 text-or" />
           </div>
-          <div className="text-[12px] font-medium text-text3">Est. cost: <span className="text-text">${aiStats.totalCost.toFixed(4)}</span></div>
+          <div className="flex-1">
+            <div className="text-3xl font-bold text-text tracking-tight leading-none mb-2">{DATA.length}</div>
+            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">Total Records</div>
+          </div>
+          <div className="mt-5 pt-4 border-t border-border-main/60">
+            <div className="text-[11px] font-medium text-text3">
+              <span className="font-bold text-text2">{PERIODS.length}</span> data periods synced
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-11 h-11 rounded-2xl bg-tofu-bg flex items-center justify-center border border-tofu-border shadow-sm">
+              <Zap className="w-5 h-5 text-tofu" />
+            </div>
+            <button onClick={() => router.push('/admin/settings')} className="text-[10px] font-bold uppercase tracking-widest text-text2 hover:text-text transition-colors bg-surface px-3 py-1.5 rounded-lg border border-border-main shadow-sm hover:shadow">Config</button>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-baseline gap-1.5 mb-2">
+              <span className="text-3xl font-bold text-text tracking-tight leading-none">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
+              <span className="text-[13px] font-bold text-text3">K</span>
+            </div>
+            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">AI Tokens</div>
+          </div>
+          <div className="mt-5 pt-4 border-t border-border-main/60">
+            <div className="text-[11px] font-medium text-text3">
+              Est. Cost: <span className="text-text font-bold">${aiStats.totalCost.toFixed(4)}</span>
+            </div>
+          </div>
         </div>
       </div>
 
