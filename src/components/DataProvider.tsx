@@ -9,6 +9,7 @@ interface DataContextType {
   ACTIVITY: ActivityEntry[];
   PERIODS: string[];
   PL: Record<string, string>;
+  AI_LOGS: any[];
 }
 
 const DataContext = createContext<DataContextType>({
@@ -17,6 +18,7 @@ const DataContext = createContext<DataContextType>({
   ACTIVITY: [],
   PERIODS: [],
   PL: {},
+  AI_LOGS: [],
 });
 
 export const useDashboardData = () => useContext(DataContext);
