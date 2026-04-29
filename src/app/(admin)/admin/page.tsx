@@ -206,6 +206,7 @@ export default function AdminPage() {
                   <tr className="text-[10px] font-bold text-text3 uppercase tracking-[0.2em] border-b border-border-main/50">
                     <th className="pb-4 px-4">Brand</th>
                     <th className="pb-4 px-4">Metadata</th>
+                    <th className="pb-4 px-4">Data Status (Bulan Ini)</th>
                     <th className="pb-4 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -219,6 +220,14 @@ export default function AdminPage() {
                       <td className="py-5 px-4">
                         <div className="text-xs font-bold text-text2">{cl.ind}</div>
                         <div className="text-[10px] text-text3 font-medium uppercase mt-0.5">{cl.cg}</div>
+                      </td>
+                      <td className="py-5 px-4">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${completeness[cl.key] === 'full' ? 'bg-gg' : completeness[cl.key] === 'partial' ? 'bg-mofu' : 'bg-rr'} animate-pulse`} />
+                          <span className="text-[10px] font-black uppercase tracking-wider">
+                            {completeness[cl.key] === 'full' ? 'Lengkap' : completeness[cl.key] === 'partial' ? 'Sebagian' : 'Belum Diisi'}
+                          </span>
+                        </div>
                       </td>
                       <td className="py-5 px-4 text-right">
                         <button className="p-2 hover:bg-accent-light text-text3 hover:text-accent rounded-lg"><Edit3 className="w-4 h-4" /></button>
