@@ -188,5 +188,3 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
     </div>
   );
 }
-  );
-}
