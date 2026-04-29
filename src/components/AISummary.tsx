@@ -23,17 +23,36 @@ interface AIResponse {
   actions: string[];
 }
 
+// Simple in-memory cache to prevent re-fetching when navigating
+const aiCache: Record<string, { data: AIResponse, timestamp: number }> = {};
+
 export default function AISummary({ clientName, metrics }: AISummaryProps) {
   const [data, setData] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSummary = async () => {
+  // Unique key for this specific client and metrics combination
+  const cacheKey = `${clientName}-${metrics.roas}-${metrics.revenue}-${metrics.growth}`;
+
+  const fetchSummary = async (force = false) => {
+    // Check cache first if not forced
+    if (!force && aiCache[cacheKey]) {
+      setData(aiCache[cacheKey].data);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
       const result = await generateAISummary(clientName, metrics);
       const parsed: AIResponse = JSON.parse(result);
+      
+      // Save to cache
+      aiCache[cacheKey] = {
+        data: parsed,
+        timestamp: Date.now()
+      };
+      
       setData(parsed);
     } catch (err) {
       setError("Gagal memuat insight AI.");
@@ -44,33 +63,13 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
 
   useEffect(() => {
     fetchSummary();
-  }, [clientName]);
+  }, [clientName, cacheKey]);
 
   const statusConfig = {
-    positive: {
-      icon: TrendingUp,
-      label: 'Performa Naik',
-      badgeClass: 'bg-gg-bg text-gg',
-      barClass: 'bg-gg',
-    },
-    negative: {
-      icon: TrendingDown,
-      label: 'Perlu Perhatian',
-      badgeClass: 'bg-rr-bg text-rr',
-      barClass: 'bg-rr',
-    },
-    neutral: {
-      icon: Minus,
-      label: 'Stabil',
-      badgeClass: 'bg-surface2 text-text2',
-      barClass: 'bg-text3',
-    },
-    warning: {
-      icon: AlertCircle,
-      label: 'Perhatian',
-      badgeClass: 'bg-mofu-bg text-mofu',
-      barClass: 'bg-mofu',
-    },
+    positive: { icon: TrendingUp, label: 'Performa Naik', badgeClass: 'bg-gg-bg text-gg' },
+    negative: { icon: TrendingDown, label: 'Perlu Perhatian', badgeClass: 'bg-rr-bg text-rr' },
+    neutral: { icon: Minus, label: 'Stabil', badgeClass: 'bg-surface2 text-text2' },
+    warning: { icon: AlertCircle, label: 'Perhatian', badgeClass: 'bg-mofu-bg text-mofu' },
   };
 
   const config = data ? statusConfig[data.status] || statusConfig.neutral : statusConfig.neutral;
@@ -79,7 +78,6 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
   return (
     <div className="bg-white rounded-[24px] shadow-main overflow-hidden mb-8">
       <div className="p-6 sm:p-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center text-white shadow-lg shadow-accent/20">
@@ -99,7 +97,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
               </span>
             )}
             <button 
-              onClick={fetchSummary}
+              onClick={() => fetchSummary(true)} // Force refresh
               disabled={loading}
               className="p-2 hover:bg-surface2 rounded-xl transition-all duration-200 disabled:opacity-50"
               title="Refresh AI Insights"
@@ -109,7 +107,6 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
           </div>
         </div>
 
-        {/* Content */}
         {loading ? (
           <div className="space-y-4">
             <div className="space-y-2.5">
@@ -128,18 +125,13 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
           </div>
         ) : data ? (
           <div className="space-y-5">
-            {/* Summary */}
             <p className="text-[14px] leading-[1.85] text-text/85 font-medium">
               {data.summary}
             </p>
 
-            {/* Action Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {data.actions.map((action, i) => (
-                <div 
-                  key={i} 
-                  className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 border border-border-main hover:bg-surface2 transition-colors duration-200"
-                >
+                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 border border-border-main hover:bg-surface2 transition-colors duration-200">
                   <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
                     <Zap className="w-3.5 h-3.5 text-accent" />
                   </div>
