@@ -2,24 +2,58 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
-import { Save, AlertCircle, CheckCircle2, Key, Cpu, Zap } from 'lucide-react';
+import { Save, AlertCircle, CheckCircle2, Key, Cpu, Zap, Calendar, Plus, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminSettingsPage() {
   const { AI_LOGS } = useDashboardData();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{type:'success'|'error',text:string}|null>(null);
   const [cfg, setCfg] = useState({openrouter_key:'',ai_model:'google/gemini-flash-1.5'});
+  const [periods, setPeriods] = useState<{period_key:string, label:string}[]>([]);
+  const [newP, setNewP] = useState({ key: '', label: '' });
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('system_settings').select('*');
-      const m = (data || []).reduce((a, s) => ({ ...a, [s.key]: s.value }), {} as any);
+      const { data: s } = await supabase.from('system_settings').select('*');
+      const m = (s || []).reduce((a, b) => ({ ...a, [b.key]: b.value }), {} as any);
       setCfg({
         openrouter_key: m.openrouter_key || '',
         ai_model: m.ai_model || 'google/gemini-flash-1.5'
       });
+
+      const { data: p } = await supabase.from('periods').select('*').order('period_key', { ascending: true });
+      setPeriods(p || []);
     })();
   }, []);
+
+  const addPeriod = async () => {
+    if (!newP.key || !newP.label) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('periods').insert({ period_key: newP.key, label: newP.label });
+      if (error) throw error;
+      setPeriods([...periods, { period_key: newP.key, label: newP.label }].sort((a,b) => a.period_key.localeCompare(b.period_key)));
+      setNewP({ key: '', label: '' });
+      setToast({ type: 'success', text: 'Period added!' });
+      router.refresh();
+    } catch (e: any) { setToast({ type: 'error', text: e.message }); }
+    finally { setLoading(false); }
+  };
+
+  const delPeriod = async (key: string) => {
+    if (!confirm(`Delete period ${key}? This might affect data visibility.`)) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('periods').delete().eq('period_key', key);
+      if (error) throw error;
+      setPeriods(periods.filter(p => p.period_key !== key));
+      setToast({ type: 'success', text: 'Period deleted!' });
+      router.refresh();
+    } catch (e: any) { setToast({ type: 'error', text: e.message }); }
+    finally { setLoading(false); }
+  };
 
   const ai = useMemo(() => ({
     tk: AI_LOGS?.reduce((s, l) => s + (l.tk || 0), 0) || 0,
@@ -72,38 +106,76 @@ export default function AdminSettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Config */}
-        <div className="lg:col-span-8 bg-white rounded-[24px] border border-border-main p-6 shadow-main">
-          <h2 className="text-lg font-bold text-text mb-6">API & AI Configuration</h2>
-          <div className="space-y-6">
-            <div>
-              <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
-                <Key className="w-3.5 h-3.5"/>OpenRouter API Key
-              </label>
-              <input type="password" value={cfg.openrouter_key} onChange={e=>setCfg({...cfg,openrouter_key:e.target.value})}
-                className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" placeholder="sk-or-v1-..."/>
-              <div className="flex items-center gap-2 mt-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse"/>
-                <span className="text-[11px] font-bold text-text3">Encrypted and stored in database</span>
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
+            <h2 className="text-lg font-bold text-text mb-6">API & AI Configuration</h2>
+            <div className="space-y-6">
+              <div>
+                <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
+                  <Key className="w-3.5 h-3.5"/>OpenRouter API Key
+                </label>
+                <input type="password" value={cfg.openrouter_key} onChange={e=>setCfg({...cfg,openrouter_key:e.target.value})}
+                  className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" placeholder="sk-or-v1-..."/>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse"/>
+                  <span className="text-[11px] font-bold text-text3">Encrypted and stored in database</span>
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
+                  <Cpu className="w-3.5 h-3.5"/>Primary Model
+                </label>
+                <select value={cfg.ai_model} onChange={e=>setCfg({...cfg,ai_model:e.target.value})}
+                  className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all appearance-none cursor-pointer">
+                  <option value="google/gemini-flash-1.5">Gemini Flash 1.5 (Fastest)</option>
+                  <option value="google/gemini-pro-1.5">Gemini Pro 1.5 (Smartest)</option>
+                  <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+                  <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+                  <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron 3 (Free)</option>
+                </select>
+              </div>
+              <div className="pt-6 border-t border-border-main flex justify-end">
+                <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-full text-sm font-bold shadow-main hover:bg-text2 transition-all">
+                  {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+                  Save settings
+                </button>
               </div>
             </div>
-            <div>
-              <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
-                <Cpu className="w-3.5 h-3.5"/>Primary Model
-              </label>
-              <select value={cfg.ai_model} onChange={e=>setCfg({...cfg,ai_model:e.target.value})}
-                className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all appearance-none cursor-pointer">
-                <option value="google/gemini-flash-1.5">Gemini Flash 1.5 (Fastest)</option>
-                <option value="google/gemini-pro-1.5">Gemini Pro 1.5 (Smartest)</option>
-                <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-                <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
-                <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron 3 (Free)</option>
-              </select>
-            </div>
-            <div className="pt-6 border-t border-border-main flex justify-end">
-              <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-full text-sm font-bold shadow-main hover:bg-text2 transition-all">
-                {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-                Save settings
-              </button>
+          </div>
+
+          <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
+            <h2 className="text-lg font-bold text-text mb-6 flex items-center gap-2"><Calendar className="w-5 h-5 text-accent"/> Period Manager</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <label className="text-[11px] font-bold text-text3 uppercase tracking-widest mb-4 block">Existing Periods</label>
+                <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-hide">
+                  {periods.map(p => (
+                    <div key={p.period_key} className="flex items-center justify-between p-3 rounded-xl bg-surface2 border border-border-main group">
+                      <div>
+                        <div className="text-[13px] font-bold text-text">{p.label}</div>
+                        <div className="text-[10px] font-medium text-text3">{p.period_key}</div>
+                      </div>
+                      <button onClick={() => delPeriod(p.period_key)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:text-rr hover:bg-rr-bg transition-all opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4"/></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-surface2/50 p-5 rounded-2xl border border-dashed border-border-main">
+                <label className="text-[11px] font-bold text-text3 uppercase tracking-widest mb-4 block">Add New Period</label>
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-[10px] font-bold text-text2 uppercase block mb-1.5 ml-1">Key (YYYY-MM)</span>
+                    <input type="text" value={newP.key} onChange={e=>setNewP({...newP, key: e.target.value})} placeholder="e.g. 2026-04" className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-[13px] font-bold text-text outline-none focus:border-accent transition-all" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-text2 uppercase block mb-1.5 ml-1">Label (MMM YYYY)</span>
+                    <input type="text" value={newP.label} onChange={e=>setNewP({...newP, label: e.target.value})} placeholder="e.g. Apr 2026" className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-[13px] font-bold text-text outline-none focus:border-accent transition-all" />
+                  </div>
+                  <button onClick={addPeriod} disabled={loading} className="w-full h-12 bg-accent text-white rounded-xl font-bold text-[13px] shadow-sm hover:shadow-main transition-all flex items-center justify-center gap-2">
+                    <Plus className="w-4 h-4"/> Add Period
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
