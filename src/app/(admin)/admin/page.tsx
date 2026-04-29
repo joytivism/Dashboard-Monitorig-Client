@@ -3,12 +3,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
-import { CH_DEF } from '@/lib/data';
+import { CH_DEF, LM as STATUS_LABEL_MAP } from '@/lib/data';
 import { 
   AlertCircle, CheckCircle2, Users, Database, Zap,
   Edit3, Trash2, X, Download, Plus, Search, ArrowUpRight, DollarSign
 } from 'lucide-react';
-import { fRp, clientWorst, LM as STATUS_LABEL_MAP } from '@/lib/utils';
+import { fRp, clientWorst } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 export default function AdminClientsPage() {
