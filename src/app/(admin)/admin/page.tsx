@@ -5,7 +5,7 @@ import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
 import { CH_DEF } from '@/lib/data';
 import { 
-  AlertCircle, CheckCircle2, Users, Database, Zap, BarChart3,
+  AlertCircle, CheckCircle2, Users, Database, Zap,
   Edit3, Trash2, X, Download, Plus, Search, ArrowUpRight, DollarSign
 } from 'lucide-react';
 import { fRp } from '@/lib/utils';
@@ -25,27 +25,6 @@ export default function AdminClientsPage() {
   });
 
   // ─── Derived Data ───
-  const completeness = useMemo(() => {
-    const curP = PERIODS[PERIODS.length - 1];
-    const result: Record<string, 'full' | 'partial' | 'empty'> = {};
-    CLIENTS.forEach(cl => {
-      const entries = DATA.filter(d => d.c === cl.key && d.p === curP);
-      if (entries.length === 0) result[cl.key] = 'empty';
-      else if (entries.length < cl.chs.length) result[cl.key] = 'partial';
-      else result[cl.key] = 'full';
-    });
-    return result;
-  }, [CLIENTS, DATA, PERIODS]);
-
-  const completenessStats = useMemo(() => {
-    const vals = Object.values(completeness);
-    return {
-      full: vals.filter(v => v === 'full').length,
-      partial: vals.filter(v => v === 'partial').length,
-      empty: vals.filter(v => v === 'empty').length,
-    };
-  }, [completeness]);
-
   const aiStats = useMemo(() => {
     const totalTokens = AI_LOGS?.reduce((sum, l) => sum + (l.tk || 0), 0) || 0;
     const totalCost = AI_LOGS?.reduce((sum, l) => sum + (l.cost || 0), 0) || 0;
@@ -125,7 +104,7 @@ export default function AdminClientsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 max-w-[1400px] mx-auto pb-20 md:pb-0">
       {/* Toast */}
       {toast && (
         <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-main border ${toast.type === 'success' ? 'bg-gg-bg border-gg-border text-gg-text' : 'bg-rr-bg border-rr-border text-rr-text'}`}>
@@ -141,11 +120,11 @@ export default function AdminClientsPage() {
           <p className="text-sm font-medium text-text3 mt-1">Here is the latest update on your clients</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-surface border border-border-main rounded-xl px-4 h-11 w-[240px] focus-within:border-text transition-colors">
+          <div className="flex items-center gap-2 bg-white border border-border-main rounded-full px-4 h-11 w-48 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/50 transition-all">
             <Search className="w-4 h-4 text-text3" />
-            <input type="text" placeholder="Search client..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-transparent text-[13px] font-bold text-text placeholder:text-text3 outline-none flex-1" />
+            <input type="text" placeholder="Search" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-transparent text-sm font-medium text-text placeholder:text-text3 outline-none flex-1" />
           </div>
-          <button onClick={exportToCSV} className="flex items-center gap-2 bg-surface border border-border-main text-text px-4 h-11 rounded-xl text-[13px] font-bold hover:bg-surface2 transition-all">
+          <button onClick={exportToCSV} className="flex items-center gap-2 bg-white border border-border-main text-text px-4 h-11 rounded-full text-sm font-medium hover:bg-surface2 transition-all">
             <Download className="w-4 h-4" /> Export data
           </button>
         </div>
@@ -237,7 +216,7 @@ export default function AdminClientsPage() {
               <p className="text-[12px] font-medium text-text3 mt-0.5">Manage connected brands</p>
             </div>
           </div>
-          <button onClick={() => { setEditingClient({key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''}); setShowClientModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-main hover:bg-text2 transition-all">
+          <button onClick={() => { setEditingClient({key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''}); setShowClientModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-main hover:bg-text2 transition-all">
             <Plus className="w-4 h-4" /> Add client
           </button>
         </div>
@@ -245,12 +224,12 @@ export default function AdminClientsPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border-main bg-surface2/50">
+              <tr className="border-b border-border-main">
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Brand</th>
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Industry</th>
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Status</th>
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Channels</th>
-                <th className="text-right py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Action</th>
+                <th className="py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -269,9 +248,7 @@ export default function AdminClientsPage() {
                   </td>
                   <td className="py-4 px-6 text-[13px] font-semibold text-text2">{cl.ind || '-'}</td>
                   <td className="py-4 px-6">
-                    {completeness[cl.key] === 'full' && <span className="badge badge-gg"><span className="dot dot-gg bg-gg-text"/> Complete</span>}
-                    {completeness[cl.key] === 'partial' && <span className="badge badge-or"><span className="dot dot-or bg-or-text"/> Partial</span>}
-                    {completeness[cl.key] === 'empty' && <span className="badge badge-rr"><span className="dot dot-rr bg-rr-text"/> Empty</span>}
+                    <span className="text-sm font-medium text-text2">Data Active</span>
                   </td>
                   <td className="py-4 px-6">
                     <span className="chip chip-nn">{cl.chs.length} channels</span>

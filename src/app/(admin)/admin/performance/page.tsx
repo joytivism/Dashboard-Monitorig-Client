@@ -45,7 +45,7 @@ export default function AdminPerformancePage() {
   }, [toast]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 max-w-[1400px] mx-auto pb-20 md:pb-0">
       {toast && (
         <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-main border ${toast.type === 'success' ? 'bg-gg-bg border-gg-border text-gg-text' : 'bg-rr-bg border-rr-border text-rr-text'}`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
@@ -60,12 +60,9 @@ export default function AdminPerformancePage() {
           <p className="text-sm font-medium text-text3 mt-1">Bulk input channel metrics for a specific period</p>
         </div>
         <div className="flex items-center gap-3">
-          <select value={pClient} onChange={e => setPClient(e.target.value)} className="h-11 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text appearance-none cursor-pointer">
+          <select value={pClient} onChange={e => setPClient(e.target.value)} className="h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 appearance-none cursor-pointer">
             <option value="">Select Client</option>
             {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
-          </select>
-          <select value={pPeriod} onChange={e => setPPeriod(e.target.value)} className="h-11 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text appearance-none cursor-pointer">
-            {PERIODS.map(p => <option key={p} value={p}>{PL[p]}</option>)}
           </select>
         </div>
       </div>
@@ -87,7 +84,7 @@ export default function AdminPerformancePage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-border-main bg-surface2/50">
+                <tr className="border-b border-border-main">
                   <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Channel</th>
                   <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Spend</th>
                   <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Revenue</th>

@@ -10,42 +10,54 @@ export default function AdminSettingsPage() {
   const [toast, setToast] = useState<{type:'success'|'error',text:string}|null>(null);
   const [cfg, setCfg] = useState({openrouter_key:'',ai_model:'google/gemini-flash-1.5'});
 
-  useEffect(()=>{
-    (async()=>{
-      const{data}=await supabase.from('system_settings').select('*');
-      const m=(data||[]).reduce((a,s)=>({...a,[s.key]:s.value}),{} as any);
-      setCfg({openrouter_key:m.openrouter_key||'',ai_model:m.ai_model||'google/gemini-flash-1.5'});
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('system_settings').select('*');
+      const m = (data || []).reduce((a, s) => ({ ...a, [s.key]: s.value }), {} as any);
+      setCfg({
+        openrouter_key: m.openrouter_key || '',
+        ai_model: m.ai_model || 'google/gemini-flash-1.5'
+      });
     })();
-  },[]);
+  }, []);
 
-  const ai=useMemo(()=>({
-    tk:AI_LOGS?.reduce((s,l)=>s+(l.tk||0),0)||0,
-    cost:AI_LOGS?.reduce((s,l)=>s+(l.cost||0),0)||0
-  }),[AI_LOGS]);
+  const ai = useMemo(() => ({
+    tk: AI_LOGS?.reduce((s, l) => s + (l.tk || 0), 0) || 0,
+    cost: AI_LOGS?.reduce((s, l) => s + (l.cost || 0), 0) || 0
+  }), [AI_LOGS]);
 
-  const save=async()=>{
+  const save = async () => {
     setLoading(true);
-    try{
-      const{error}=await supabase.from('system_settings').upsert([
-        {key:'openrouter_key',value:cfg.openrouter_key},
-        {key:'ai_model',value:cfg.ai_model}
+    try {
+      const { error } = await supabase.from('system_settings').upsert([
+        { key: 'openrouter_key', value: cfg.openrouter_key },
+        { key: 'ai_model', value: cfg.ai_model }
       ]);
-      if(error)throw error;
-      setToast({type:'success',text:'Saved!'});
-    }catch(e:any){setToast({type:'error',text:e.message});}
-    finally{setLoading(false);}
+      if (error) throw error;
+      setToast({ type: 'success', text: 'Settings saved successfully!' });
+    } catch (e: any) {
+      setToast({ type: 'error', text: e.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(()=>{if(toast){const t=setTimeout(()=>setToast(null),3000);return()=>clearTimeout(t);}},[toast]);
+  useEffect(() => {
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [toast]);
 
-  const ac=(k:string)=>{
-    const c=['bg-or', 'bg-text', 'bg-tofu', 'bg-gd', 'bg-rr', 'bg-text2'];
-    let h=0;for(let i=0;i<k.length;i++)h=k.charCodeAt(i)+((h<<5)-h);
-    return c[Math.abs(h)%c.length];
+  const ac = (k: string) => {
+    const c = ['bg-or', 'bg-text', 'bg-tofu', 'bg-gd', 'bg-rr', 'bg-text2'];
+    let h = 0;
+    for (let i = 0; i < k.length; i++) h = k.charCodeAt(i) + ((h << 5) - h);
+    return c[Math.abs(h) % c.length];
   };
 
-  return(
-    <div className="space-y-8">
+  return (
+    <div className="space-y-6 max-w-[1400px] mx-auto pb-20 md:pb-0">
       {toast&&(
         <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-main border ${toast.type==='success'?'bg-gg-bg border-gg-border text-gg-text':'bg-rr-bg border-rr-border text-rr-text'}`}>
           {toast.type==='success'?<CheckCircle2 className="w-4 h-4"/>:<AlertCircle className="w-4 h-4"/>}
@@ -88,8 +100,8 @@ export default function AdminSettingsPage() {
               </select>
             </div>
             <div className="pt-6 border-t border-border-main flex justify-end">
-              <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-xl font-bold text-[13px] shadow-main hover:bg-text2 transition-all">
-                {loading?<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>:<Save className="w-4 h-4"/>}
+              <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-full text-sm font-bold shadow-main hover:bg-text2 transition-all">
+                {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
                 Save settings
               </button>
             </div>
@@ -138,8 +150,14 @@ export default function AdminSettingsPage() {
                   </div>
                 </div>
               ))}
-              {(!AI_LOGS||AI_LOGS.length===0)&&(
-                <div className="text-center py-8 text-[12px] font-bold text-text3">No data yet</div>
+              {(!AI_LOGS || AI_LOGS.length === 0) && (
+                <div className="text-center py-10">
+                  <div className="w-12 h-12 bg-surface2 rounded-xl flex items-center justify-center mx-auto mb-3 border border-border-main">
+                    <Zap className="w-5 h-5 text-text3" />
+                  </div>
+                  <p className="text-sm font-bold text-text">No usage data</p>
+                  <p className="text-[11px] font-medium text-text3 mt-1">AI logs will appear here</p>
+                </div>
               )}
             </div>
           </div>

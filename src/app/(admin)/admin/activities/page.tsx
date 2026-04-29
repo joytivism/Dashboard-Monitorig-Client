@@ -50,7 +50,7 @@ export default function AdminActivitiesPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 max-w-[1400px] mx-auto pb-20 md:pb-0">
       {toast && (
         <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-main border ${toast.type === 'success' ? 'bg-gg-bg border-gg-border text-gg-text' : 'bg-rr-bg border-rr-border text-rr-text'}`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
@@ -64,7 +64,7 @@ export default function AdminActivitiesPage() {
           <h1 className="text-2xl font-bold text-text tracking-tight">Activity Logs 📋</h1>
           <p className="text-sm font-medium text-text3 mt-1">Track promotions, events, and launches</p>
         </div>
-        <button onClick={() => { setEditing({ id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' }); setShowModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-main hover:bg-text2 transition-all">
+        <button onClick={() => { setEditing({ id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' }); setShowModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-main hover:bg-text2 transition-all">
           <Plus className="w-4 h-4" /> Add log
         </button>
       </div>
@@ -74,7 +74,7 @@ export default function AdminActivitiesPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border-main bg-surface2/50">
+              <tr className="border-b border-border-main">
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Client</th>
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Type</th>
                 <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Date</th>
@@ -112,7 +112,15 @@ export default function AdminActivitiesPage() {
             </tbody>
           </table>
         </div>
-        {ACTIVITIES.length === 0 && <div className="py-16 text-center text-[13px] font-bold text-text3">No activity logs found</div>}
+        {ACTIVITIES.length === 0 && (
+          <div className="py-20 text-center">
+            <div className="w-16 h-16 bg-surface2 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-border-main">
+              <Calendar className="w-7 h-7 text-text3" />
+            </div>
+            <p className="text-base font-bold text-text">No activity logs found</p>
+            <p className="text-sm font-medium text-text3 mt-1">Start tracking promotions, events, and launches</p>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
