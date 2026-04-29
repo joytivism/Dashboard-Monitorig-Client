@@ -113,164 +113,211 @@ export default function AdminClientsPage() {
         </div>
       )}
 
-      {/* ═══ WELCOME BAR ═══ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text">Welcome back, Admin! 👋</h1>
-          <p className="text-sm font-medium text-text3 mt-1">Here is the latest update on your clients</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white border border-border-main rounded-full px-4 h-11 w-48 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/50 transition-all">
-            <Search className="w-4 h-4 text-text3" />
-            <input type="text" placeholder="Search" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-transparent text-sm font-medium text-text placeholder:text-text3 outline-none flex-1" />
+      {/* ═══ TOP ACTION BAR ═══ */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-2">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-[11px] font-bold text-accent uppercase tracking-[0.2em] mb-1">
+            <span className="w-4 h-[2px] bg-accent rounded-full"/> Admin Control Center
           </div>
-          <button onClick={exportToCSV} className="flex items-center gap-2 bg-white border border-border-main text-text px-4 h-11 rounded-full text-sm font-medium hover:bg-surface2 transition-all">
-            <Download className="w-4 h-4" /> Export data
+          <h1 className="text-3xl font-black text-text tracking-tight">Management Overview <span className="text-accent">.</span></h1>
+          <p className="text-sm font-medium text-text3">Monitor brand performance and agency operations</p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-3 bg-surface2/50 p-2 rounded-[20px] border border-border-main backdrop-blur-sm">
+          <div className="flex items-center gap-3 px-4 h-10 bg-white rounded-full border border-border-main shadow-sm focus-within:border-accent transition-all min-w-[240px]">
+            <Search className="w-4 h-4 text-text3" />
+            <input type="text" placeholder="Search brands..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="bg-transparent text-[13px] font-semibold text-text placeholder:text-text3 outline-none flex-1" />
+          </div>
+          <button onClick={exportToCSV} className="flex items-center gap-2 bg-white border border-border-main text-text3 px-4 h-10 rounded-full text-[12px] font-bold hover:text-text hover:bg-surface2 transition-all">
+            <Download className="w-4 h-4" /> Export
+          </button>
+          <button onClick={() => { setEditingClient({key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''}); setShowClientModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 h-10 rounded-full text-[12px] font-bold shadow-main hover:bg-accent transition-all">
+            <Plus className="w-4 h-4" /> Add Brand
           </button>
         </div>
       </div>
 
-      {/* ═══ STAT CARDS (REDESIGN) ═══ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
-          <div className="w-11 h-11 rounded-2xl bg-surface flex items-center justify-center border border-border-main shadow-sm mb-6">
-            <Users className="w-5 h-5 text-text" />
+      {/* ═══ BENTO STATS ═══ */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        {/* Main Stats - Large */}
+        <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white rounded-[32px] border border-border-main p-8 shadow-main group hover:shadow-xl transition-all">
+            <div className="flex items-start justify-between mb-8">
+              <div className="w-14 h-14 rounded-3xl bg-surface2 flex items-center justify-center border border-border-main group-hover:scale-110 transition-transform">
+                <Users className="w-6 h-6 text-text" />
+              </div>
+              <div className="flex -space-x-2">
+                {CLIENTS.slice(0, 3).map(c => (
+                  <div key={c.key} className={`w-8 h-8 rounded-full border-2 border-white ${getAvatarColor(c.key)} flex items-center justify-center text-[10px] font-black text-white`}>
+                    {c.key.substring(0, 1)}
+                  </div>
+                ))}
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-surface flex items-center justify-center text-[10px] font-black text-text3">
+                  +{CLIENTS.length}
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="text-5xl font-black text-text tracking-tighter mb-1">{CLIENTS.length}</div>
+              <p className="text-[12px] font-bold text-text3 uppercase tracking-[0.1em]">Total Brands Managed</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <div className="text-3xl font-bold text-text tracking-tight leading-none mb-2">{CLIENTS.length}</div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">Total Brands</div>
+
+          <div className="bg-white rounded-[32px] border border-border-main p-8 shadow-main group hover:shadow-xl transition-all">
+            <div className="flex items-start justify-between mb-8">
+              <div className="w-14 h-14 rounded-3xl bg-gg-bg flex items-center justify-center border border-gg-border group-hover:scale-110 transition-transform">
+                <DollarSign className="w-6 h-6 text-gg" />
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gg-bg border border-gg-border">
+                <span className="w-2 h-2 rounded-full bg-gg animate-pulse"/>
+                <span className="text-[10px] font-black text-gg uppercase">Active Spend</span>
+              </div>
+            </div>
+            <div>
+              <div className="text-4xl font-black text-text tracking-tighter mb-2">{fRp(spendStats.current)}</div>
+              <div className="flex items-center gap-2">
+                <span className="text-[12px] font-bold text-text3 uppercase tracking-[0.1em]">Monthly Budget</span>
+                <span className="px-2 py-0.5 rounded-md bg-surface2 text-[10px] font-bold text-text3">Prev: {fRp(spendStats.previous)}</span>
+              </div>
+            </div>
           </div>
-          <div className="mt-5 pt-4 border-t border-border-main/60 flex items-center gap-2">
-            <div className="flex items-center -space-x-1.5">
-              {CLIENTS.slice(0, 4).map(c => (
-                <span key={c.key} className={`w-4 h-4 rounded-full border border-white ${getAvatarColor(c.key)}`} title={c.key} />
+        </div>
+
+        {/* Side Stats - Stacked */}
+        <div className="md:col-span-4 flex flex-col gap-6">
+          <div className="flex-1 bg-white rounded-[32px] border border-border-main p-6 shadow-main flex items-center gap-5 group hover:bg-surface2 transition-all">
+            <div className="w-14 h-14 rounded-2xl bg-or-bg flex items-center justify-center border border-or-border shrink-0">
+              <Database className="w-6 h-6 text-or" />
+            </div>
+            <div>
+              <div className="text-2xl font-black text-text leading-tight">{DATA.length}</div>
+              <p className="text-[11px] font-bold text-text3 uppercase tracking-wide">Data Points Records</p>
+            </div>
+          </div>
+
+          <div className="flex-1 bg-text rounded-[32px] border border-text/10 p-6 shadow-main flex items-center gap-5 group hover:bg-text2 transition-all cursor-pointer" onClick={() => router.push('/admin/settings')}>
+            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 shrink-0">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-black text-white leading-tight">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
+                <span className="text-[12px] font-bold text-white/50">K</span>
+              </div>
+              <p className="text-[11px] font-bold text-white/50 uppercase tracking-wide">AI Utilization</p>
+            </div>
+            <ArrowUpRight className="w-5 h-5 text-white/30 group-hover:text-white transition-all"/>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ CLIENT DIRECTORY ═══ */}
+      <div className="bg-white rounded-[32px] border border-border-main overflow-hidden shadow-main">
+        <div className="p-8 border-b border-border-main bg-surface/30">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-text text-white flex items-center justify-center shadow-lg"><Users className="w-6 h-6" /></div>
+              <div>
+                <h2 className="text-xl font-black text-text tracking-tight">Client Directory</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="px-2 py-0.5 rounded bg-surface2 text-[10px] font-black text-text3 uppercase">{filteredClients.length} connected</span>
+                  <span className="w-1 h-1 rounded-full bg-text3/30"/>
+                  <span className="text-[11px] font-semibold text-text3">Manage and monitor connected brands</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
+              {['All Brands', 'Fashion', 'Health', 'F&B'].map((f, i) => (
+                <button key={f} className={`px-4 h-9 rounded-full text-[11px] font-bold transition-all whitespace-nowrap ${i === 0 ? 'bg-text text-white shadow-md' : 'bg-surface2 text-text3 hover:bg-border-main'}`}>{f}</button>
               ))}
             </div>
-            {CLIENTS.length > 4 && <span className="text-[11px] font-bold text-text3 ml-1">+{CLIENTS.length - 4} active</span>}
           </div>
-        </div>
-
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
-          <div className="w-11 h-11 rounded-2xl bg-gg-bg flex items-center justify-center border border-gg-border shadow-sm mb-6">
-            <DollarSign className="w-5 h-5 text-gg" />
-          </div>
-          <div className="flex-1">
-            <div className="text-3xl font-bold text-text tracking-tight leading-none mb-2">{fRp(spendStats.current)}</div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">Managed Spend</div>
-          </div>
-          <div className="mt-5 pt-4 border-t border-border-main/60 flex items-center justify-between">
-            <div className="text-[11px] font-medium text-text3">
-              Last: <span className="text-text2 font-bold">{fRp(spendStats.previous)}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-gg shadow-[0_0_8px_rgba(23,201,100,0.6)] animate-pulse" />
-              <span className="text-[10px] font-bold text-gg uppercase tracking-wide">Live</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
-          <div className="w-11 h-11 rounded-2xl bg-or-bg flex items-center justify-center border border-or-border shadow-sm mb-6">
-            <Database className="w-5 h-5 text-or" />
-          </div>
-          <div className="flex-1">
-            <div className="text-3xl font-bold text-text tracking-tight leading-none mb-2">{DATA.length}</div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">Total Records</div>
-          </div>
-          <div className="mt-5 pt-4 border-t border-border-main/60">
-            <div className="text-[11px] font-medium text-text3">
-              <span className="font-bold text-text2">{PERIODS.length}</span> data periods synced
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <div className="w-11 h-11 rounded-2xl bg-tofu-bg flex items-center justify-center border border-tofu-border shadow-sm">
-              <Zap className="w-5 h-5 text-tofu" />
-            </div>
-            <button onClick={() => router.push('/admin/settings')} className="text-[10px] font-bold uppercase tracking-widest text-text2 hover:text-text transition-colors bg-surface px-3 py-1.5 rounded-lg border border-border-main shadow-sm hover:shadow">Config</button>
-          </div>
-          <div className="flex-1">
-            <div className="flex items-baseline gap-1.5 mb-2">
-              <span className="text-3xl font-bold text-text tracking-tight leading-none">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
-              <span className="text-[13px] font-bold text-text3">K</span>
-            </div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest">AI Tokens</div>
-          </div>
-          <div className="mt-5 pt-4 border-t border-border-main/60">
-            <div className="text-[11px] font-medium text-text3">
-              Est. Cost: <span className="text-text font-bold">${aiStats.totalCost.toFixed(4)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══ CLIENT TABLE ═══ */}
-      <div className="bg-white rounded-[24px] border border-border-main overflow-hidden shadow-main">
-        <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-main">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center border border-border-main"><Users className="w-5 h-5 text-text2" /></div>
-            <div>
-              <h2 className="text-lg font-bold text-text">Client Directory</h2>
-              <p className="text-[12px] font-medium text-text3 mt-0.5">Manage connected brands</p>
-            </div>
-          </div>
-          <button onClick={() => { setEditingClient({key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''}); setShowClientModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-main hover:bg-text2 transition-all">
-            <Plus className="w-4 h-4" /> Add client
-          </button>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-border-main">
-                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Brand</th>
-                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Industry</th>
-                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Status</th>
-                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Channels</th>
-                <th className="py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wider">Action</th>
+              <tr className="bg-surface2/30">
+                <th className="text-left py-5 px-8 text-[11px] font-black text-text3 uppercase tracking-[0.15em]">Brand Identity</th>
+                <th className="text-left py-5 px-8 text-[11px] font-black text-text3 uppercase tracking-[0.15em]">Industry</th>
+                <th className="text-left py-5 px-8 text-[11px] font-black text-text3 uppercase tracking-[0.15em]">Live Status</th>
+                <th className="text-left py-5 px-8 text-[11px] font-black text-text3 uppercase tracking-[0.15em]">Coverage</th>
+                <th className="py-5 px-8 text-[11px] font-black text-text3 uppercase tracking-[0.15em] text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border-main/50">
               {filteredClients.map(cl => (
-                <tr key={cl.key} className="border-b border-border-main hover:bg-surface2 transition-colors group">
-                  <td className="py-4 px-6">
+                <tr key={cl.key} className="group hover:bg-surface/50 transition-all">
+                  <td className="py-6 px-8">
                     <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl ${getAvatarColor(cl.key)} flex items-center justify-center shrink-0 shadow-sm`}>
-                        <span className="text-white text-[12px] font-black uppercase">{cl.key.substring(0, 2)}</span>
+                      <div className={`w-12 h-12 rounded-2xl ${getAvatarColor(cl.key)} flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform`}>
+                        <span className="text-white text-[14px] font-black uppercase">{cl.key.substring(0, 1)}</span>
                       </div>
                       <div>
-                        <div className="text-[14px] font-bold text-text">{cl.key}</div>
-                        <div className="text-[12px] font-medium text-text3">{cl.pic || 'No PIC'}</div>
+                        <div className="text-base font-black text-text group-hover:text-accent transition-colors">{cl.key}</div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[11px] font-bold text-text3 uppercase tracking-wider">{cl.pic || 'No PIC'}</span>
+                          <span className="w-1 h-1 rounded-full bg-border-main"/>
+                          <span className="text-[11px] font-medium text-text3">Strategist: {cl.as || '-'}</span>
+                        </div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 px-6 text-[13px] font-semibold text-text2">{cl.ind || '-'}</td>
-                  <td className="py-4 px-6">
+                  <td className="py-6 px-8">
+                    <div className="px-3 py-1.5 rounded-xl bg-surface2 border border-border-main inline-flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-text3/50"/>
+                      <span className="text-[12px] font-bold text-text2">{cl.ind || 'General'}</span>
+                    </div>
+                  </td>
+                  <td className="py-6 px-8">
                     {(() => {
                       const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
                       return (
-                        <span className={`badge badge-${wc}`}>
-                          <span className={`dot dot-${wc} bg-${wc}-text`}/> {STATUS_LABEL_MAP[wc] || 'Stabil'}
-                        </span>
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
+                          wc === 'gd' || wc === 'gg' ? 'bg-gg-bg border-gg-border text-gg-text' : 
+                          wc === 'nn' ? 'bg-surface2 border-border-main text-text3' :
+                          'bg-rr-bg border-rr-border text-rr-text'
+                        }`}>
+                          <span className={`w-2 h-2 rounded-full ${
+                            wc === 'gd' || wc === 'gg' ? 'bg-gg' : 
+                            wc === 'nn' ? 'bg-text3' :
+                            'bg-rr animate-pulse'
+                          }`}/> 
+                          <span className="text-[11px] font-black uppercase tracking-tight">{STATUS_LABEL_MAP[wc] || 'Stabil'}</span>
+                        </div>
                       );
                     })()}
                   </td>
-                  <td className="py-4 px-6">
-                    <span className="chip chip-nn">{cl.chs.length} channels</span>
+                  <td className="py-6 px-8">
+                    <div className="flex items-center gap-3">
+                      <div className="flex -space-x-1">
+                        {cl.chs.slice(0, 3).map(ch => (
+                          <div key={ch} className="w-6 h-6 rounded-lg bg-surface2 border border-border-main flex items-center justify-center text-[8px] font-black text-text3 uppercase shadow-sm" title={CH_DEF[ch]?.l}>
+                            {ch.substring(0, 2)}
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-[11px] font-bold text-text3">{cl.chs.length} channels</span>
+                    </div>
                   </td>
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => router.push(`/client/${cl.key}`)} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-accent hover:bg-accent-light text-text3 hover:text-accent transition-all" title="View as Client"><ArrowUpRight className="w-4 h-4" /></button>
-                      <button onClick={() => { setEditingClient({ key: cl.key, name: cl.key, chs: cl.chs, industry: cl.ind, pic_name: cl.pic, brand_category: cl.cg, account_strategist: cl.as }); setShowClientModal(true); }} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-text text-text3 hover:text-text transition-all" title="Edit Client"><Edit3 className="w-4 h-4" /></button>
-                      <button onClick={() => handleDeleteClient(cl.key)} className="w-9 h-9 rounded-xl flex items-center justify-center bg-surface border border-border-main hover:border-rr hover:bg-rr-bg text-text3 hover:text-rr transition-all" title="Delete Client"><Trash2 className="w-4 h-4" /></button>
+                  <td className="py-6 px-8 text-right">
+                    <div className="flex justify-end gap-2 group-hover:translate-x-0 sm:translate-x-4 transition-all opacity-0 group-hover:opacity-100">
+                      <button onClick={() => router.push(`/client/${cl.key}`)} className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white border border-border-main hover:border-accent hover:bg-accent hover:text-white text-text3 shadow-sm hover:shadow-lg transition-all" title="Launch Dashboard"><ArrowUpRight className="w-5 h-5" /></button>
+                      <button onClick={() => { setEditingClient({ key: cl.key, name: cl.key, chs: cl.chs, industry: cl.ind, pic_name: cl.pic, brand_category: cl.cg, account_strategist: cl.as }); setShowClientModal(true); }} className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white border border-border-main hover:border-text hover:bg-text hover:text-white text-text3 shadow-sm hover:shadow-lg transition-all" title="Edit Properties"><Edit3 className="w-5 h-5" /></button>
+                      <button onClick={() => handleDeleteClient(cl.key)} className="w-10 h-10 rounded-2xl flex items-center justify-center bg-white border border-border-main hover:border-rr hover:bg-rr hover:text-white text-text3 shadow-sm hover:shadow-lg transition-all" title="Terminate Connection"><Trash2 className="w-5 h-5" /></button>
                     </div>
                   </td>
                 </tr>
               ))}
               {filteredClients.length === 0 && (
-                <tr><td colSpan={5} className="py-12 text-center text-[13px] font-bold text-text3">No clients found matching your search.</td></tr>
+                <tr><td colSpan={5} className="py-20 text-center">
+                  <div className="w-16 h-16 bg-surface2 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-border-main border-dashed">
+                    <Search className="w-8 h-8 text-text3" />
+                  </div>
+                  <h3 className="text-lg font-bold text-text">No brands found</h3>
+                  <p className="text-sm font-medium text-text3 mt-1">Try adjusting your search or filters</p>
+                </td></tr>
               )}
             </tbody>
           </table>
