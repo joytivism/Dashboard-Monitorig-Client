@@ -12,37 +12,19 @@ export async function generateAISummary(clientName: string, metrics: any) {
   }
 
   const prompt = `
-    Anda adalah seorang Senior Digital Marketing Strategist di agensi periklanan terkemuka di Indonesia.
-    
-    Analisis data performa klien "${clientName}" dan berikan output dalam format JSON SAJA (tanpa markdown, tanpa backtick).
+    Diberikan data performa untuk klien "${clientName}":
+    - Reach: ${metrics.reach}, Spend: ${metrics.spend}, Revenue: ${metrics.revenue}, ROAS: ${metrics.roas}x
+    - CVR: ${metrics.cvr}%, Checkout: ${metrics.chk}%, Trend: ${metrics.growth}%
 
-    DATA PERFORMA BULAN INI:
-    - Total Reach: ${metrics.reach}
-    - Total Spend: ${metrics.spend}
-    - Total Revenue: ${metrics.revenue}
-    - Blended ROAS: ${metrics.roas}x
-    - Conversion Rate: ${metrics.cvr}%
-    - Checkout Rate: ${metrics.chk}%
+    Tugas: Analisis performa ini dan berikan output dalam format JSON MURNI. 
+    HANYA KELUARKAN JSON. JANGAN ADA TEKS LAIN. JANGAN ADA MARKDOWN.
 
-    TARGET & TREND:
-    - ROAS Target: 4.0x
-    - Tren ROAS vs Bulan Lalu: ${metrics.growth}%
-
-    FORMAT JSON YANG HARUS ANDA KEMBALIKAN (tanpa backtick, tanpa markdown):
+    Format JSON:
     {
-      "status": "positive" atau "negative" atau "neutral",
-      "summary": "Ringkasan analisis dalam 2 kalimat bahasa Indonesia yang profesional tapi santai.",
-      "actions": ["Tindakan konkret 1", "Tindakan konkret 2"]
+      "status": "positive" (jika roas > target 4x) atau "negative" (jika roas < 3x) atau "neutral",
+      "summary": "Teks analisis singkat (1-2 kalimat) bahasa Indonesia.",
+      "actions": ["Tindakan 1", "Tindakan 2"]
     }
-
-    ATURAN:
-    - status "positive" jika performa bagus/naik
-    - status "negative" jika performa turun/buruk
-    - status "neutral" jika stabil
-    - summary harus singkat, jelas, dan to the point (maks 2 kalimat)
-    - actions berisi 2 tindakan konkret yang harus dilakukan minggu ini
-    - Gunakan bahasa Indonesia profesional gaya startup
-    - HANYA kembalikan JSON, tidak ada teks lain
   `;
 
   try {
@@ -58,38 +40,42 @@ export async function generateAISummary(clientName: string, metrics: any) {
         "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", 
         "messages": [
           { "role": "user", "content": prompt }
-        ]
+        ],
+        "temperature": 0.1, // Rendah agar lebih konsisten
+        "response_format": { "type": "json_object" } // Memaksa format JSON
       })
     });
 
     const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content || "";
+    let raw = data.choices?.[0]?.message?.content || "";
     
-    // Try to extract JSON from response (handle potential markdown wrapping)
+    // Pembersihan teks jika ada tag <thought> atau lainnya
+    raw = raw.replace(/<thought>[\s\S]*?<\/thought>/g, '');
+    
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      // Validate it's parseable JSON
       try {
-        JSON.parse(jsonMatch[0]);
-        return jsonMatch[0];
-      } catch {
-        // If JSON parse fails, return fallback
-      }
+        const validated = JSON.parse(jsonMatch[0]);
+        // Pastikan key yang dibutuhkan ada
+        if (validated.summary && validated.actions) {
+          return JSON.stringify(validated);
+        }
+      } catch (e) {}
     }
     
-    // Fallback: return raw text wrapped in JSON
+    // Jika masih gagal tapi ada teks, bungkus teks tersebut ke JSON
     return JSON.stringify({
-      status: "neutral",
-      summary: raw.replace(/```json|```/g, '').trim() || "Gagal menganalisis data.",
-      actions: ["Review ulang data performa", "Konsultasi dengan tim iklan"]
+      status: metrics.growth >= 0 ? "positive" : "negative",
+      summary: raw.substring(0, 150).replace(/[{}"]/g, '') || "Performa sedang dipantau. Pastikan budget iklan teralokasi dengan optimal.",
+      actions: ["Pantau metrics secara harian", "Optimasi bid pada campaign utama"]
     });
 
   } catch (error) {
     console.error("AI Action Error:", error);
     return JSON.stringify({
       status: "negative",
-      summary: "Terjadi kesalahan saat menghubungkan ke AI.",
-      actions: ["Periksa koneksi internet", "Coba refresh halaman"]
+      summary: "Koneksi ke AI terputus. Silakan coba beberapa saat lagi.",
+      actions: ["Cek koneksi internet", "Klik tombol refresh AI"]
     });
   }
 }
