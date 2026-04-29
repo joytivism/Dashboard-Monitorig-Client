@@ -57,11 +57,11 @@ export async function getDashboardData() {
     
     return {
       key: c.client_key,
-      ind: '—', // Placeholder as it wasn't in schema
-      cg: '—',
-      at: '—',
-      as: '—',
-      pic: '—',
+      ind: c.industry || '—',
+      cg: c.brand_category || '—',
+      at: '—', // Reserved for future
+      as: c.account_strategist || '—',
+      pic: c.pic_name || '—',
       chs: chs.map(ch => ch.channel_key),
       troas
     };

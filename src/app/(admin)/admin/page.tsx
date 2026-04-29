@@ -23,7 +23,9 @@ import {
   History,
   X,
   ArrowRightLeft,
-  Info
+  Info,
+  ShieldCheck,
+  Calendar
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -36,6 +38,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{type: 'success' | 'error', text: string} | null>(null);
   const [showClientModal, setShowClientModal] = useState(false);
+  const [showPeriodModal, setShowPeriodModal] = useState(false);
   
   // Form State: Performance
   const [pClient, setPClient] = useState('');
@@ -46,7 +49,26 @@ export default function AdminPage() {
   });
 
   // Form State: Client Management
-  const [editingClient, setEditingClient] = useState<{key: string, name: string, chs: string[]} | null>(null);
+  const [editingClient, setEditingClient] = useState({
+    key: '', 
+    name: '', 
+    chs: [] as string[],
+    industry: '',
+    pic_name: '',
+    brand_category: '',
+    account_strategist: ''
+  });
+
+  // Form State: Period Management
+  const [newPeriod, setNewPeriod] = useState({ key: '', label: '' });
+
+  // Cookie Auth Sync for Middleware
+  useEffect(() => {
+    // Set cookie if authenticated via localStorage
+    if (localStorage.getItem('ra_admin_auth') === 'true') {
+      document.cookie = "ra_admin_auth=true; path=/; max-age=86400"; // 24h
+    }
+  }, []);
 
   // Show toast then hide
   useEffect(() => {
@@ -104,12 +126,16 @@ export default function AdminPage() {
 
   const handleSaveClient = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingClient?.key) return;
+    if (!editingClient.key) return;
     setLoading(true);
     try {
       const { error: cErr } = await supabase.from('clients').upsert({ 
         client_key: editingClient.key, 
-        name: editingClient.name || editingClient.key 
+        name: editingClient.name || editingClient.key,
+        industry: editingClient.industry,
+        pic_name: editingClient.pic_name,
+        brand_category: editingClient.brand_category,
+        account_strategist: editingClient.account_strategist
       });
       if (cErr) throw cErr;
 
@@ -121,9 +147,29 @@ export default function AdminPage() {
         if (chErr) throw chErr;
       }
 
-      setToast({ type: 'success', text: 'Data klien berhasil disimpan!' });
+      setToast({ type: 'success', text: 'Data klien & metadata berhasil disimpan!' });
       setShowClientModal(false);
-      setEditingClient(null);
+      router.refresh();
+    } catch (err: any) {
+      setToast({ type: 'error', text: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSavePeriod = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPeriod.key || !newPeriod.label) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('periods').insert({
+        period_key: newPeriod.key,
+        label: newPeriod.label
+      });
+      if (error) throw error;
+      setToast({ type: 'success', text: `Periode ${newPeriod.label} berhasil ditambahkan!` });
+      setShowPeriodModal(false);
+      setNewPeriod({ key: '', label: '' });
       router.refresh();
     } catch (err: any) {
       setToast({ type: 'error', text: err.message });
@@ -149,10 +195,16 @@ export default function AdminPage() {
 
   const activeChannels = CLIENTS.find(c => c.key === pClient)?.chs || [];
 
+  // Helper for pretty number inputs
+  const formatValue = (v: string) => {
+    if (!v) return '';
+    return Number(v).toLocaleString('id-ID');
+  };
+
   return (
     <div className="max-w-[1400px] mx-auto space-y-6">
       
-      {/* Toast Notification (Aligned Style) */}
+      {/* Toast Notification */}
       {toast && (
         <div className={`fixed top-24 right-8 z-[9999] flex items-center gap-3 px-6 py-4 rounded-[12px] shadow-main border animate-in slide-in-from-right-full duration-300 ${toast.type === 'success' ? 'bg-gd-bg border-gd-border text-gd-text' : 'bg-rr-bg border-rr-border text-rr-text'}`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
@@ -163,13 +215,21 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Header (Sesuai Dashboard Client) */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
         <div>
-          <h1 className="text-2xl font-bold text-text">Data Management</h1>
-          <p className="text-[12px] font-medium text-text3 mt-1 uppercase tracking-wider">Administrator Hub</p>
+          <h1 className="text-2xl font-bold text-text">Command Center Admin</h1>
+          <p className="text-[12px] font-medium text-text3 mt-1 uppercase tracking-wider">Enterprise Management Hub</p>
         </div>
         <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setShowPeriodModal(true)}
+            className="px-4 py-2 rounded-full text-xs font-bold bg-white text-text2 border border-border-main hover:bg-surface2 transition-all flex items-center gap-2"
+          >
+            <Calendar className="w-4 h-4" />
+            Manage Periods
+          </button>
+          <div className="w-px h-6 bg-border-main mx-2" />
           <button 
             onClick={() => setActiveView('overview')}
             className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${activeView === 'overview' ? 'bg-accent text-white shadow-md shadow-accent/20' : 'bg-white text-text2 border border-border-main hover:bg-surface2'}`}
@@ -185,13 +245,13 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Stats Row (Sesuai Dashboard Client) */}
+      {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: 'Total Clients', value: stats.totalClients, icon: Users, color: 'bg-accent-light text-accent' },
-          { label: 'Data Points', value: stats.totalRecords, icon: Layers, color: 'bg-tofu-bg text-tofu' },
-          { label: 'Active Periods', value: stats.activePeriods, icon: TrendingUp, color: 'bg-gd-bg text-gd' },
-          { label: 'System Health', value: 'Optimal', icon: ShieldCheck, color: 'bg-gg-bg text-gg' },
+          { label: 'Registered Clients', value: stats.totalClients, icon: Users, color: 'bg-accent-light text-accent' },
+          { label: 'Performance Records', value: stats.totalRecords, icon: Layers, color: 'bg-tofu-bg text-tofu' },
+          { label: 'Historical Periods', value: stats.activePeriods, icon: TrendingUp, color: 'bg-gd-bg text-gd' },
+          { label: 'Security Level', value: 'Server Edge', icon: ShieldCheck, color: 'bg-gg-bg text-gg' },
         ].map((s, i) => (
           <div key={i} className="bg-white rounded-[24px] p-6 shadow-main">
             <div className="flex justify-between items-start mb-6">
@@ -211,15 +271,20 @@ export default function AdminPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <h2 className="text-base font-bold text-text">Clients Directory</h2>
-              <p className="text-[12px] font-medium text-text3 mt-1">Daftar klien dan konfigurasi channel aktif.</p>
+              <p className="text-[12px] font-medium text-text3 mt-1">Kelola metadata, PIC, dan konfigurasi channel.</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Search className="w-4 h-4 text-text3 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input type="text" placeholder="Search..." className="pl-9 pr-4 py-2 bg-white border border-border-main rounded-full text-sm w-48 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-all" />
+                <input type="text" placeholder="Search brands..." className="pl-9 pr-4 py-2 bg-white border border-border-main rounded-full text-sm w-48 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-all" />
               </div>
               <button 
-                onClick={() => { setEditingClient({key: '', name: '', chs: []}); setShowClientModal(true); }}
+                onClick={() => { 
+                  setEditingClient({
+                    key: '', name: '', chs: [], industry: '', pic_name: '', brand_category: '', account_strategist: ''
+                  }); 
+                  setShowClientModal(true); 
+                }}
                 className="flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-full font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
                 <Plus className="w-4 h-4" />
@@ -229,40 +294,57 @@ export default function AdminPage() {
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+            <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="text-xs font-semibold text-text3 uppercase tracking-wider border-b border-border-main">
-                  <th className="pb-4 font-semibold">Klien</th>
+                  <th className="pb-4 font-semibold">Klien & PIC</th>
+                  <th className="pb-4 font-semibold">Industry / Category</th>
+                  <th className="pb-4 font-semibold">Strategist</th>
                   <th className="pb-4 font-semibold">Channels</th>
-                  <th className="pb-4 font-semibold">Status</th>
                   <th className="pb-4 text-right pr-3 font-semibold">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-transparent">
                 {CLIENTS.map(cl => (
-                  <tr key={cl.key} className="group hover:bg-surface2 transition-all duration-200">
+                  <tr key={cl.key} className="group hover:bg-surface2 transition-all duration-200 border-b border-border-main/20">
                     <td className="py-5 pr-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center font-bold text-sm text-text3 border border-border-main uppercase">{cl.key.charAt(0)}</div>
                         <div>
                           <div className="font-bold text-sm text-text">{cl.key}</div>
-                          <div className="text-[11px] text-text3 font-medium uppercase mt-0.5">{cl.ind || 'General'}</div>
+                          <div className="text-[11px] text-accent font-bold mt-0.5">{cl.pic || '—'}</div>
                         </div>
                       </div>
                     </td>
                     <td className="py-5 pr-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {cl.chs.map(ch => (
-                          <span key={ch} className="px-2 py-0.5 rounded-md bg-surface2 border border-border-main/50 text-[10px] font-bold text-text3 uppercase">{ch}</span>
-                        ))}
-                      </div>
+                      <div className="text-[13px] font-semibold text-text2">{cl.ind}</div>
+                      <div className="text-[10px] text-text3 font-medium uppercase mt-0.5">{cl.cg}</div>
                     </td>
                     <td className="py-5 pr-4">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-gg-bg text-gg-text border border-gg-border">ACTIVE</span>
+                      <div className="text-[13px] font-bold text-text2">{cl.as}</div>
+                    </td>
+                    <td className="py-5 pr-4">
+                      <div className="flex flex-wrap gap-1">
+                        {cl.chs.slice(0, 3).map(ch => (
+                          <span key={ch} className="px-1.5 py-0.5 rounded bg-surface3 text-[9px] font-black text-text3 uppercase">{ch}</span>
+                        ))}
+                        {cl.chs.length > 3 && <span className="text-[9px] font-bold text-text3">+{cl.chs.length - 3}</span>}
+                      </div>
                     </td>
                     <td className="py-5 text-right pr-3">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => { setEditingClient({key: cl.key, name: cl.key, chs: cl.chs}); setShowClientModal(true); }} className="p-2 hover:bg-accent-light text-text3 hover:text-accent rounded-lg transition-colors">
+                        <button onClick={() => { 
+                          setEditingClient({
+                            key: cl.key, 
+                            name: cl.key, 
+                            chs: cl.chs,
+                            industry: cl.ind,
+                            pic_name: cl.pic,
+                            brand_category: cl.cg,
+                            account_strategist: cl.as
+                          }); 
+                          setShowClientModal(true); 
+                        }} className="p-2 hover:bg-accent-light text-text3 hover:text-accent rounded-lg transition-colors">
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button onClick={() => { setPClient(cl.key); setActiveView('performance'); }} className="p-2 hover:bg-surface3 text-text3 hover:text-text rounded-lg transition-colors">
@@ -280,10 +362,9 @@ export default function AdminPage() {
 
       {activeView === 'performance' && (
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start animate-in fade-in duration-500">
-          
           <div className="xl:col-span-8 bg-white rounded-[24px] p-8 shadow-main border border-border-main/50">
             <h2 className="text-base font-bold text-text mb-2">Performance Editor</h2>
-            <p className="text-[12px] font-medium text-text3 mb-8">Update metrik performa iklan bulanan.</p>
+            <p className="text-[12px] font-medium text-text3 mb-8">Update data real-time dengan validasi otomatis.</p>
             
             <form onSubmit={handleSavePerforma}>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10 p-6 bg-surface2 rounded-[20px] border border-border-main">
@@ -315,13 +396,16 @@ export default function AdminPage() {
                     <div className="space-y-4">
                       <h3 className="text-xs font-bold text-text uppercase border-b border-border-main pb-2 tracking-wide">Financial Metrics</h3>
                       {[
-                        { key: 'sp', label: 'Ad Spend' },
-                        { key: 'rev', label: 'Revenue' },
+                        { key: 'sp', label: 'Ad Spend (IDR)' },
+                        { key: 'rev', label: 'Revenue (IDR)' },
                         { key: 'ord', label: 'Orders' },
                       ].map(f => (
                         <div key={f.key}>
-                          <label className="block text-[11px] font-bold text-text2 mb-1.5 ml-1">{f.label}</label>
-                          <input type="number" value={(fMetrics as any)[f.key]} onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} className="w-full h-10 px-4 rounded-lg border border-border-main bg-white text-sm font-semibold focus:border-accent outline-none transition-all" />
+                          <div className="flex justify-between items-center mb-1.5 ml-1">
+                            <label className="block text-[11px] font-bold text-text2 uppercase">{f.label}</label>
+                            <span className="text-[10px] font-black text-accent">{formatValue((fMetrics as any)[f.key])}</span>
+                          </div>
+                          <input type="number" value={(fMetrics as any)[f.key]} onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} className="w-full h-10 px-4 rounded-lg border border-border-main bg-white text-sm font-bold focus:border-accent outline-none transition-all" placeholder="0" />
                         </div>
                       ))}
                     </div>
@@ -334,8 +418,11 @@ export default function AdminPage() {
                         { key: 'res', label: 'Results' },
                       ].map(f => (
                         <div key={f.key}>
-                          <label className="block text-[11px] font-bold text-text2 mb-1.5 ml-1">{f.label}</label>
-                          <input type="number" value={(fMetrics as any)[f.key]} onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} className="w-full h-10 px-4 rounded-lg border border-border-main bg-white text-sm font-semibold focus:border-accent outline-none transition-all" />
+                          <div className="flex justify-between items-center mb-1.5 ml-1">
+                            <label className="block text-[11px] font-bold text-text2 uppercase">{f.label}</label>
+                            <span className="text-[10px] font-black text-blue-500">{formatValue((fMetrics as any)[f.key])}</span>
+                          </div>
+                          <input type="number" value={(fMetrics as any)[f.key]} onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} className="w-full h-10 px-4 rounded-lg border border-border-main bg-white text-sm font-bold focus:border-accent outline-none transition-all" placeholder="0" />
                         </div>
                       ))}
                     </div>
@@ -343,7 +430,7 @@ export default function AdminPage() {
                   <div className="pt-6 border-t border-border-main flex justify-end">
                     <button type="submit" disabled={loading} className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-accent/20 transition-all">
                       {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                      Simpan Perubahan
+                      Sync Performance
                     </button>
                   </div>
                 </div>
@@ -366,11 +453,11 @@ export default function AdminPage() {
                   <div key={i} className={`p-4 rounded-xl border transition-all ${h.period === pPeriod ? 'bg-accent-light border-accent/20' : 'bg-surface2 border-border-main/50'}`}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-text3">{h.label}</span>
-                      {h.data ? <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gg-bg text-gg-text">COMPLETE</span> : <span className="text-[9px] font-bold text-text3 italic">NO DATA</span>}
+                      {h.data ? <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gg-bg text-gg-text">SYNCED</span> : <span className="text-[9px] font-bold text-text3 italic">EMPTY</span>}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <div className="text-[9px] font-bold text-text3 uppercase mb-0.5">Rev</div>
+                        <div className="text-[9px] font-bold text-text3 uppercase mb-0.5">Revenue</div>
                         <div className="text-[12px] font-bold text-text">{h.data ? fRp(h.data.rev) : '—'}</div>
                       </div>
                       <div>
@@ -380,43 +467,58 @@ export default function AdminPage() {
                     </div>
                   </div>
                 ))}
-                {historyData.length === 0 && <p className="text-[11px] text-text3 italic text-center py-6">Pilih channel untuk melihat histori.</p>}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal (Sesuai Style Dashboard) */}
+      {/* MODAL: CLIENT & METADATA */}
       {showClientModal && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-[24px] shadow-main w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/30">
               <div>
-                <h3 className="text-base font-bold text-text">
-                  {editingClient?.key ? 'Edit Client' : 'Add New Client'}
-                </h3>
+                <h3 className="text-base font-bold text-text">Client & Metadata Configuration</h3>
               </div>
               <button onClick={() => setShowClientModal(false)} className="p-2 hover:bg-surface2 rounded-full transition-colors">
                 <X className="w-5 h-5 text-text3" />
               </button>
             </div>
-            <form onSubmit={handleSaveClient} className="p-8 space-y-6">
-              <div>
-                <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Client Key / ID</label>
-                <input type="text" value={editingClient?.key} onChange={e => setEditingClient({...editingClient!, key: e.target.value})} disabled={!!editingClient?.key && editingClient.key !== ''} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none disabled:bg-surface2" placeholder="Contoh: brand_a" required />
+            <form onSubmit={handleSaveClient} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Client Key / ID</label>
+                  <input type="text" value={editingClient.key} onChange={e => setEditingClient({...editingClient, key: e.target.value})} disabled={!!editingClient.key && CLIENTS.some(c => c.key === editingClient.key)} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none disabled:bg-surface2" placeholder="brand_id" required />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Industry</label>
+                  <input type="text" value={editingClient.industry} onChange={e => setEditingClient({...editingClient, industry: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none" placeholder="Fashion / F&B" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Brand Category</label>
+                  <input type="text" value={editingClient.brand_category} onChange={e => setEditingClient({...editingClient, brand_category: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none" placeholder="Retail" />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">PIC Name</label>
+                  <input type="text" value={editingClient.pic_name} onChange={e => setEditingClient({...editingClient, pic_name: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none" placeholder="Nama Klien" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Account Strategist</label>
+                  <input type="text" value={editingClient.account_strategist} onChange={e => setEditingClient({...editingClient, account_strategist: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none" placeholder="Nama Strategist" />
+                </div>
               </div>
+
               <div className="space-y-3">
                 <label className="text-[11px] font-bold text-text3 uppercase ml-1 block">Active Channels</label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {Object.keys(CH_DEF).map(ch => {
-                    const active = editingClient?.chs.includes(ch);
+                    const active = editingClient.chs.includes(ch);
                     return (
                       <button key={ch} type="button" onClick={() => {
-                        const current = editingClient?.chs || [];
-                        const next = current.includes(ch) ? current.filter(x => x !== ch) : [...current, ch];
-                        setEditingClient({...editingClient!, chs: next});
-                      }} className={`p-3 rounded-xl border text-[10px] font-bold uppercase transition-all flex items-center gap-3 ${active ? 'border-accent bg-accent-light text-accent' : 'border-border-main bg-white text-text3 hover:border-text2'}`}>
+                        const next = active ? editingClient.chs.filter(x => x !== ch) : [...editingClient.chs, ch];
+                        setEditingClient({...editingClient, chs: next});
+                      }} className={`p-3 rounded-xl border text-[10px] font-bold uppercase transition-all flex items-center gap-2 ${active ? 'border-accent bg-accent-light text-accent' : 'border-border-main bg-white text-text3 hover:border-text2'}`}>
                         <div className={`w-2 h-2 rounded-full ${active ? 'bg-accent' : 'bg-border-alt'}`} />
                         {CH_DEF[ch]?.l}
                       </button>
@@ -424,11 +526,42 @@ export default function AdminPage() {
                   })}
                 </div>
               </div>
+
               <div className="pt-4 flex gap-3">
                 <button type="button" onClick={() => setShowClientModal(false)} className="flex-1 h-11 rounded-full border border-border-main font-bold text-xs text-text3 hover:bg-surface2 transition-all">Cancel</button>
                 <button type="submit" disabled={loading} className="flex-1 h-11 bg-accent text-white rounded-full font-bold text-xs shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2">
                   {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  Save Client
+                  Save All Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: PERIOD MANAGER */}
+      {showPeriodModal && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/30">
+              <h3 className="text-base font-bold text-text">Period Manager</h3>
+              <button onClick={() => setShowPeriodModal(false)} className="p-2 hover:bg-surface2 rounded-full transition-colors">
+                <X className="w-5 h-5 text-text3" />
+              </button>
+            </div>
+            <form onSubmit={handleSavePeriod} className="p-8 space-y-6">
+              <div>
+                <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Period Key</label>
+                <input type="text" value={newPeriod.key} onChange={e => setNewPeriod({...newPeriod, key: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none" placeholder="YYYY-MM (Contoh: 2026-04)" required />
+              </div>
+              <div>
+                <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Label Display</label>
+                <input type="text" value={newPeriod.label} onChange={e => setNewPeriod({...newPeriod, label: e.target.value})} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none" placeholder="Mmm YYYY (Contoh: Apr 2026)" required />
+              </div>
+              <div className="pt-4">
+                <button type="submit" disabled={loading} className="w-full h-11 bg-accent text-white rounded-full font-bold text-xs shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2">
+                  {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  Register Period
                 </button>
               </div>
             </form>
