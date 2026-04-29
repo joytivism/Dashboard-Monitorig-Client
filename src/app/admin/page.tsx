@@ -29,6 +29,48 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: '', text: '' });
 
+  // Form State: Klien
+  const [cKey, setCKey] = useState('');
+  const [cChannels, setCChannels] = useState<string[]>([]);
+  const [cLoading, setCLoading] = useState(false);
+  const [cMsg, setCMsg] = useState({ type: '', text: '' });
+
+  const handleLoadClient = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (!val) { setCKey(''); setCChannels([]); return; }
+    const c = CLIENTS.find(x => x.key === val);
+    if (c) { setCKey(c.key); setCChannels(c.chs || []); }
+  };
+
+  const toggleChannel = (ch: string) => {
+    setCChannels(prev => prev.includes(ch) ? prev.filter(x => x !== ch) : [...prev, ch]);
+  };
+
+  const handleSaveClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cKey) return;
+    setCLoading(true); setCMsg({ type: '', text: '' });
+    try {
+      const { error: cErr } = await supabase.from('clients').upsert({ client_key: cKey });
+      if (cErr) throw cErr;
+
+      await supabase.from('client_channels').delete().eq('client_key', cKey);
+
+      if (cChannels.length > 0) {
+        const { error: chErr } = await supabase.from('client_channels').insert(
+          cChannels.map(ch => ({ client_key: cKey, channel_key: ch, target_roas: null }))
+        );
+        if (chErr) throw chErr;
+      }
+      setCMsg({ type: 'success', text: 'Klien & channel berhasil disimpan!' });
+      router.refresh();
+    } catch (err: any) {
+      setCMsg({ type: 'error', text: err.message || 'Gagal menyimpan klien.' });
+    } finally {
+      setCLoading(false);
+    }
+  };
+
   // Update channels list based on client
   const activeClient = CLIENTS.find(c => c.key === pClient);
   const availableChannels = activeClient?.chs || [];
@@ -197,10 +239,60 @@ export default function AdminPage() {
       )}
 
       {activeTab === 'klien' && (
-        <div className="bg-white rounded-[24px] p-8 shadow-main flex flex-col items-center justify-center text-center py-20">
-          <AlertCircle className="w-12 h-12 text-text3 mb-4" />
-          <h2 className="text-lg font-bold text-text mb-2">Segera Hadir</h2>
-          <p className="text-text3 text-sm max-w-sm">Fitur untuk menambah klien baru dan mengelola relasi channel sedang dalam tahap pengembangan (Work in Progress).</p>
+        <div className="bg-white rounded-[24px] p-8 shadow-main">
+          <form onSubmit={handleSaveClient}>
+            <div className="mb-6 pb-6 border-b border-border-main flex items-center justify-between">
+              <div>
+                <label className="block text-xs font-bold text-text3 uppercase tracking-wider mb-2">Edit Klien yang Ada</label>
+                <select onChange={handleLoadClient} className="w-64 h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold focus:ring-2 focus:ring-accent/50 outline-none">
+                  <option value="">-- Pilih Klien untuk Edit --</option>
+                  {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
+                </select>
+              </div>
+              <div className="text-sm font-medium text-text3 italic">atau isi form di bawah untuk klien baru</div>
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-xs font-bold text-text3 uppercase tracking-wider mb-2">Nama Klien (Key)</label>
+              <input type="text" value={cKey} onChange={e => setCKey(e.target.value)} placeholder="Contoh: Kalisha" required className="w-full sm:w-1/2 h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold focus:ring-2 focus:ring-accent/50 outline-none" />
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-xs font-bold text-text3 uppercase tracking-wider mb-4">Pilih Channel Aktif</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.keys(CH_DEF).map(ch => {
+                  const isActive = cChannels.includes(ch);
+                  return (
+                    <label key={ch} className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${isActive ? 'border-accent bg-accent/5' : 'border-border-main hover:border-accent/50'}`}>
+                      <input type="checkbox" checked={isActive} onChange={() => toggleChannel(ch)} className="w-4 h-4 rounded border-border-alt text-accent focus:ring-accent/30" />
+                      <div>
+                        <div className="text-sm font-bold text-text">{CH_DEF[ch]?.l}</div>
+                        <div className="text-[10px] text-text3 font-medium uppercase tracking-wider mt-0.5">{CH_DEF[ch]?.stage}</div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {cMsg.text && (
+              <div className={`flex items-center gap-2 p-4 rounded-xl mb-6 text-sm font-medium ${cMsg.type === 'error' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
+                {cMsg.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                {cMsg.text}
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <button 
+                type="submit" 
+                disabled={cLoading || !cKey}
+                className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-6 py-2.5 rounded-full font-bold text-sm transition-colors disabled:opacity-50"
+              >
+                {cLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                Simpan Klien
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
