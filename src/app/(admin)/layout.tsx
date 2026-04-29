@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AdminSidebar from "@/components/AdminSidebar";
 import { Lock } from 'lucide-react';
 
-export default function AdminLayout({
+export default function AdminGroupLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -20,7 +19,6 @@ export default function AdminLayout({
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple check, in production use better auth
     if (password === 'admin123') {
       localStorage.setItem('ra_admin_auth', 'true');
       setAuthorized(true);
@@ -32,13 +30,13 @@ export default function AdminLayout({
 
   if (!authorized) {
     return (
-      <div className="fixed inset-0 bg-bg flex items-center justify-center p-6 z-[9999]">
-        <div className="bg-white rounded-[32px] p-10 shadow-xl max-w-md w-full border border-border-main text-center">
-          <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center text-accent mx-auto mb-6">
+      <div className="fixed inset-0 flex items-center justify-center p-6 z-[9999]" style={{ background: '#E8EFF6' }}>
+        <div className="bg-white rounded-[32px] p-10 shadow-xl shadow-black/5 max-w-md w-full border border-black/[0.04] text-center">
+          <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mx-auto mb-6">
             <Lock className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold text-text mb-2">Admin Access</h1>
-          <p className="text-text3 text-sm mb-8">Silakan masukkan password untuk mengakses dashboard manajemen.</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 mb-2">Admin Access</h1>
+          <p className="text-gray-400 text-sm font-medium mb-8">Enter your password to access the command center.</p>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <input 
@@ -46,45 +44,22 @@ export default function AdminLayout({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
-              className={`w-full h-12 px-4 rounded-xl border ${error ? 'border-rr bg-rr-bg/30' : 'border-border-main'} bg-surface2 text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all`}
+              className={`w-full h-12 px-4 rounded-2xl border ${error ? 'border-red-300 bg-red-50' : 'border-gray-100 bg-gray-50'} text-center text-lg font-bold focus:outline-none focus:border-emerald-300 transition-all`}
               autoFocus
             />
             <button 
               type="submit"
-              className="w-full h-12 bg-text text-white rounded-xl font-bold hover:bg-text/90 transition-all shadow-lg shadow-black/10"
+              className="w-full h-12 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/10"
             >
               Unlock Dashboard
             </button>
           </form>
-          {error && <p className="text-rr text-xs font-bold mt-4 animate-bounce">Password salah!</p>}
+          {error && <p className="text-red-500 text-xs font-bold mt-4 animate-bounce">Password salah!</p>}
         </div>
       </div>
     );
   }
 
-  return (
-    <>
-      <AdminSidebar />
-      <div className="flex-1 ml-[240px] flex flex-col min-h-screen">
-        <header className="h-16 border-b border-border-main bg-white/80 backdrop-blur-md sticky top-0 z-30 flex items-center px-8 justify-between">
-          <div className="text-sm font-bold text-text2 uppercase tracking-widest flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-            Admin Control Center
-          </div>
-          <button 
-            onClick={() => {
-              localStorage.removeItem('ra_admin_auth');
-              setAuthorized(false);
-            }}
-            className="text-xs font-bold text-text3 hover:text-rr transition-colors"
-          >
-            Logout Session
-          </button>
-        </header>
-        <main className="flex-1 p-8">
-          {children}
-        </main>
-      </div>
-    </>
-  );
+  // No sidebar, no extra header — just pass children directly to the inner admin layout
+  return <>{children}</>;
 }
