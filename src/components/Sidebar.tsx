@@ -15,7 +15,7 @@ function SidebarContent() {
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[240px] bg-white border-r border-border-main flex flex-col p-4 z-40">
+    <aside className="fixed left-0 top-0 h-screen w-[240px] bg-white flex flex-col p-4 z-40 shadow-[2px_0_8px_-2px_rgba(0,0,0,0.04)]">
       {/* Logo */}
       <div className="flex items-center gap-3 px-2 mb-8 mt-2">
         <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white shrink-0">

@@ -98,7 +98,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         {growthNode}
       </div>
       <div className="text-[12px] font-medium text-text3">
-        Last month: <span className="text-text2">{lastMonthStr}</span>
+        Bulan lalu: <span className="text-text2">{lastMonthStr}</span>
       </div>
     </div>
     );
@@ -137,10 +137,10 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
       </div>
 
       {probs.length > 0 && (
-        <div className="bg-red-50 rounded-2xl p-4 border border-red-100 flex gap-3 items-start">
-          <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+        <div className="bg-rr-bg rounded-2xl p-4 flex gap-3 items-start">
+          <AlertCircle className="w-5 h-5 text-rr shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-bold text-red-800 text-sm">{probs.length} channel butuh perhatian</h4>
+            <h4 className="font-bold text-rr-text text-sm">{probs.length} channel butuh perhatian</h4>
             <div className="mt-1 space-y-1">
               {probs.map(ch => {
                 const c = gd(DATA, id, ch, curPeriod), p2 = gd(DATA, id, ch, prv);
@@ -148,7 +148,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 const v = pct((c as any)?.[mk], (p2 as any)?.[mk]);
                 const r = roas(c); const tr = cl.troas[ch];
                 return (
-                  <div key={ch} className="text-xs text-red-700">
+                  <div key={ch} className="text-xs text-rr-text">
                     <strong>{CH_DEF[ch]?.l}</strong>: {aware ? 'reach' : 'revenue'} {v !== null ? (v >= 0 ? '+' : '') + Math.round(v) + '%' : '—'}
                     {!aware && r ? ` · ROAS ${r.toFixed(2)}x` : ''}
                     {tr && !aware ? ` (target ${tr}x)` : ''}
@@ -447,7 +447,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                       ) : (
                         <>
                           <div><span className="text-[10px] text-text3 font-semibold uppercase block mb-1">Spend</span><span className="font-bold text-sm text-text">{c?.sp ? fRp(c.sp) : '—'}</span></div>
-                          <div><span className="text-[10px] text-text3 font-semibold uppercase block mb-1">Revenue</span><span className="font-bold text-sm text-green-600">{c?.rev ? fRp(c.rev) : '—'}</span></div>
+                          <div><span className="text-[10px] text-text3 font-semibold uppercase block mb-1">Revenue</span><span className="font-bold text-sm text-tofu">{c?.rev ? fRp(c.rev) : '—'}</span></div>
                         </>
                       )}
                     </div>
@@ -471,7 +471,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           </thead>
           <tbody className="divide-y divide-transparent">
             {ACTIVITY.filter(a => a.c === id).map((a, i) => {
-              const cls = { p: 'bg-green-100 text-green-700', e: 'bg-blue-100 text-blue-700', c: 'bg-yellow-100 text-yellow-700', l: 'bg-red-100 text-red-700' }[a.t];
+              const cls = { p: 'bg-gg-bg text-gg-text', e: 'bg-tofu-bg text-tofu', c: 'bg-mofu-bg text-mofu', l: 'bg-rr-bg text-rr-text' }[a.t];
               const lbl = { p: 'Promo', e: 'Event', c: 'Content', l: 'Launching' }[a.t];
               return (
                 <tr key={i} className="hover:bg-surface2 transition-all duration-200">

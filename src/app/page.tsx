@@ -70,7 +70,7 @@ function OverviewContent() {
         )}
       </div>
       <div className="text-[12px] font-medium text-text3">
-        Last month: <span className="text-text2">{lastMonth}</span>
+        Bulan lalu: <span className="text-text2">{lastMonth}</span>
       </div>
     </div>
     );
@@ -127,7 +127,7 @@ function OverviewContent() {
           <div className="bg-white rounded-[24px] p-8 shadow-main">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-bold text-text flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-red-500" />
+                <AlertCircle className="w-5 h-5 text-rr" />
                 Attention Needed
               </h2>
               <div className="px-3 py-1 rounded-full border border-border-main text-xs font-medium text-text2">
@@ -146,7 +146,7 @@ function OverviewContent() {
                       <div className="text-xs text-text3 mt-1">Rev: {fRp(t.rev)}</div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <span className="text-xs font-bold text-red-500">{v !== null ? (v >= 0 ? '+' : '') + Math.round(v) + '%' : '—'}</span>
+                      <span className="text-xs font-bold text-rr">{v !== null ? (v >= 0 ? '+' : '') + Math.round(v) + '%' : '—'}</span>
                     </div>
                   </div>
                 );

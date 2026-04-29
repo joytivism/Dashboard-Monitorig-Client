@@ -138,7 +138,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
               {data.actions.map((action, i) => (
                 <div 
                   key={i} 
-                  className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 hover:bg-surface2 transition-colors duration-200"
+                  className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 border border-border-main hover:bg-surface2 transition-colors duration-200"
                 >
                   <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
                     <Zap className="w-3.5 h-3.5 text-accent" />
