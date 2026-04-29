@@ -67,12 +67,12 @@ export async function generateAISummary(clientName: string, metrics: any) {
         const validated = JSON.parse(jsonStr);
         if (validated.summary) {
           // Log usage
-          supabase.from('ai_usage_logs').insert({
+          await supabase.from('ai_usage_logs').insert({
             client_key: clientName,
             model_name: data.model || 'free-model',
             tokens_used: data.usage?.total_tokens || 0,
             estimated_cost: (data.usage?.total_tokens || 0) * 0.0000001
-          }).then(); // Fire and forget logging
+          });
 
           return JSON.stringify(validated);
         }
