@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm">
                 <span className="text-white text-[13px] font-black tracking-tight">RA</span>
               </div>
-              <span className="text-[17px] font-extrabold text-text hidden sm:inline">Command Center</span>
+              <span className="text-lg font-bold text-text hidden sm:inline">Command Center</span>
             </Link>
 
             {/* Pill Navigation */}

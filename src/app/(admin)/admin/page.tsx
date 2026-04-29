@@ -126,8 +126,8 @@ export default function AdminClientsPage() {
       {/* ═══ WELCOME BAR ═══ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-extrabold text-text tracking-tight">Welcome back, Admin! 👋</h1>
-          <p className="text-[14px] font-medium text-text3 mt-1">Here is the latest update on your clients</p>
+          <h1 className="text-2xl font-bold text-text">Welcome back, Admin! 👋</h1>
+          <p className="text-sm font-medium text-text3 mt-1">Here is the latest update on your clients</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-surface border border-border-main rounded-xl px-4 h-11 w-[240px] focus-within:border-text transition-colors">
@@ -150,7 +150,7 @@ export default function AdminClientsPage() {
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-[48px] font-extrabold text-text leading-none tracking-tight">{CLIENTS.length}</span>
+            <span className="text-3xl font-bold text-text tracking-tight">{CLIENTS.length}</span>
           </div>
           <div className="flex items-center gap-2 mt-4">
             {CLIENTS.slice(0, 4).map(c => (
@@ -193,7 +193,7 @@ export default function AdminClientsPage() {
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-[48px] font-extrabold text-text leading-none tracking-tight">{DATA.length}</span>
+            <span className="text-3xl font-bold text-text tracking-tight">{DATA.length}</span>
           </div>
           <div className="text-[12px] font-bold text-text3 mt-4">{PERIODS.length} periods tracked</div>
         </div>
@@ -207,7 +207,7 @@ export default function AdminClientsPage() {
             <button onClick={() => router.push('/admin/settings')} className="text-[11px] font-bold text-text2 hover:text-text transition-colors">Settings &rarr;</button>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-[48px] font-extrabold text-text leading-none tracking-tight">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
+            <span className="text-3xl font-bold text-text tracking-tight">{(aiStats.totalTokens / 1000).toFixed(1)}</span>
             <span className="text-[18px] font-bold text-text3">K tk</span>
           </div>
           <div className="text-[12px] font-bold text-text3 mt-4">Est. cost: <span className="text-text">${aiStats.totalCost.toFixed(4)}</span></div>
@@ -220,7 +220,7 @@ export default function AdminClientsPage() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center border border-border-main"><Users className="w-5 h-5 text-text2" /></div>
             <div>
-              <h2 className="text-[16px] font-extrabold text-text">Client Directory</h2>
+              <h2 className="text-lg font-bold text-text">Client Directory</h2>
               <p className="text-[12px] font-medium text-text3 mt-0.5">Manage connected brands</p>
             </div>
           </div>
@@ -233,11 +233,11 @@ export default function AdminClientsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border-main bg-surface2/50">
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Brand</th>
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Industry</th>
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Status</th>
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Channels</th>
-                <th className="text-right py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Action</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Brand</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Industry</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Status</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Channels</th>
+                <th className="text-right py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -284,7 +284,7 @@ export default function AdminClientsPage() {
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-text/20 backdrop-blur-sm">
           <div className="bg-surface rounded-2xl shadow-main w-full max-w-2xl overflow-hidden border border-border-main">
             <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2">
-              <h3 className="text-[18px] font-extrabold text-text">Client Configuration</h3>
+              <h3 className="text-lg font-bold text-text">Client Configuration</h3>
               <button onClick={() => setShowClientModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface text-text3"><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSaveClient} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
@@ -296,13 +296,13 @@ export default function AdminClientsPage() {
                   { label: 'Strategist', value: editingClient.account_strategist, key: 'account_strategist', ph: 'Nama Strategist' },
                 ].map(f => (
                   <div key={f.key}>
-                    <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">{f.label}</label>
+                    <label className="text-[11px] font-semibold text-text3 uppercase tracking-wide block mb-2">{f.label}</label>
                     <input type="text" value={f.value} disabled={f.disabled} onChange={e => setEditingClient({...editingClient, [f.key]: e.target.value})} className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all disabled:opacity-50" placeholder={f.ph} required={f.key === 'key'} />
                   </div>
                 ))}
               </div>
               <div>
-                <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-3">Data Channels</label>
+                <label className="text-[11px] font-semibold text-text3 uppercase tracking-wide block mb-3">Data Channels</label>
                 <div className="grid grid-cols-3 gap-3">
                   {Object.keys(CH_DEF).map(ch => {
                     const active = editingClient.chs.includes(ch);
@@ -310,7 +310,7 @@ export default function AdminClientsPage() {
                       <button key={ch} type="button" onClick={() => {
                         const next = active ? editingClient.chs.filter(x => x !== ch) : [...editingClient.chs, ch];
                         setEditingClient({...editingClient, chs: next});
-                      }} className={`p-3.5 rounded-xl border text-[11px] font-extrabold uppercase tracking-widest transition-all flex items-center gap-2 ${active ? 'border-text bg-text text-white' : 'border-border-main bg-surface2 text-text3 hover:border-border-alt'}`}>
+                      }} className={`p-3.5 rounded-xl border text-[11px] font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${active ? 'border-text bg-text text-white' : 'border-border-main bg-surface2 text-text3 hover:border-border-alt'}`}>
                         <span className={`w-2 h-2 rounded-full ${active ? 'bg-white' : 'bg-border-main'}`} />
                         {CH_DEF[ch]?.l}
                       </button>
@@ -319,7 +319,7 @@ export default function AdminClientsPage() {
                 </div>
               </div>
               <div className="pt-2">
-                <button type="submit" disabled={loading} className="w-full h-14 bg-text text-white rounded-xl font-extrabold text-[14px] shadow-main hover:bg-text2 transition-all flex items-center justify-center gap-2">
+                <button type="submit" disabled={loading} className="w-full h-14 bg-text text-white rounded-xl font-bold text-[14px] shadow-main hover:bg-text2 transition-all flex items-center justify-center gap-2">
                   {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                   Save Configuration
                 </button>

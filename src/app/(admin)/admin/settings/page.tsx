@@ -54,17 +54,17 @@ export default function AdminSettingsPage() {
       )}
 
       <div>
-        <h1 className="text-[28px] font-extrabold text-text tracking-tight">Settings ⚙️</h1>
-        <p className="text-[14px] font-medium text-text3 mt-1">Configure AI model, API keys, and monitor usage</p>
+        <h1 className="text-2xl font-bold text-text tracking-tight">Settings ⚙️</h1>
+        <p className="text-sm font-medium text-text3 mt-1">Configure AI model, API keys, and monitor usage</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Config */}
         <div className="lg:col-span-8 bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
-          <h2 className="text-[16px] font-extrabold text-text mb-6">API & AI Configuration</h2>
+          <h2 className="text-lg font-bold text-text mb-6">API & AI Configuration</h2>
           <div className="space-y-6">
             <div>
-              <label className="flex items-center gap-2 text-[11px] font-extrabold text-text3 uppercase tracking-widest mb-3">
+              <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
                 <Key className="w-3.5 h-3.5"/>OpenRouter API Key
               </label>
               <input type="password" value={cfg.openrouter_key} onChange={e=>setCfg({...cfg,openrouter_key:e.target.value})}
@@ -75,7 +75,7 @@ export default function AdminSettingsPage() {
               </div>
             </div>
             <div>
-              <label className="flex items-center gap-2 text-[11px] font-extrabold text-text3 uppercase tracking-widest mb-3">
+              <label className="flex items-center gap-2 text-[11px] font-semibold text-text3 uppercase tracking-wide mb-3">
                 <Cpu className="w-3.5 h-3.5"/>Primary Model
               </label>
               <select value={cfg.ai_model} onChange={e=>setCfg({...cfg,ai_model:e.target.value})}
@@ -88,7 +88,7 @@ export default function AdminSettingsPage() {
               </select>
             </div>
             <div className="pt-6 border-t border-border-main flex justify-end">
-              <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-xl font-extrabold text-[13px] shadow-main hover:bg-text2 transition-all">
+              <button onClick={save} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-xl font-bold text-[13px] shadow-main hover:bg-text2 transition-all">
                 {loading?<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>:<Save className="w-4 h-4"/>}
                 Save settings
               </button>
@@ -99,27 +99,27 @@ export default function AdminSettingsPage() {
         {/* Monitor */}
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
-            <h3 className="text-[14px] font-extrabold text-text mb-5 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-text mb-5 flex items-center gap-2">
               <Zap className="w-4 h-4 text-tofu"/>AI Health
             </h3>
             <div className="space-y-3">
               <div className="p-4 rounded-xl bg-gg-bg border border-gg-border">
-                <div className="text-[10px] font-extrabold text-gg-text uppercase tracking-widest mb-1">Status</div>
-                <div className="text-[16px] font-extrabold text-gg-text">Operational</div>
+                <div className="text-[10px] font-semibold text-gg-text uppercase tracking-wide mb-1">Status</div>
+                <div className="text-base font-bold text-gg-text">Operational</div>
               </div>
               <div className="p-4 rounded-xl bg-surface2 border border-border-main">
-                <div className="text-[10px] font-extrabold text-text3 uppercase tracking-widest mb-1">Tokens</div>
-                <div className="text-[16px] font-extrabold text-text">{(ai.tk/1000).toFixed(1)}K</div>
+                <div className="text-[10px] font-semibold text-text3 uppercase tracking-wide mb-1">Tokens</div>
+                <div className="text-base font-bold text-text">{(ai.tk/1000).toFixed(1)}K</div>
               </div>
               <div className="p-4 rounded-xl bg-tofu-bg border border-tofu-border">
-                <div className="text-[10px] font-extrabold text-tofu uppercase tracking-widest mb-1">Cost</div>
-                <div className="text-[16px] font-extrabold text-text">${ai.cost.toFixed(4)}</div>
+                <div className="text-[10px] font-semibold text-tofu uppercase tracking-wide mb-1">Cost</div>
+                <div className="text-base font-bold text-text">${ai.cost.toFixed(4)}</div>
               </div>
             </div>
           </div>
           <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[14px] font-extrabold text-text">Usage Logs</h3>
+              <h3 className="text-lg font-bold text-text">Usage Logs</h3>
               <span className="text-[11px] font-bold text-text2 hover:text-text transition-colors">See all</span>
             </div>
             <div className="space-y-4">

@@ -61,8 +61,8 @@ export default function AdminActivitiesPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-extrabold text-text tracking-tight">Activity Logs 📋</h1>
-          <p className="text-[14px] font-medium text-text3 mt-1">Track promotions, events, and launches</p>
+          <h1 className="text-2xl font-bold text-text tracking-tight">Activity Logs 📋</h1>
+          <p className="text-sm font-medium text-text3 mt-1">Track promotions, events, and launches</p>
         </div>
         <button onClick={() => { setEditing({ id: '', client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' }); setShowModal(true); }} className="flex items-center gap-2 bg-text text-white px-5 py-2.5 rounded-xl text-[13px] font-bold shadow-main hover:bg-text2 transition-all">
           <Plus className="w-4 h-4" /> Add log
@@ -75,11 +75,11 @@ export default function AdminActivitiesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border-main bg-surface2/50">
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Client</th>
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Type</th>
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Date</th>
-                <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Note</th>
-                <th className="text-right py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Action</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Client</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Type</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Date</th>
+                <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Note</th>
+                <th className="text-right py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -120,39 +120,39 @@ export default function AdminActivitiesPage() {
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-text/20 backdrop-blur-sm">
           <div className="bg-surface rounded-2xl shadow-main w-full max-w-lg overflow-hidden border border-border-main">
             <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2">
-              <h3 className="text-[18px] font-extrabold text-text">Log Activity</h3>
+              <h3 className="text-lg font-bold text-text">Log Activity</h3>
               <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface text-text3"><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-6">
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">Client</label>
+                  <label className="text-[11px] font-semibold text-text3 uppercase tracking-wide block mb-2">Client</label>
                   <select value={editing.client_key} onChange={e => setEditing({...editing, client_key: e.target.value})} className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" required>
                     <option value="">Choose</option>
                     {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">Date</label>
+                  <label className="text-[11px] font-semibold text-text3 uppercase tracking-wide block mb-2">Date</label>
                   <input type="date" value={editing.log_date} onChange={e => setEditing({...editing, log_date: e.target.value})} className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text focus:bg-surface transition-all" required />
                 </div>
               </div>
               <div>
-                <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-3">Type</label>
+                <label className="text-[11px] font-semibold text-text3 uppercase tracking-wide block mb-3">Type</label>
                 <div className="grid grid-cols-4 gap-3">
                   {(['p', 'e', 'c', 'l'] as const).map(type => (
-                    <button key={type} type="button" onClick={() => setEditing({...editing, log_type: type})} className={`py-3 rounded-xl text-[11px] font-extrabold uppercase tracking-widest transition-all ${editing.log_type === type ? 'bg-text text-white shadow-sm' : 'bg-surface2 text-text3 border border-border-main hover:border-border-alt'}`}>
+                    <button key={type} type="button" onClick={() => setEditing({...editing, log_type: type})} className={`py-3 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all ${editing.log_type === type ? 'bg-text text-white shadow-sm' : 'bg-surface2 text-text3 border border-border-main hover:border-border-alt'}`}>
                       {type === 'p' ? 'Promo' : type === 'e' ? 'Event' : type === 'c' ? 'Content' : 'Launch'}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="text-[11px] font-extrabold text-text3 uppercase tracking-widest block mb-2">Note</label>
+                <label className="text-[11px] font-semibold text-text3 uppercase tracking-wide block mb-2">Note</label>
                 <textarea value={editing.note} onChange={e => setEditing({...editing, note: e.target.value})} className="w-full p-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text h-28 outline-none focus:bg-surface focus:border-text transition-all" placeholder="Describe the activity..." required />
               </div>
               <div className="pt-2">
-                <button type="submit" disabled={loading} className="w-full h-14 bg-text text-white rounded-xl font-extrabold text-[14px] shadow-main hover:bg-text2 transition-all flex items-center justify-center gap-2">
+                <button type="submit" disabled={loading} className="w-full h-14 bg-text text-white rounded-xl font-bold text-[14px] shadow-main hover:bg-text2 transition-all flex items-center justify-center gap-2">
                   {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                   Save Log
                 </button>

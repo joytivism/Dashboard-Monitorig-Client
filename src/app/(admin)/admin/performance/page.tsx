@@ -56,8 +56,8 @@ export default function AdminPerformancePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-[28px] font-extrabold text-text tracking-tight">Performance Entry 📊</h1>
-          <p className="text-[14px] font-medium text-text3 mt-1">Bulk input channel metrics for a specific period</p>
+          <h1 className="text-2xl font-bold text-text tracking-tight">Performance Entry 📊</h1>
+          <p className="text-sm font-medium text-text3 mt-1">Bulk input channel metrics for a specific period</p>
         </div>
         <div className="flex items-center gap-3">
           <select value={pClient} onChange={e => setPClient(e.target.value)} className="h-11 px-4 rounded-xl border border-border-main bg-surface2 text-[13px] font-bold text-text outline-none focus:border-text appearance-none cursor-pointer">
@@ -88,11 +88,11 @@ export default function AdminPerformancePage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border-main bg-surface2/50">
-                  <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Channel</th>
-                  <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Spend</th>
-                  <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Revenue</th>
-                  <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Orders</th>
-                  <th className="text-left py-4 px-6 text-[11px] font-extrabold text-text3 uppercase tracking-widest">Visitors</th>
+                  <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Channel</th>
+                  <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Spend</th>
+                  <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Revenue</th>
+                  <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Orders</th>
+                  <th className="text-left py-4 px-6 text-[11px] font-semibold text-text3 uppercase tracking-wide">Visitors</th>
                 </tr>
               </thead>
               <tbody>
@@ -109,7 +109,7 @@ export default function AdminPerformancePage() {
             </table>
           </div>
           <div className="p-6 flex justify-end border-t border-border-main bg-surface2/30">
-            <button onClick={handleSaveBulk} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-xl font-extrabold text-[13px] shadow-main hover:bg-text2 transition-all">
+            <button onClick={handleSaveBulk} disabled={loading} className="flex items-center gap-2 bg-text text-white px-8 py-3.5 rounded-xl font-bold text-[13px] shadow-main hover:bg-text2 transition-all">
               {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
               Save all changes
             </button>
