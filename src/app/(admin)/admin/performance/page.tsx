@@ -71,7 +71,7 @@ export default function AdminPerformancePage() {
       </div>
 
       {/* Period Picker */}
-      <div className="bg-surface rounded-2xl border border-border-main p-5 shadow-sm">
+      <div className="bg-white rounded-[24px] border border-border-main p-5 shadow-main">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {PERIODS.map(p => (
             <button key={p} onClick={() => setPPeriod(p)} className={`px-5 py-2.5 rounded-full text-[12px] font-bold transition-all shrink-0 ${pPeriod === p ? 'bg-text text-white shadow-sm' : 'text-text3 bg-surface2 hover:text-text hover:bg-border-main/30 border border-border-main/50'}`}>
@@ -83,7 +83,7 @@ export default function AdminPerformancePage() {
 
       {/* Table */}
       {pClient ? (
-        <div className="bg-surface rounded-2xl border border-border-main overflow-hidden shadow-sm">
+        <div className="bg-white rounded-[24px] border border-border-main overflow-hidden shadow-main">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -116,7 +116,7 @@ export default function AdminPerformancePage() {
           </div>
         </div>
       ) : (
-        <div className="bg-surface rounded-2xl border border-border-main py-24 text-center shadow-sm">
+        <div className="bg-white rounded-[24px] border border-border-main py-24 text-center shadow-main">
           <div className="w-16 h-16 bg-surface2 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-border-main">
             <TrendingUp className="w-7 h-7 text-text3" />
           </div>

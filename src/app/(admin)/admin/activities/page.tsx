@@ -70,7 +70,7 @@ export default function AdminActivitiesPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-surface rounded-2xl border border-border-main overflow-hidden shadow-sm">
+      <div className="bg-white rounded-[24px] border border-border-main overflow-hidden shadow-main">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -118,7 +118,7 @@ export default function AdminActivitiesPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-text/20 backdrop-blur-sm">
-          <div className="bg-surface rounded-2xl shadow-main w-full max-w-lg overflow-hidden border border-border-main">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-lg overflow-hidden border border-border-main">
             <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2">
               <h3 className="text-lg font-bold text-text">Log Activity</h3>
               <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface text-text3"><X className="w-5 h-5" /></button>

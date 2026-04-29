@@ -60,7 +60,7 @@ export default function AdminSettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Config */}
-        <div className="lg:col-span-8 bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+        <div className="lg:col-span-8 bg-white rounded-[24px] border border-border-main p-6 shadow-main">
           <h2 className="text-lg font-bold text-text mb-6">API & AI Configuration</h2>
           <div className="space-y-6">
             <div>
@@ -98,7 +98,7 @@ export default function AdminSettingsPage() {
 
         {/* Monitor */}
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+          <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
             <h3 className="text-lg font-bold text-text mb-5 flex items-center gap-2">
               <Zap className="w-4 h-4 text-tofu"/>AI Health
             </h3>
@@ -117,7 +117,7 @@ export default function AdminSettingsPage() {
               </div>
             </div>
           </div>
-          <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+          <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-text">Usage Logs</h3>
               <span className="text-[11px] font-bold text-text2 hover:text-text transition-colors">See all</span>

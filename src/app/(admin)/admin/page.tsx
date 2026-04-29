@@ -142,11 +142,11 @@ export default function AdminClientsPage() {
 
       {/* ═══ STAT CARDS ═══ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
           <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-surface2 flex items-center justify-center border border-border-alt"><Users className="w-4 h-4 text-text2" /></div>
-              <span className="text-[13px] font-bold text-text3 uppercase tracking-wider">Total brands</span>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center border border-border-alt"><Users className="w-5 h-5 text-text2" /></div>
+              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Total brands</span>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -160,11 +160,11 @@ export default function AdminClientsPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
           <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gg-bg flex items-center justify-center border border-gg-border"><BarChart3 className="w-4 h-4 text-gg-text" /></div>
-              <span className="text-[13px] font-bold text-text3 uppercase tracking-wider">Completeness</span>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gg-bg flex items-center justify-center border border-gg-border"><BarChart3 className="w-5 h-5 text-gg-text" /></div>
+              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Completeness</span>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -185,11 +185,11 @@ export default function AdminClientsPage() {
           </div>
         </div>
 
-        <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
           <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-or-bg flex items-center justify-center border border-or-border"><Database className="w-4 h-4 text-or-text" /></div>
-              <span className="text-[13px] font-bold text-text3 uppercase tracking-wider">Total records</span>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-or-bg flex items-center justify-center border border-or-border"><Database className="w-5 h-5 text-or-text" /></div>
+              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">Total records</span>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -198,11 +198,11 @@ export default function AdminClientsPage() {
           <div className="text-[12px] font-bold text-text3 mt-4">{PERIODS.length} periods tracked</div>
         </div>
 
-        <div className="bg-surface rounded-2xl border border-border-main p-6 shadow-sm">
+        <div className="bg-white rounded-[24px] border border-border-main p-6 shadow-main">
           <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-tofu-bg flex items-center justify-center border border-tofu-border"><Zap className="w-4 h-4 text-tofu" /></div>
-              <span className="text-[13px] font-bold text-text3 uppercase tracking-wider">AI usage</span>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-tofu-bg flex items-center justify-center border border-tofu-border"><Zap className="w-5 h-5 text-tofu" /></div>
+              <span className="text-[13px] font-semibold text-text2 uppercase tracking-wide">AI usage</span>
             </div>
             <button onClick={() => router.push('/admin/settings')} className="text-[11px] font-bold text-text2 hover:text-text transition-colors">Settings &rarr;</button>
           </div>
@@ -215,7 +215,7 @@ export default function AdminClientsPage() {
       </div>
 
       {/* ═══ CLIENT TABLE ═══ */}
-      <div className="bg-surface rounded-2xl border border-border-main overflow-hidden shadow-sm">
+      <div className="bg-white rounded-[24px] border border-border-main overflow-hidden shadow-main">
         <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-main">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center border border-border-main"><Users className="w-5 h-5 text-text2" /></div>
@@ -282,7 +282,7 @@ export default function AdminClientsPage() {
       {/* ═══ MODAL ═══ */}
       {showClientModal && (
         <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6 bg-text/20 backdrop-blur-sm">
-          <div className="bg-surface rounded-2xl shadow-main w-full max-w-2xl overflow-hidden border border-border-main">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-2xl overflow-hidden border border-border-main">
             <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2">
               <h3 className="text-lg font-bold text-text">Client Configuration</h3>
               <button onClick={() => setShowClientModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface text-text3"><X className="w-5 h-5" /></button>
