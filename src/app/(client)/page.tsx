@@ -214,10 +214,7 @@ function OverviewContent() {
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
               <tr className="text-xs font-semibold text-text3 uppercase tracking-wider border-b border-border-main">
-                <th className="pb-4 pl-3 w-10">
-                  <input type="checkbox" className="w-4 h-4 rounded border-border-alt text-accent focus:ring-accent/30" />
-                </th>
-                <th className="pb-4 font-semibold">Klien</th>
+                <th className="pb-4 pl-3 font-semibold">Klien</th>
                 <th className="pb-4 font-semibold">Industri</th>
                 <th className="pb-4 font-semibold">Status</th>
                 <th className="pb-4 font-semibold">Revenue</th>
@@ -233,10 +230,7 @@ function OverviewContent() {
                 
                 return (
                   <tr key={cl.key} onClick={() => router.push(`/client/${cl.key}${qs}`)} className="cursor-pointer group hover:bg-surface2 transition-all duration-200">
-                    <td className="py-4 pl-3 rounded-l-xl" onClick={(e) => e.stopPropagation()}>
-                      <input type="checkbox" className="w-4 h-4 rounded border-border-alt text-accent focus:ring-accent/30 transition-shadow" />
-                    </td>
-                    <td className="py-4">
+                    <td className="py-4 pl-3 rounded-l-xl">
                       <div className="flex items-center gap-3">
                         <div className="font-semibold text-sm text-text">{cl.key}</div>
                       </div>
