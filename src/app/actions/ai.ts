@@ -35,12 +35,12 @@ export async function generateAISummary(clientName: string, metrics: any) {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://real-advertise.com", // Optional, for OpenRouter rankings
-        "X-Title": "Real Advertise Dashboard", // Optional
+        "HTTP-Referer": "https://real-advertise.com", 
+        "X-Title": "Real Advertise Dashboard", 
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        "model": "google/gemini-2.0-flash-001", // Model gratis/murah & cepat
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", 
         "messages": [
           { "role": "user", "content": prompt }
         ]
