@@ -20,8 +20,10 @@ import {
   Zap,
   Smartphone,
   Filter,
-  Layers
+  Layers,
+  Sparkles
 } from 'lucide-react';
+import AISummary from '@/components/AISummary';
 
 function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -192,6 +194,20 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           color="yellow"
         />
       </div>
+
+      {/* AI Summary Section */}
+      <AISummary 
+        clientName={cl.key}
+        metrics={{
+          reach: fK(tofu_reach),
+          spend: fRp(bofu_sp + tofu_sp),
+          revenue: fRp(bofu_rev + mofu_rev),
+          roas: bRoas ? bRoas.toFixed(2) : '0',
+          cvr: blCr ? blCr.toFixed(2) : '0',
+          chk: mofu_vis > 0 ? ((bofu_ord / (mofu_vis || 1)) * 100).toFixed(2) : '0',
+          growth: pct(bRoas || 0, pbRoas || 0) || 0
+        }}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Trend Chart Area */}
