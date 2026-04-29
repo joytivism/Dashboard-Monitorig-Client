@@ -15,6 +15,7 @@ export default function AdminSettingsPage() {
   const [periods, setPeriods] = useState<{period_key:string, label:string}[]>([]);
   const [newP, setNewP] = useState({ key: '', label: '' });
 
+  useEffect(() => {
     (async () => {
       const { data: p } = await supabase.from('periods').select('*').order('period_key', { ascending: true });
       setPeriods(p || []);
