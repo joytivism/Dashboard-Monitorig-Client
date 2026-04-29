@@ -440,6 +440,28 @@ export default function AdminPage() {
                 <div className="text-sm font-bold text-text">{(aiStats.totalTokens/1000).toFixed(1)}K Tokens</div>
               </div>
             </div>
+
+            <div className="mt-8">
+              <h3 className="text-sm font-bold text-text mb-4">Recent AI Usage</h3>
+              <div className="space-y-3">
+                {AI_LOGS?.slice(0, 10).map((l, i) => (
+                  <div key={i} className="p-3 rounded-xl border border-border-main/50 bg-white hover:bg-surface2 transition-all">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="text-[11px] font-bold text-accent uppercase">{l.c || 'Unknown'}</div>
+                      <div className="text-[9px] font-mono text-text3">{new Date(l.d).toLocaleTimeString()}</div>
+                    </div>
+                    <div className="text-[10px] font-medium text-text2 truncate mb-1">{l.m}</div>
+                    <div className="flex justify-between items-center text-[10px]">
+                      <span className="text-text3">{l.tk} tokens</span>
+                      <span className="font-bold text-gg">${Number(l.cost).toFixed(5)}</span>
+                    </div>
+                  </div>
+                ))}
+                {(!AI_LOGS || AI_LOGS.length === 0) && (
+                  <div className="text-center py-10 text-[11px] text-text3 italic">Belum ada aktivitas AI.</div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
