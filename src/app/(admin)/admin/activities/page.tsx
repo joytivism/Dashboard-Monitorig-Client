@@ -145,9 +145,9 @@ export default function AdminActivitiesPage() {
               <div>
                 <label className="text-[11px] font-bold text-text3 uppercase block mb-1.5 ml-1">Log Type</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {['p', 'e', 'c', 'l'].map(type => (
-                    <button key={type} type="button" onClick={() => setEditingActivity({...editingActivity, log_type: type as any})} className={`py-2 rounded-lg border text-[10px] font-black uppercase transition-all ${editingActivity.log_type === type ? 'bg-accent text-white border-accent' : 'bg-surface2 text-text3 border-border-main'}`}>
-                      {{p:'Promo', e:'Event', c:'Content', l:'Launch'}[type as any]}
+                  {(['p', 'e', 'c', 'l'] as const).map(type => (
+                    <button key={type} type="button" onClick={() => setEditingActivity({...editingActivity, log_type: type})} className={`py-2 rounded-lg border text-[10px] font-black uppercase transition-all ${editingActivity.log_type === type ? 'bg-accent text-white border-accent' : 'bg-surface2 text-text3 border-border-main'}`}>
+                      {type === 'p' ? 'Promo' : type === 'e' ? 'Event' : type === 'c' ? 'Content' : 'Launch'}
                     </button>
                   ))}
                 </div>
