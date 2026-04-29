@@ -4,12 +4,17 @@ export async function generateAISummary(clientName: string, metrics: any) {
   const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey || apiKey === 'your_openrouter_key_here') {
-    return "API Key OpenRouter belum diatur. Silakan masukkan key di .env.local.";
+    return JSON.stringify({
+      status: "warning",
+      summary: "API Key OpenRouter belum diatur.",
+      actions: ["Masukkan key di .env.local atau Vercel Environment Variables."]
+    });
   }
 
   const prompt = `
-    Anda adalah seorang Senior Digital Marketing Strategist. 
-    Berikan ringkasan eksekutif yang sangat singkat (maksimal 3-4 kalimat) dan "preskriptif" (berikan rekomendasi tindakan) berdasarkan data berikut untuk klien bernama "${clientName}":
+    Anda adalah seorang Senior Digital Marketing Strategist di agensi periklanan terkemuka di Indonesia.
+    
+    Analisis data performa klien "${clientName}" dan berikan output dalam format JSON SAJA (tanpa markdown, tanpa backtick).
 
     DATA PERFORMA BULAN INI:
     - Total Reach: ${metrics.reach}
@@ -23,11 +28,21 @@ export async function generateAISummary(clientName: string, metrics: any) {
     - ROAS Target: 4.0x
     - Tren ROAS vs Bulan Lalu: ${metrics.growth}%
 
-    TUGAS ANDA:
-    1. Analisis singkat apa yang terjadi.
-    2. Berikan 1-2 tindakan konkret yang harus diambil admin iklan minggu ini.
-    Gunakan bahasa Indonesia yang profesional namun santai (seperti gaya startup). 
-    Jangan gunakan poin-poin, buat dalam satu paragraf mengalir.
+    FORMAT JSON YANG HARUS ANDA KEMBALIKAN (tanpa backtick, tanpa markdown):
+    {
+      "status": "positive" atau "negative" atau "neutral",
+      "summary": "Ringkasan analisis dalam 2 kalimat bahasa Indonesia yang profesional tapi santai.",
+      "actions": ["Tindakan konkret 1", "Tindakan konkret 2"]
+    }
+
+    ATURAN:
+    - status "positive" jika performa bagus/naik
+    - status "negative" jika performa turun/buruk
+    - status "neutral" jika stabil
+    - summary harus singkat, jelas, dan to the point (maks 2 kalimat)
+    - actions berisi 2 tindakan konkret yang harus dilakukan minggu ini
+    - Gunakan bahasa Indonesia profesional gaya startup
+    - HANYA kembalikan JSON, tidak ada teks lain
   `;
 
   try {
@@ -48,9 +63,33 @@ export async function generateAISummary(clientName: string, metrics: any) {
     });
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || "Gagal mendapatkan ringkasan dari AI.";
+    const raw = data.choices?.[0]?.message?.content || "";
+    
+    // Try to extract JSON from response (handle potential markdown wrapping)
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      // Validate it's parseable JSON
+      try {
+        JSON.parse(jsonMatch[0]);
+        return jsonMatch[0];
+      } catch {
+        // If JSON parse fails, return fallback
+      }
+    }
+    
+    // Fallback: return raw text wrapped in JSON
+    return JSON.stringify({
+      status: "neutral",
+      summary: raw.replace(/```json|```/g, '').trim() || "Gagal menganalisis data.",
+      actions: ["Review ulang data performa", "Konsultasi dengan tim iklan"]
+    });
+
   } catch (error) {
     console.error("AI Action Error:", error);
-    return "Terjadi kesalahan saat menghubungkan ke AI.";
+    return JSON.stringify({
+      status: "negative",
+      summary: "Terjadi kesalahan saat menghubungkan ke AI.",
+      actions: ["Periksa koneksi internet", "Coba refresh halaman"]
+    });
   }
 }
