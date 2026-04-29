@@ -35,10 +35,21 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
   const cacheKey = `${clientName}-${metrics.roas}-${metrics.revenue}-${metrics.growth}`;
 
   const fetchSummary = async (force = false) => {
-    // Check cache first if not forced
+    // 1. Cek Memory Cache
     if (!force && aiCache[cacheKey]) {
       setData(aiCache[cacheKey].data);
       return;
+    }
+
+    // 2. Cek Session Storage (Persistent on Refresh)
+    if (!force) {
+      const stored = sessionStorage.getItem(`ai_cache_${cacheKey}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setData(parsed);
+        aiCache[cacheKey] = { data: parsed, timestamp: Date.now() };
+        return;
+      }
     }
 
     setLoading(true);
@@ -47,11 +58,9 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
       const result = await generateAISummary(clientName, metrics);
       const parsed: AIResponse = JSON.parse(result);
       
-      // Save to cache
-      aiCache[cacheKey] = {
-        data: parsed,
-        timestamp: Date.now()
-      };
+      // Save to Memory & Session Storage
+      aiCache[cacheKey] = { data: parsed, timestamp: Date.now() };
+      sessionStorage.setItem(`ai_cache_${cacheKey}`, JSON.stringify(parsed));
       
       setData(parsed);
     } catch (err) {
@@ -62,7 +71,13 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
   };
 
   useEffect(() => {
-    fetchSummary();
+    // Hanya auto-fetch jika SUDAH ada di cache (memory atau session)
+    const stored = sessionStorage.getItem(`ai_cache_${cacheKey}`);
+    if (aiCache[cacheKey] || stored) {
+      fetchSummary();
+    } else {
+      setData(null); // Reset jika ganti klien dan belum dianalisa
+    }
   }, [clientName, cacheKey]);
 
   const statusConfig = {
@@ -76,16 +91,16 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
   const StatusIcon = config.icon;
 
   return (
-    <div className="bg-white rounded-[24px] shadow-main overflow-hidden mb-8">
+    <div className="bg-white rounded-[24px] shadow-main overflow-hidden mb-8 border border-border-main/50">
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center text-white shadow-lg shadow-accent/20">
-              <Sparkles className="w-4 h-4" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center text-white shadow-lg shadow-accent/20">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-text">AI Strategy Insights</h3>
-              <p className="text-[11px] text-text3 font-medium">Analisis Real-time Campaign</p>
+              <p className="text-[11px] text-text3 font-medium tracking-wide">Command Center Intelligence</p>
             </div>
           </div>
 
@@ -96,14 +111,16 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
                 {config.label}
               </span>
             )}
-            <button 
-              onClick={() => fetchSummary(true)} // Force refresh
-              disabled={loading}
-              className="p-2 hover:bg-surface2 rounded-xl transition-all duration-200 disabled:opacity-50"
-              title="Refresh AI Insights"
-            >
-              <RefreshCw className={`w-4 h-4 text-text3 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            {data && (
+              <button 
+                onClick={() => fetchSummary(true)} 
+                disabled={loading}
+                className="p-2 hover:bg-surface2 rounded-xl transition-all duration-200 disabled:opacity-50 text-text3"
+                title="Re-analyze Data"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -119,27 +136,28 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
             </div>
           </div>
         ) : error ? (
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-rr-bg/50 text-rr text-sm font-medium">
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-rr-bg/50 text-rr text-sm font-medium border border-rr-border/50">
             <AlertCircle className="w-5 h-5 shrink-0" />
             {error}
+            <button onClick={() => fetchSummary(true)} className="ml-auto underline text-xs">Coba Lagi</button>
           </div>
         ) : data ? (
           <div className="space-y-5">
-            <p className="text-[14px] leading-[1.85] text-text/85 font-medium">
-              {data.summary}
+            <p className="text-[14px] leading-[1.85] text-text/85 font-medium italic">
+              "{data.summary}"
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {data.actions.map((action, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 border border-border-main hover:bg-surface2 transition-colors duration-200">
-                  <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Zap className="w-3.5 h-3.5 text-accent" />
+                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 border border-border-main hover:bg-surface2 transition-all duration-200 group">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-accent group-hover:text-white transition-colors">
+                    <Zap className="w-4 h-4 text-accent group-hover:text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1">
-                      Tindakan {i + 1}
+                      Action Recommendation
                     </div>
-                    <p className="text-[13px] text-text font-medium leading-snug">
+                    <p className="text-[13px] text-text font-semibold leading-snug">
                       {action}
                     </p>
                   </div>
@@ -147,8 +165,28 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
               ))}
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="py-10 flex flex-col items-center text-center">
+            <div className="w-20 h-20 bg-surface2 rounded-full flex items-center justify-center mb-6 relative">
+              <Sparkles className="w-10 h-10 text-accent/20" />
+              <div className="absolute inset-0 bg-accent/5 rounded-full animate-ping opacity-20"></div>
+            </div>
+            <h4 className="text-base font-bold text-text mb-2">Siap untuk dianalisis?</h4>
+            <p className="text-sm text-text3 max-w-[300px] mb-8 font-medium">
+              Gunakan AI untuk mendapatkan ringkasan performa dan rekomendasi tindakan strategis.
+            </p>
+            <button 
+              onClick={() => fetchSummary()}
+              className="flex items-center gap-3 bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-accent/25 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Zap className="w-4 h-4 fill-current" />
+              Mulai Analisis AI
+            </button>
+          </div>
+        )}
       </div>
     </div>
+  );
+}
   );
 }
