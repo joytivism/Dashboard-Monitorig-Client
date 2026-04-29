@@ -60,6 +60,12 @@ export default function AdminPage() {
     return { totalTokens, totalCost };
   }, [AI_LOGS]);
 
+  const stats = useMemo(() => ({
+    totalClients: CLIENTS.length,
+    totalRecords: DATA.length,
+    activePeriods: PERIODS.length,
+  }), [CLIENTS, DATA, PERIODS]);
+
   // --- ACTIONS ---
   const handleSaveBulk = async () => {
     if (!pClient || !pPeriod) return;
