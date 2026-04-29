@@ -51,7 +51,10 @@ export default function AdminPage() {
     if (!cKey) return;
     setCLoading(true); setCMsg({ type: '', text: '' });
     try {
-      const { error: cErr } = await supabase.from('clients').upsert({ client_key: cKey });
+      const { error: cErr } = await supabase.from('clients').upsert({ 
+        client_key: cKey,
+        name: cKey // Mengisi kolom name yang required di database
+      });
       if (cErr) throw cErr;
 
       await supabase.from('client_channels').delete().eq('client_key', cKey);
