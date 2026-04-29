@@ -23,7 +23,8 @@ import {
   History,
   X,
   ArrowRightLeft,
-  Info
+  Info,
+  ShieldCheck
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -61,10 +62,9 @@ export default function AdminPage() {
     totalClients: CLIENTS.length,
     totalRecords: DATA.length,
     activePeriods: PERIODS.length,
-    latestUpdate: DATA.length > 0 ? 'Just now' : 'No data'
   }), [CLIENTS, DATA]);
 
-  // Performance History for selected client/channel
+  // Performance History
   const historyData = useMemo(() => {
     if (!pClient || !pChannel) return [];
     return PERIODS.slice(-4).reverse().map(p => {
@@ -108,14 +108,12 @@ export default function AdminPage() {
     if (!editingClient?.key) return;
     setLoading(true);
     try {
-      // 1. Upsert Client
       const { error: cErr } = await supabase.from('clients').upsert({ 
         client_key: editingClient.key, 
         name: editingClient.name || editingClient.key 
       });
       if (cErr) throw cErr;
 
-      // 2. Sync Channels
       await supabase.from('client_channels').delete().eq('client_key', editingClient.key);
       if (editingClient.chs.length > 0) {
         const { error: chErr } = await supabase.from('client_channels').insert(
@@ -135,7 +133,6 @@ export default function AdminPage() {
     }
   };
 
-  // Sync Form when selection changes
   useEffect(() => {
     if (pClient && pPeriod && pChannel) {
       const existing = DATA.find(d => d.c === pClient && d.p === pPeriod && d.ch === pChannel);
@@ -154,143 +151,122 @@ export default function AdminPage() {
   const activeChannels = CLIENTS.find(c => c.key === pClient)?.chs || [];
 
   return (
-    <div className="max-w-[1400px] mx-auto pb-20 px-4 sm:px-6">
+    <div className="max-w-[1400px] mx-auto space-y-6">
       
-      {/* --- TOAST NOTIFICATION --- */}
+      {/* Toast Notification (Aligned Style) */}
       {toast && (
-        <div className={`fixed top-24 right-8 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border animate-in slide-in-from-right-full duration-300 ${toast.type === 'success' ? 'bg-white border-green-100 text-green-600' : 'bg-white border-red-100 text-red-600'}`}>
+        <div className={`fixed top-24 right-8 z-[9999] flex items-center gap-3 px-6 py-4 rounded-[12px] shadow-main border animate-in slide-in-from-right-full duration-300 ${toast.type === 'success' ? 'bg-gd-bg border-gd-border text-gd-text' : 'bg-rr-bg border-rr-border text-rr-text'}`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-          <span className="text-sm font-bold">{toast.text}</span>
-          <button onClick={() => setToast(null)} className="ml-4 p-1 hover:bg-surface2 rounded-full">
-            <X className="w-4 h-4 text-text3" />
+          <span className="text-[13px] font-bold tracking-tight">{toast.text}</span>
+          <button onClick={() => setToast(null)} className="ml-4 p-1 hover:bg-black/5 rounded-full">
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* --- HEADER --- */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+      {/* Header (Sesuai Dashboard Client) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] font-black uppercase tracking-widest mb-4">
-            <Zap className="w-3 h-3 fill-current" />
-            System Administrator
-          </div>
-          <h1 className="text-4xl font-black text-text tracking-tighter mb-2">Management Hub</h1>
-          <p className="text-sm text-text3 font-medium">Powering the Real Advertise Command Center</p>
+          <h1 className="text-2xl font-bold text-text">Data Management</h1>
+          <p className="text-[12px] font-medium text-text3 mt-1 uppercase tracking-wider">Administrator Hub</p>
         </div>
-        
-        <div className="flex items-center gap-3 bg-white p-2 rounded-[24px] shadow-sm border border-border-main/50">
+        <div className="flex items-center gap-2">
           <button 
             onClick={() => setActiveView('overview')}
-            className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeView === 'overview' ? 'bg-text text-white shadow-lg' : 'text-text3 hover:bg-surface2'}`}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${activeView === 'overview' ? 'bg-accent text-white shadow-md shadow-accent/20' : 'bg-white text-text2 border border-border-main hover:bg-surface2'}`}
           >
             Directory
           </button>
           <button 
             onClick={() => setActiveView('performance')}
-            className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all ${activeView === 'performance' ? 'bg-text text-white shadow-lg' : 'text-text3 hover:bg-surface2'}`}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${activeView === 'performance' ? 'bg-accent text-white shadow-md shadow-accent/20' : 'bg-white text-text2 border border-border-main hover:bg-surface2'}`}
           >
             Performance
           </button>
         </div>
       </div>
 
-      {/* --- STATS --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {/* Stats Row (Sesuai Dashboard Client) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: 'Total Clients', value: stats.totalClients, icon: Users, color: 'accent' },
-          { label: 'Data Points', value: stats.totalRecords, icon: Layers, color: 'blue-500' },
-          { label: 'Active Periods', value: stats.activePeriods, icon: TrendingUp, color: 'gg' },
-          { label: 'System Status', value: 'Healthy', icon: ShieldCheck, color: 'green-500' },
+          { label: 'Total Clients', value: stats.totalClients, icon: Users, color: 'bg-accent-light text-accent' },
+          { label: 'Data Points', value: stats.totalRecords, icon: Layers, color: 'bg-tofu-bg text-tofu' },
+          { label: 'Active Periods', value: stats.activePeriods, icon: TrendingUp, color: 'bg-gd-bg text-gd' },
+          { label: 'System Health', value: 'Optimal', icon: ShieldCheck, color: 'bg-gg-bg text-gg' },
         ].map((s, i) => (
-          <div key={i} className="bg-white p-6 rounded-[32px] border border-border-main/50 shadow-sm group hover:border-accent/30 transition-colors">
-            <div className="flex justify-between items-start mb-4">
-              <div className={`p-3 rounded-2xl bg-${s.color}/10 text-${s.color}`}>
+          <div key={i} className="bg-white rounded-[24px] p-6 shadow-main">
+            <div className="flex justify-between items-start mb-6">
+              <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide">{s.label}</div>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${s.color}`}>
                 <s.icon className="w-6 h-6" />
               </div>
-              <ChevronRight className="w-4 h-4 text-text3 opacity-0 group-hover:opacity-100 transition-all" />
             </div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-widest mb-1">{s.label}</div>
-            <div className="text-2xl font-black text-text tracking-tight">{s.value}</div>
+            <div className="text-3xl font-bold text-text tracking-tight">{s.value}</div>
           </div>
         ))}
       </div>
 
-      {/* --- VIEW: DIRECTORY --- */}
+      {/* Main Content Area */}
       {activeView === 'overview' && (
-        <div className="bg-white rounded-[40px] shadow-main border border-border-main/50 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="p-10 border-b border-border-main/50 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-surface2/20">
+        <div className="bg-white rounded-[24px] p-8 shadow-main border border-border-main/50 animate-in fade-in duration-500">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-xl font-black text-text">Clients Directory</h2>
-              <p className="text-sm text-text3 font-medium">Manajemen database klien dan konfigurasi channel.</p>
+              <h2 className="text-base font-bold text-text">Clients Directory</h2>
+              <p className="text-[12px] font-medium text-text3 mt-1">Daftar klien dan konfigurasi channel aktif.</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="relative group">
-                <Search className="w-4 h-4 text-text3 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-accent transition-colors" />
-                <input type="text" placeholder="Search..." className="pl-11 pr-5 py-3 bg-surface2 border border-border-main rounded-2xl text-sm w-64 focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all" />
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="w-4 h-4 text-text3 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input type="text" placeholder="Search..." className="pl-9 pr-4 py-2 bg-white border border-border-main rounded-full text-sm w-48 focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-all" />
               </div>
               <button 
                 onClick={() => { setEditingClient({key: '', name: '', chs: []}); setShowClientModal(true); }}
-                className="flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl shadow-accent/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-full font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4" />
                 Add Client
               </button>
             </div>
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="text-[11px] font-black text-text3 uppercase tracking-[0.2em] bg-surface2/50 border-b border-border-main/50">
-                  <th className="px-10 py-5">Brand Name</th>
-                  <th className="px-8 py-5">Active Channels</th>
-                  <th className="px-8 py-5">Health Status</th>
-                  <th className="px-10 py-5 text-right">Actions</th>
+                <tr className="text-xs font-semibold text-text3 uppercase tracking-wider border-b border-border-main">
+                  <th className="pb-4 font-semibold">Klien</th>
+                  <th className="pb-4 font-semibold">Channels</th>
+                  <th className="pb-4 font-semibold">Status</th>
+                  <th className="pb-4 text-right pr-3 font-semibold">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-main/30">
+              <tbody className="divide-y divide-transparent">
                 {CLIENTS.map(cl => (
-                  <tr key={cl.key} className="hover:bg-surface2/40 transition-colors group">
-                    <td className="px-10 py-7">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-surface3 flex items-center justify-center text-lg font-black text-text2 uppercase border border-border-main/50">
-                          {cl.key.charAt(0)}
-                        </div>
+                  <tr key={cl.key} className="group hover:bg-surface2 transition-all duration-200">
+                    <td className="py-5 pr-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center font-bold text-sm text-text3 border border-border-main uppercase">{cl.key.charAt(0)}</div>
                         <div>
-                          <div className="font-black text-base text-text leading-tight">{cl.key}</div>
-                          <div className="text-[10px] text-text3 font-bold uppercase tracking-widest mt-1">{cl.ind || 'General Business'}</div>
+                          <div className="font-bold text-sm text-text">{cl.key}</div>
+                          <div className="text-[11px] text-text3 font-medium uppercase mt-0.5">{cl.ind || 'General'}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-7">
-                      <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                    <td className="py-5 pr-4">
+                      <div className="flex flex-wrap gap-1.5">
                         {cl.chs.map(ch => (
-                          <span key={ch} className="px-2 py-1 rounded-lg bg-surface2 border border-border-main/50 text-[9px] font-bold text-text2 uppercase">
-                            {CH_DEF[ch]?.l || ch}
-                          </span>
+                          <span key={ch} className="px-2 py-0.5 rounded-md bg-surface2 border border-border-main/50 text-[10px] font-bold text-text3 uppercase">{ch}</span>
                         ))}
                       </div>
                     </td>
-                    <td className="px-8 py-7">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-gg animate-pulse" />
-                        <span className="text-xs font-bold text-text leading-none uppercase tracking-wide">Connected</span>
-                      </div>
+                    <td className="py-5 pr-4">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold bg-gg-bg text-gg-text border border-gg-border">ACTIVE</span>
                     </td>
-                    <td className="px-10 py-7 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button 
-                          onClick={() => { setEditingClient({key: cl.key, name: cl.key, chs: cl.chs}); setShowClientModal(true); }}
-                          className="p-3 hover:bg-accent/10 text-text3 hover:text-accent rounded-xl transition-all"
-                          title="Edit Client Info"
-                        >
+                    <td className="py-5 text-right pr-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => { setEditingClient({key: cl.key, name: cl.key, chs: cl.chs}); setShowClientModal(true); }} className="p-2 hover:bg-accent-light text-text3 hover:text-accent rounded-lg transition-colors">
                           <Edit3 className="w-4 h-4" />
                         </button>
-                        <button 
-                          onClick={() => { setPClient(cl.key); setActiveView('performance'); }}
-                          className="p-3 hover:bg-surface2 text-text3 hover:text-text rounded-xl transition-all"
-                          title="Input Performance"
-                        >
+                        <button onClick={() => { setPClient(cl.key); setActiveView('performance'); }} className="p-2 hover:bg-surface3 text-text3 hover:text-text rounded-lg transition-colors">
                           <ArrowRightLeft className="w-4 h-4" />
                         </button>
                       </div>
@@ -303,250 +279,157 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* --- VIEW: PERFORMANCE EDITOR --- */}
       {activeView === 'performance' && (
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start animate-in fade-in duration-500">
           
-          {/* Editor Form */}
-          <div className="xl:col-span-7 bg-white rounded-[40px] shadow-main border border-border-main/50 overflow-hidden">
-            <div className="p-10 border-b border-border-main/50 bg-surface2/20">
-              <h2 className="text-xl font-black text-text">Performance Editor</h2>
-              <p className="text-sm text-text3 font-medium">Input atau update metrik iklan per channel.</p>
-            </div>
+          <div className="xl:col-span-8 bg-white rounded-[24px] p-8 shadow-main border border-border-main/50">
+            <h2 className="text-base font-bold text-text mb-2">Performance Editor</h2>
+            <p className="text-[12px] font-medium text-text3 mb-8">Update metrik performa iklan bulanan.</p>
             
-            <form onSubmit={handleSavePerforma} className="p-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+            <form onSubmit={handleSavePerforma}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10 p-6 bg-surface2 rounded-[20px] border border-border-main">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-text3 uppercase tracking-widest ml-1">Klien Target</label>
-                  <select value={pClient} onChange={e => setPClient(e.target.value)} className="w-full h-14 px-5 rounded-2xl border border-border-main bg-surface2/50 text-sm font-bold focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none transition-all appearance-none cursor-pointer">
-                    <option value="">-- Pilih Klien --</option>
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1">Klien</label>
+                  <select value={pClient} onChange={e => setPClient(e.target.value)} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:ring-2 focus:ring-accent/20 outline-none">
+                    <option value="">-- Pilih --</option>
                     {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-text3 uppercase tracking-widest ml-1">Periode Laporan</label>
-                  <select value={pPeriod} onChange={e => setPPeriod(e.target.value)} className="w-full h-14 px-5 rounded-2xl border border-border-main bg-surface2/50 text-sm font-bold focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none transition-all cursor-pointer">
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1">Periode</label>
+                  <select value={pPeriod} onChange={e => setPPeriod(e.target.value)} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:ring-2 focus:ring-accent/20 outline-none">
                     {PERIODS.map(p => <option key={p} value={p}>{PL[p]}</option>)}
                   </select>
                 </div>
-                <div className="sm:col-span-2 space-y-2">
-                  <label className="text-[10px] font-black text-text3 uppercase tracking-widest ml-1">Marketing Channel</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {activeChannels.map(ch => (
-                      <button 
-                        key={ch}
-                        type="button"
-                        onClick={() => setPChannel(ch)}
-                        className={`p-4 rounded-2xl border-2 text-[10px] font-black uppercase tracking-widest transition-all ${pChannel === ch ? 'border-accent bg-accent/5 text-accent shadow-inner' : 'border-border-main hover:border-text2 text-text3 bg-white'}`}
-                      >
-                        {CH_DEF[ch]?.l || ch}
-                      </button>
-                    ))}
-                  </div>
-                  {!pClient && <p className="text-[10px] text-text3 italic mt-2">Pilih klien terlebih dahulu untuk memunculkan channel.</p>}
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-text3 uppercase ml-1">Channel</label>
+                  <select value={pChannel} onChange={e => setPChannel(e.target.value)} disabled={!pClient} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:ring-2 focus:ring-accent/20 outline-none">
+                    <option value="">-- Pilih --</option>
+                    {activeChannels.map(ch => <option key={ch} value={ch}>{CH_DEF[ch]?.l || ch}</option>)}
+                  </select>
                 </div>
               </div>
 
               {pChannel ? (
-                <div className="space-y-12 animate-in fade-in slide-in-from-top-4 duration-300">
-                  {/* Financials */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                    <div className="sm:col-span-2 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-accent text-white flex items-center justify-center">
-                        <TrendingUp className="w-4 h-4" />
-                      </div>
-                      <h3 className="font-black text-text uppercase tracking-tight">Core Financial Metrics</h3>
-                    </div>
-                    {[
-                      { key: 'sp', label: 'Advertising Spend', icon: '💸' },
-                      { key: 'rev', label: 'Conversion Revenue', icon: '💰' },
-                      { key: 'ord', label: 'Total Orders', icon: '🛒' },
-                    ].map(f => (
-                      <div key={f.key} className="space-y-2">
-                        <label className="text-xs font-bold text-text2 ml-1">{f.label}</label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">{f.icon}</span>
-                          <input 
-                            type="number" 
-                            value={(fMetrics as any)[f.key]} 
-                            onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} 
-                            className="w-full h-14 pl-12 pr-5 rounded-2xl border border-border-main bg-white text-base font-black focus:border-accent focus:ring-4 focus:ring-accent/5 outline-none transition-all" 
-                            placeholder="0"
-                          />
+                <div className="space-y-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-bold text-text uppercase border-b border-border-main pb-2 tracking-wide">Financial Metrics</h3>
+                      {[
+                        { key: 'sp', label: 'Ad Spend' },
+                        { key: 'rev', label: 'Revenue' },
+                        { key: 'ord', label: 'Orders' },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label className="block text-[11px] font-bold text-text2 mb-1.5 ml-1">{f.label}</label>
+                          <input type="number" value={(fMetrics as any)[f.key]} onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} className="w-full h-10 px-4 rounded-lg border border-border-main bg-white text-sm font-semibold focus:border-accent outline-none transition-all" />
                         </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Reach */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-border-main/50">
-                    <div className="sm:col-span-2 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center">
-                        <Layers className="w-4 h-4" />
-                      </div>
-                      <h3 className="font-black text-text uppercase tracking-tight">Awareness & Traffic</h3>
+                      ))}
                     </div>
-                    {[
-                      { key: 'reach', label: 'Unique Reach' },
-                      { key: 'impr', label: 'Impressions' },
-                      { key: 'vis', label: 'Total Visitors' },
-                      { key: 'res', label: 'Results (ATC/Leads)' },
-                    ].map(f => (
-                      <div key={f.key} className="space-y-2">
-                        <label className="text-xs font-bold text-text2 ml-1">{f.label}</label>
-                        <input 
-                          type="number" 
-                          value={(fMetrics as any)[f.key]} 
-                          onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} 
-                          className="w-full h-14 px-5 rounded-2xl border border-border-main bg-white text-base font-black focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all" 
-                          placeholder="0"
-                        />
-                      </div>
-                    ))}
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-bold text-text uppercase border-b border-border-main pb-2 tracking-wide">Traffic & Awareness</h3>
+                      {[
+                        { key: 'reach', label: 'Reach' },
+                        { key: 'impr', label: 'Impressions' },
+                        { key: 'vis', label: 'Visitors' },
+                        { key: 'res', label: 'Results' },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label className="block text-[11px] font-bold text-text2 mb-1.5 ml-1">{f.label}</label>
+                          <input type="number" value={(fMetrics as any)[f.key]} onChange={e => setFMetrics({...fMetrics, [f.key]: e.target.value})} className="w-full h-10 px-4 rounded-lg border border-border-main bg-white text-sm font-semibold focus:border-accent outline-none transition-all" />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-
-                  <div className="pt-10">
-                    <button 
-                      type="submit" 
-                      disabled={loading}
-                      className="w-full h-16 bg-text text-white rounded-[24px] font-black text-lg shadow-2xl shadow-black/10 hover:bg-black hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3"
-                    >
-                      {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                      Push Performance Data
+                  <div className="pt-6 border-t border-border-main flex justify-end">
+                    <button type="submit" disabled={loading} className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-accent/20 transition-all">
+                      {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Simpan Perubahan
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="py-20 text-center border-2 border-dashed border-border-main rounded-[32px] bg-surface2/30">
-                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                    <ArrowRightLeft className="w-8 h-8 text-text3" />
-                  </div>
-                  <h4 className="font-bold text-text">Pilih Channel untuk Mulai</h4>
-                  <p className="text-xs text-text3 font-medium mt-1">Metrik pengisian akan muncul setelah channel dipilih.</p>
+                <div className="py-20 text-center border-2 border-dashed border-border-main rounded-[20px] bg-surface2/30">
+                  <p className="text-sm font-bold text-text3 italic">Silakan pilih klien & channel untuk mengedit data.</p>
                 </div>
               )}
             </form>
           </div>
 
-          {/* History Sidebar */}
-          <div className="xl:col-span-5 space-y-6">
-            <div className="bg-text rounded-[40px] p-10 text-white shadow-2xl shadow-black/20 relative overflow-hidden">
-              <div className="relative z-10">
-                <History className="w-8 h-8 mb-6 text-accent" />
-                <h3 className="text-xl font-black mb-2 tracking-tight">Performance History</h3>
-                <p className="text-white/60 text-sm font-medium mb-8">Bandingkan data yang diinput dengan bulan-bulan sebelumnya.</p>
-                
-                <div className="space-y-4">
-                  {historyData.map((h, i) => (
-                    <div key={i} className={`p-5 rounded-3xl border transition-all ${h.period === pPeriod ? 'bg-white/10 border-accent shadow-lg' : 'bg-white/5 border-white/10'}`}>
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-accent">{h.label}</span>
-                        {h.data ? (
-                          <div className="text-[10px] font-black px-2 py-0.5 rounded bg-gg text-white uppercase leading-none">Complete</div>
-                        ) : (
-                          <div className="text-[10px] font-black px-2 py-0.5 rounded bg-white/10 text-white/40 uppercase leading-none">No Data</div>
-                        )}
+          <div className="xl:col-span-4 space-y-6">
+            <div className="bg-white rounded-[24px] p-8 shadow-main border border-border-main/50">
+              <h3 className="text-sm font-bold text-text mb-6 flex items-center gap-2">
+                <History className="w-4 h-4 text-accent" />
+                History Preview
+              </h3>
+              <div className="space-y-3">
+                {historyData.map((h, i) => (
+                  <div key={i} className={`p-4 rounded-xl border transition-all ${h.period === pPeriod ? 'bg-accent-light border-accent/20' : 'bg-surface2 border-border-main/50'}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-text3">{h.label}</span>
+                      {h.data ? <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gg-bg text-gg-text">COMPLETE</span> : <span className="text-[9px] font-bold text-text3 italic">NO DATA</span>}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-[9px] font-bold text-text3 uppercase mb-0.5">Rev</div>
+                        <div className="text-[12px] font-bold text-text">{h.data ? fRp(h.data.rev) : '—'}</div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-[9px] font-bold text-white/40 uppercase tracking-wider mb-0.5">Revenue</div>
-                          <div className="text-sm font-black">{h.data ? fRp(h.data.rev || 0) : '—'}</div>
-                        </div>
-                        <div>
-                          <div className="text-[9px] font-bold text-white/40 uppercase tracking-wider mb-0.5">Spend</div>
-                          <div className="text-sm font-black">{h.data ? fRp(h.data.sp || 0) : '—'}</div>
-                        </div>
+                      <div>
+                        <div className="text-[9px] font-bold text-text3 uppercase mb-0.5">Spend</div>
+                        <div className="text-[12px] font-bold text-text">{h.data ? fRp(h.data.sp) : '—'}</div>
                       </div>
                     </div>
-                  ))}
-                  {historyData.length === 0 && <p className="text-xs text-white/30 italic text-center py-10">Silakan pilih klien & channel untuk memuat histori.</p>}
-                </div>
+                  </div>
+                ))}
+                {historyData.length === 0 && <p className="text-[11px] text-text3 italic text-center py-6">Pilih channel untuk melihat histori.</p>}
               </div>
-              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-accent/20 rounded-full blur-[100px]" />
-            </div>
-
-            <div className="bg-white rounded-[40px] p-10 border border-border-main/50 shadow-main">
-              <div className="flex items-center gap-3 mb-6">
-                <Info className="w-5 h-5 text-accent" />
-                <h4 className="text-sm font-black text-text uppercase">Data Policy</h4>
-              </div>
-              <p className="text-xs text-text3 leading-relaxed font-medium">
-                Setiap data yang diinput akan disimpan secara permanen di database Supabase. Jika terjadi kesalahan input, silakan timpa data dengan periode dan channel yang sama.
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* --- CLIENT MODAL --- */}
+      {/* Modal (Sesuai Style Dashboard) */}
       {showClientModal && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-text/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="p-10 border-b border-border-main/50 flex items-center justify-between bg-surface2/30">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[24px] shadow-main w-full max-w-xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/30">
               <div>
-                <h3 className="text-2xl font-black text-text tracking-tighter">
-                  {editingClient?.key ? 'Edit Client Config' : 'Register New Client'}
+                <h3 className="text-base font-bold text-text">
+                  {editingClient?.key ? 'Edit Client' : 'Add New Client'}
                 </h3>
-                <p className="text-xs text-text3 font-medium mt-1">Konfigurasi metadata dan channel aktif klien.</p>
               </div>
-              <button onClick={() => setShowClientModal(false)} className="p-3 hover:bg-surface2 rounded-2xl transition-colors">
-                <X className="w-6 h-6 text-text3" />
+              <button onClick={() => setShowClientModal(false)} className="p-2 hover:bg-surface2 rounded-full transition-colors">
+                <X className="w-5 h-5 text-text3" />
               </button>
             </div>
-            
-            <form onSubmit={handleSaveClient} className="p-10 space-y-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-text3 uppercase tracking-widest ml-1">Client Key / ID</label>
-                <input 
-                  type="text" 
-                  value={editingClient?.key} 
-                  onChange={e => setEditingClient({...editingClient!, key: e.target.value})}
-                  disabled={!!editingClient?.key && editingClient.key !== ''}
-                  className="w-full h-14 px-5 rounded-2xl border border-border-main bg-white text-base font-black focus:border-accent focus:ring-4 focus:ring-accent/5 outline-none transition-all disabled:bg-surface2" 
-                  placeholder="Contoh: kalisha"
-                  required
-                />
+            <form onSubmit={handleSaveClient} className="p-8 space-y-6">
+              <div>
+                <label className="text-[11px] font-bold text-text3 uppercase ml-1 block mb-1.5">Client Key / ID</label>
+                <input type="text" value={editingClient?.key} onChange={e => setEditingClient({...editingClient!, key: e.target.value})} disabled={!!editingClient?.key && editingClient.key !== ''} className="w-full h-11 px-4 rounded-xl border border-border-main bg-white text-sm font-bold focus:border-accent outline-none disabled:bg-surface2" placeholder="Contoh: brand_a" required />
               </div>
-
-              <div className="space-y-4">
-                <label className="text-[10px] font-black text-text3 uppercase tracking-widest ml-1">Active Marketing Channels</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="space-y-3">
+                <label className="text-[11px] font-bold text-text3 uppercase ml-1 block">Active Channels</label>
+                <div className="grid grid-cols-2 gap-2">
                   {Object.keys(CH_DEF).map(ch => {
                     const active = editingClient?.chs.includes(ch);
                     return (
-                      <button 
-                        key={ch}
-                        type="button"
-                        onClick={() => {
-                          const current = editingClient?.chs || [];
-                          const next = current.includes(ch) ? current.filter(x => x !== ch) : [...current, ch];
-                          setEditingClient({...editingClient!, chs: next});
-                        }}
-                        className={`p-4 rounded-2xl border-2 text-[9px] font-black uppercase tracking-wider transition-all text-left flex flex-col gap-1 ${active ? 'border-accent bg-accent/5 text-accent' : 'border-border-main bg-white text-text3 hover:border-text2'}`}
-                      >
-                        <span className="text-text leading-none">{CH_DEF[ch]?.l}</span>
-                        <span className="opacity-60 text-[7px]">{CH_DEF[ch]?.stage}</span>
+                      <button key={ch} type="button" onClick={() => {
+                        const current = editingClient?.chs || [];
+                        const next = current.includes(ch) ? current.filter(x => x !== ch) : [...current, ch];
+                        setEditingClient({...editingClient!, chs: next});
+                      }} className={`p-3 rounded-xl border text-[10px] font-bold uppercase transition-all flex items-center gap-3 ${active ? 'border-accent bg-accent-light text-accent' : 'border-border-main bg-white text-text3 hover:border-text2'}`}>
+                        <div className={`w-2 h-2 rounded-full ${active ? 'bg-accent' : 'bg-border-alt'}`} />
+                        {CH_DEF[ch]?.l}
                       </button>
                     );
                   })}
                 </div>
               </div>
-
-              <div className="pt-6 flex gap-4">
-                <button 
-                  type="button" 
-                  onClick={() => setShowClientModal(false)}
-                  className="flex-1 h-14 border border-border-main rounded-2xl font-bold text-sm text-text3 hover:bg-surface2 transition-all"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="flex-1 h-14 bg-accent text-white rounded-2xl font-black text-sm shadow-xl shadow-accent/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                >
+              <div className="pt-4 flex gap-3">
+                <button type="button" onClick={() => setShowClientModal(false)} className="flex-1 h-11 rounded-full border border-border-main font-bold text-xs text-text3 hover:bg-surface2 transition-all">Cancel</button>
+                <button type="submit" disabled={loading} className="flex-1 h-11 bg-accent text-white rounded-full font-bold text-xs shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2">
                   {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  Save Configuration
+                  Save Client
                 </button>
               </div>
             </form>
