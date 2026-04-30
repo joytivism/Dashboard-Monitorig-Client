@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, Hexagon } from 'lucide-react';
+import { LayoutDashboard, Hexagon, Settings } from 'lucide-react';
 import { clientWorst } from '@/lib/utils';
 import { useDashboardData } from './DataProvider';
 
@@ -42,6 +42,17 @@ function SidebarContent() {
             >
               <LayoutDashboard className="w-4 h-4" />
               Dashboard
+            </Link>
+            <Link
+              href="/admin"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                pathname.startsWith('/admin')
+                  ? 'bg-accent text-white shadow-sm'
+                  : 'text-text2 hover:bg-surface2 hover:text-text'
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              Admin Hub
             </Link>
           </div>
         </div>
