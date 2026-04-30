@@ -143,7 +143,6 @@ export default function AdminClientsPage() {
           </div>
           <div>
             <div className="text-4xl font-bold text-text tracking-tight">{CLIENTS.length}</div>
-          </div>
             <div className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-text3 bg-surface2 px-2 py-1 rounded-md w-fit">
               {CLIENTS.slice(0, 3).map(c => (
                 <span key={c.key} className={`w-1.5 h-1.5 rounded-full ${getAvatarColor(c.key)}`} />
