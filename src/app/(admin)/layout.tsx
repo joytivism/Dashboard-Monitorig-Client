@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Lock } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 
 export default function AdminGroupLayout({
   children,
@@ -60,6 +62,15 @@ export default function AdminGroupLayout({
     );
   }
 
-  // No sidebar, no extra header — just pass children directly to the inner admin layout
-  return <div className="flex-1 w-full flex flex-col">{children}</div>;
+  return (
+    <>
+      <Sidebar />
+      <div className="flex-1 ml-[240px] flex flex-col min-h-screen bg-bg">
+        <Header />
+        <main className="flex-1 p-6 lg:p-10">
+          {children}
+        </main>
+      </div>
+    </>
+  );
 }

@@ -57,21 +57,23 @@ function HeaderContent() {
 
   return (
     <>
-      <header className="h-16 px-8 flex items-center justify-between sticky top-0 z-30 bg-bg/80 backdrop-blur-md">
-        {/* Search Trigger */}
-        <button
-          onClick={() => setSearchOpen(true)}
-          className="flex items-center gap-3 h-10 px-4 bg-white rounded-xl text-sm text-text3 font-medium hover:bg-surface2 transition-all w-full max-w-sm shadow-sm"
-        >
-          <Search className="w-4 h-4 text-text3 shrink-0" />
-          <span className="flex-1 text-left">Cari klien...</span>
-          <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] text-text3 font-mono">
-            <span className="bg-surface2 px-1.5 py-0.5 rounded text-[10px]">⌘K</span>
-          </kbd>
-        </button>
+      <header className="h-20 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-30 bg-bg">
+        {/* Center: Search Trigger */}
+        <div className="flex-1 flex justify-center max-w-2xl mx-auto">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex items-center gap-3 h-12 px-5 bg-white rounded-full border border-border-main text-sm text-text3 font-medium hover:border-accent/30 transition-all w-full max-w-md shadow-sm"
+          >
+            <Search className="w-4 h-4 text-text3 shrink-0" />
+            <span className="flex-1 text-left">Search clients...</span>
+            <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] text-text3 font-mono">
+              <span className="bg-surface2 px-1.5 py-0.5 rounded text-[10px]">⌘K</span>
+            </kbd>
+          </button>
+        </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-4 ml-4">
+        {/* Right: Actions */}
+        <div className="flex items-center gap-4">
           {/* Period Picker */}
           <div className="relative flex items-center bg-white rounded-xl shadow-sm h-10 px-1">
             <div className="absolute left-3 text-text3 pointer-events-none">
@@ -92,13 +94,13 @@ function HeaderContent() {
           </div>
 
           {/* Profile */}
-          <div className="flex items-center gap-3 bg-white pl-1.5 pr-4 py-1.5 rounded-xl shadow-sm">
-            <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
-              <User className="w-4 h-4" />
+          <div className="flex items-center gap-3">
+            <div className="text-right hidden sm:block">
+              <div className="text-sm font-bold text-text leading-tight">Real Advertise</div>
+              <div className="text-[11px] font-medium text-text3">Admin</div>
             </div>
-            <div className="text-left hidden sm:block">
-              <div className="text-xs font-bold text-text leading-tight">Real Advertise</div>
-              <div className="text-[10px] font-medium text-text3">Admin</div>
+            <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold shadow-sm">
+              <User className="w-5 h-5" />
             </div>
           </div>
         </div>

@@ -134,15 +134,16 @@ export default function AdminClientsPage() {
 
       {/* ═══ STAT CARDS ═══ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white rounded-[24px] p-6 shadow-main border border-border-main">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-full bg-bb-bg flex items-center justify-center text-bb">
-              <Users className="w-5 h-5" />
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-border-main flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-6">
+            <div className="text-sm font-semibold text-text2">Total Brands</div>
+            <div className="w-8 h-8 rounded-full bg-surface2 flex items-center justify-center text-text">
+              <Users className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">Total Brands</div>
-            <div className="text-2xl font-bold text-text tracking-tight">{CLIENTS.length}</div>
+            <div className="text-4xl font-bold text-text tracking-tight">{CLIENTS.length}</div>
+          </div>
             <div className="mt-3 flex items-center gap-1.5 text-[10px] font-bold text-text3 bg-surface2 px-2 py-1 rounded-md w-fit">
               {CLIENTS.slice(0, 3).map(c => (
                 <span key={c.key} className={`w-1.5 h-1.5 rounded-full ${getAvatarColor(c.key)}`} />
@@ -152,47 +153,51 @@ export default function AdminClientsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-[24px] p-6 shadow-main border border-border-main">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-full bg-gg-bg flex items-center justify-center text-gg">
-              <DollarSign className="w-5 h-5" />
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-border-main flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-6">
+            <div className="text-sm font-semibold text-text2">Managed Spend</div>
+            <div className="flex items-center gap-2">
+              <button onClick={exportToCSV} title="Export CSV" className="p-1.5 rounded-lg bg-surface2 text-text3 hover:text-text transition-all"><Download className="w-4 h-4"/></button>
+              <div className="w-8 h-8 rounded-full bg-surface2 flex items-center justify-center text-text">
+                <DollarSign className="w-4 h-4" />
+              </div>
             </div>
-            <button onClick={exportToCSV} title="Export CSV" className="p-2 rounded-lg bg-surface2 text-text3 hover:text-text transition-all"><Download className="w-4 h-4"/></button>
           </div>
           <div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">Managed Spend</div>
-            <div className="text-2xl font-bold text-text tracking-tight">{fRp(spendStats.current)}</div>
+            <div className="text-4xl font-bold text-text tracking-tight">{fRp(spendStats.current)}</div>
             <div className="mt-3 text-[10px] font-bold text-gg bg-gg-bg px-2 py-1 rounded-md w-fit uppercase">
               Current Period
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-[24px] p-6 shadow-main border border-border-main">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-full bg-yy-bg flex items-center justify-center text-yy">
-              <Database className="w-5 h-5" />
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-border-main flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-6">
+            <div className="text-sm font-semibold text-text2">Total Records</div>
+            <div className="w-8 h-8 rounded-full bg-surface2 flex items-center justify-center text-text">
+              <Database className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">Total Records</div>
-            <div className="text-2xl font-bold text-text tracking-tight">{DATA.length}</div>
+            <div className="text-4xl font-bold text-text tracking-tight">{DATA.length}</div>
             <div className="mt-3 text-[10px] font-bold text-text3 bg-surface2 px-2 py-1 rounded-md w-fit">
               Across {PERIODS.length} periods
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-[24px] p-6 shadow-main border border-border-main">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-full bg-rr-bg flex items-center justify-center text-rr">
-              <Zap className="w-5 h-5" />
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-border-main flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-6">
+            <div className="text-sm font-semibold text-text2">AI Utilization</div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => router.push('/admin/settings')} className="p-1.5 rounded-lg bg-surface2 text-text3 hover:text-text transition-all"><ArrowUpRight className="w-4 h-4"/></button>
+              <div className="w-8 h-8 rounded-full bg-surface2 flex items-center justify-center text-text">
+                <Zap className="w-4 h-4" />
+              </div>
             </div>
-            <button onClick={() => router.push('/admin/settings')} className="p-2 rounded-lg bg-surface2 text-text3 hover:text-text transition-all"><ArrowUpRight className="w-4 h-4"/></button>
           </div>
           <div>
-            <div className="text-[11px] font-bold text-text3 uppercase tracking-wider mb-1">AI Utilization</div>
-            <div className="text-2xl font-bold text-text tracking-tight">{(aiStats.totalTokens / 1000).toFixed(1)}K</div>
+            <div className="text-4xl font-bold text-text tracking-tight">{(aiStats.totalTokens / 1000).toFixed(1)}K</div>
             <div className="mt-3 text-[10px] font-bold text-text3 bg-surface2 px-2 py-1 rounded-md w-fit">
               Est. Cost: ${aiStats.totalCost.toFixed(3)}
             </div>
@@ -201,20 +206,19 @@ export default function AdminClientsPage() {
       </div>
 
       {/* ═══ CLIENT DIRECTORY ═══ */}
-      <div className="bg-white rounded-[24px] border border-border-main overflow-hidden shadow-main">
-        <div className="p-6 border-b border-border-main flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-border-main overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center border border-border-main">
+            <div className="w-10 h-10 rounded-full bg-surface2 flex items-center justify-center">
               <Users className="w-5 h-5 text-text2" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-text tracking-tight">Client Directory</h2>
-              <p className="text-xs font-medium text-text3">Manage and monitor connected brands</p>
+              <h2 className="text-lg font-semibold text-text tracking-tight">Client Directory</h2>
             </div>
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
             {['All', 'Fashion', 'Health', 'F&B'].map((f, i) => (
-              <button key={f} className={`px-4 h-8 rounded-full text-[11px] font-bold transition-all whitespace-nowrap ${i === 0 ? 'bg-text text-white' : 'bg-surface2 text-text3 hover:bg-border-main'}`}>{f}</button>
+              <button key={f} className={`px-4 h-8 rounded-full text-[11px] font-bold transition-all whitespace-nowrap ${i === 0 ? 'bg-text text-white' : 'bg-surface2 text-text3 hover:bg-gray-200'}`}>{f}</button>
             ))}
           </div>
         </div>

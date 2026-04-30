@@ -36,7 +36,7 @@ function SidebarContent() {
               href={`/${queryString}`}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 pathname === '/' 
-                  ? 'bg-accent text-white shadow-md shadow-accent/20' 
+                  ? 'bg-accent text-white shadow-sm' 
                   : 'text-text2 hover:bg-surface2 hover:text-text'
               }`}
             >
@@ -47,7 +47,7 @@ function SidebarContent() {
               href={`/admin${queryString}`}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                 pathname === '/admin' 
-                  ? 'bg-accent text-white shadow-md shadow-accent/20' 
+                  ? 'bg-accent text-white shadow-sm' 
                   : 'text-text2 hover:bg-surface2 hover:text-text'
               }`}
             >
@@ -70,7 +70,7 @@ function SidebarContent() {
                   href={`/client/${cl.key}${queryString}`}
                   className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isActive 
-                      ? 'bg-accent text-white shadow-md shadow-accent/20' 
+                      ? 'bg-accent text-white shadow-sm' 
                       : 'text-text2 hover:bg-surface2 hover:text-text'
                   }`}
                 >

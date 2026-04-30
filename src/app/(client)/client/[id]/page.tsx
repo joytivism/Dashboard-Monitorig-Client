@@ -77,35 +77,28 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
     );
   }
 
-  const MetricCard = ({ title, value, icon: Icon, growthNode, lastMonthStr, color = 'accent' }: any) => {
-    const colorClasses: Record<string, string> = {
-      accent: 'bg-accent-light text-accent',
-      green: 'bg-gg-bg text-gg',
-      blue: 'bg-tofu-bg text-tofu',
-      red: 'bg-rr-bg text-rr',
-      yellow: 'bg-mofu-bg text-mofu',
-    };
+  const MetricCard = ({ title, value, icon: Icon, growthNode, lastMonthStr }: any) => {
     return (
-    <div className="bg-white rounded-[24px] p-6 shadow-main">
+    <div className="bg-white rounded-2xl p-6 border border-border-main shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-6">
-        <div className="text-[13px] font-semibold text-text2 uppercase tracking-wide">{title}</div>
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
+        <div className="text-sm font-semibold text-text2">{title}</div>
+        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-surface2 text-text">
+          <Icon className="w-4 h-4" />
         </div>
       </div>
-      <div className="flex items-center gap-3 mb-4">
-        <div className="text-3xl font-bold text-text tracking-tight">{value}</div>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="text-4xl font-bold text-text tracking-tight">{value}</div>
         {growthNode}
       </div>
-      <div className="text-[12px] font-medium text-text3">
-        Bulan lalu: <span className="text-text2">{lastMonthStr}</span>
+      <div className="text-xs text-text3">
+        Last month: {lastMonthStr}
       </div>
     </div>
     );
   };
 
   return (
-    <div className="space-y-6 max-w-[1400px]">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <button 
         onClick={() => router.push(`/${searchParams.toString() ? '?' + searchParams.toString() : ''}`)}
         className="inline-flex items-center gap-2 text-sm text-text2 hover:text-accent font-medium transition-colors"
@@ -176,7 +169,6 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           icon={CreditCard} 
           growthNode={renderGrowthChip(bofu_sp + tofu_sp, pt_sp + pb_sp)}
           lastMonthStr={fRp(pt_sp + pb_sp)} 
-          color="blue"
         />
         <MetricCard 
           title="ROAS (BOFU)" 
@@ -265,7 +257,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
         
         {/* TOFU Bar */}
-        <div className="bg-white rounded-[24px] p-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] transition-transform duration-300 hover:-translate-y-1 relative group">
+        <div className="bg-white rounded-2xl p-6 border border-border-main shadow-sm transition-transform duration-300 hover:-translate-y-1 relative group">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-tofu-bg text-tofu flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)]">
                <Megaphone className="w-6 h-6" />
@@ -295,7 +287,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         </div>
 
         {/* MOFU Bar */}
-        <div className="bg-white rounded-[24px] p-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] transition-transform duration-300 hover:-translate-y-1 relative group">
+        <div className="bg-white rounded-2xl p-6 border border-border-main shadow-sm transition-transform duration-300 hover:-translate-y-1 relative group">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-mofu-bg text-mofu flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)]">
                <Store className="w-6 h-6" />
@@ -328,7 +320,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         </div>
 
         {/* BOFU Bar */}
-        <div className="bg-white rounded-[24px] p-6 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.04)] transition-transform duration-300 hover:-translate-y-1 relative group">
+        <div className="bg-white rounded-2xl p-6 border border-border-main shadow-sm transition-transform duration-300 hover:-translate-y-1 relative group">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-bofu-bg text-bofu flex items-center justify-center shadow-[0_4px_12px_-2px_rgba(0,0,0,0.04)] border border-border-main/50">
                <Target className="w-6 h-6" />
@@ -396,7 +388,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 else if (ch.includes('fb') || ch.includes('meta')) ChIcon = Activity;
 
                 return (
-                  <div key={ch} className="bg-white rounded-[24px] p-6 shadow-main flex flex-col justify-between group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                  <div key={ch} className="bg-white rounded-2xl p-6 border border-border-main shadow-sm flex flex-col justify-between group hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                     <div>
                       <div className="flex items-start justify-between mb-8">
                         <div className="flex items-center gap-3">
