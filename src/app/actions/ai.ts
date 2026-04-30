@@ -7,7 +7,7 @@ export async function generateAISummary(clientName: string, metrics: any) {
   const settings = (dbSettings || []).reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as any);
 
   const apiKey = settings.openrouter_key || process.env.OPENROUTER_API_KEY;
-  const model = settings.ai_model || "google/gemini-flash-1.5";
+  const model = settings.ai_model || "nvidia/nemotron-3-super-120b-a12b:free";
 
   if (!apiKey || apiKey === 'your_openrouter_key_here') {
     return JSON.stringify({
