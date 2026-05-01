@@ -114,7 +114,7 @@ export default function ActivityPage() {
       <div className="flex justify-end">
         <button
           onClick={openNew}
-          className="flex items-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm shrink-0 hover:-translate-y-0.5"
+          className="flex items-center justify-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent/90 transition-all shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4" /> Tambah Activity
         </button>
@@ -265,41 +265,41 @@ export default function ActivityPage() {
 
       {/* ── Modal ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[5vh] pb-[5vh] px-5">
-          <div className="absolute inset-0 bg-text/40 backdrop-blur-sm transition-opacity" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
+        <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[14vh] px-5">
+          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm transition-opacity" onClick={() => setShowModal(false)} />
+          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
             {/* Header */}
-            <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b border-border-main bg-surface2/30">
+            <div className="flex items-center justify-between p-5 border-b border-border-main">
               <div>
-                <h3 className="text-lg font-black text-text">{editId ? 'Edit Activity' : 'Tambah Activity Baru'}</h3>
-                <p className="text-xs text-text3 mt-1">Catat promo, event, content, atau launching klien.</p>
+                <h3 className="text-base font-bold text-text">{editId ? 'Edit Activity' : 'Tambah Activity Baru'}</h3>
+                <p className="text-xs text-text3 mt-0.5">Catat promo, event, content, atau launching klien.</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-xl hover:bg-surface2 flex items-center justify-center text-text3 transition-colors bg-white border border-border-main shadow-sm">
+              <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-all">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4">
                 
                 {/* Client Selection */}
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-2">Pilih Klien</label>
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Pilih Klien</label>
                   <select
                     value={form.client_key}
                     onChange={e => setForm(f => ({ ...f, client_key: e.target.value }))}
                     required
-                    className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all cursor-pointer"
+                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all cursor-pointer"
                   >
                     <option value="" disabled>— Klik untuk memilih klien —</option>
                     {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
                   </select>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Date */}
                   <div>
-                    <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-2">Tanggal Pelaksanaan</label>
+                    <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tanggal Pelaksanaan</label>
                     <div className="relative">
                       <CalendarDays className="w-4 h-4 text-text4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                       <input
@@ -307,7 +307,7 @@ export default function ActivityPage() {
                         value={form.log_date}
                         onChange={e => setForm(f => ({ ...f, log_date: e.target.value }))}
                         required
-                        className="w-full h-12 pl-11 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all cursor-pointer"
+                        className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all cursor-pointer"
                       />
                     </div>
                   </div>
@@ -315,17 +315,17 @@ export default function ActivityPage() {
 
                 {/* Type (Segmented Control) */}
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-2">Tipe Activity</label>
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tipe Activity</label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {Object.entries(TYPE_MAP).map(([k, v]) => (
                       <button
                         key={k}
                         type="button"
                         onClick={() => setForm(f => ({ ...f, log_type: k as ActivityType }))}
-                        className={`h-12 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                        className={`h-11 rounded-xl border text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
                           form.log_type === k 
-                            ? v.cls + ' shadow-sm ring-4 ring-black/5 scale-[1.02]' 
-                            : 'bg-surface2 text-text3 border-border-main hover:bg-surface3 hover:border-border-alt'
+                            ? v.cls + ' shadow-sm ring-2 ring-accent/20' 
+                            : 'bg-surface2 text-text3 border-border-main hover:bg-surface3 hover:text-text'
                         }`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${form.log_type === k ? v.dot : 'bg-text4'}`} />
@@ -337,30 +337,30 @@ export default function ActivityPage() {
 
                 {/* Note */}
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-2">Deskripsi / Catatan</label>
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Deskripsi / Catatan</label>
                   <textarea
                     value={form.note}
                     onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
                     required rows={4}
                     placeholder="Contoh: Flash sale 50% koleksi hijab instan, target 10.000 orders dalam 24 jam..."
-                    className="w-full px-4 py-3.5 rounded-xl border border-border-main bg-surface2 text-sm font-medium text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all resize-none placeholder:text-text4"
+                    className="w-full px-4 py-3 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all resize-none placeholder:text-text4"
                   />
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="shrink-0 px-6 py-5 border-t border-border-main bg-surface2/40 flex items-center justify-end gap-3">
+              <div className="shrink-0 px-5 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-6 h-11 rounded-xl border border-border-main bg-white text-sm font-bold text-text2 hover:bg-surface2 hover:text-text transition-all"
+                  className="text-text2 hover:bg-surface2 hover:text-text rounded-xl px-4 py-2.5 text-xs font-semibold transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 px-8 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all disabled:opacity-50 shadow-sm hover:shadow hover:-translate-y-0.5"
+                  className="flex items-center gap-2 px-5 bg-text text-white rounded-xl font-bold text-sm h-12 hover:bg-accent transition-all disabled:opacity-50"
                 >
                   {loading
                     ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
