@@ -106,7 +106,7 @@ export default function AdminHubPage() {
       </div>
 
       {/* ── KPI Cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           {
             label: 'Total Klien',
@@ -149,7 +149,7 @@ export default function AdminHubPage() {
           return (
             <div
               key={i}
-              className="bg-white rounded-2xl p-5 border shadow-sm flex flex-col gap-3 transition-shadow hover:shadow-md"
+              className="bg-white rounded-2xl p-6 border shadow-sm flex flex-col gap-3 transition-shadow hover:shadow-md"
               style={{ borderColor: sc ? sc.border : 'var(--border)', background: sc ? sc.bg : '#fff' }}
             >
               <div className="flex items-center justify-between">
@@ -168,8 +168,8 @@ export default function AdminHubPage() {
       </div>
 
       {/* ── Revenue Strip ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-5">
-        <div className="flex items-center gap-2 mb-5">
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-6">
+        <div className="flex items-center gap-2 mb-6">
           <BarChart3 className="w-4 h-4 text-text3" />
           <span className="text-sm font-semibold text-text2">Ringkasan Finansial · <span className="text-text">{curPeriod}</span></span>
         </div>
@@ -211,7 +211,7 @@ export default function AdminHubPage() {
           <Settings2 className="w-4 h-4 text-text3" />
           <span className="text-sm font-semibold text-text2">Modul Admin</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {MENU.map(item => (
             <Link
               key={item.href}
@@ -253,11 +253,11 @@ export default function AdminHubPage() {
       </div>
 
       {/* ── Bottom: Client Status + Activity ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         {/* Client Status */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-border-main flex items-center justify-between">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden flex flex-col">
+          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between">
             <h2 className="text-sm font-bold text-text">Status Klien</h2>
             <Link href="/admin/clients" className="flex items-center gap-1 text-xs font-semibold text-accent hover:underline">
               Kelola <ArrowRight className="w-3 h-3" />
@@ -272,9 +272,9 @@ export default function AdminHubPage() {
                 <Link
                   key={cl.key}
                   href={`/client/${encodeURIComponent(cl.key)}`}
-                  className="flex items-center gap-3 px-5 py-3.5 hover:bg-surface2 transition-colors group"
+                  className="flex items-center gap-4 px-6 py-4 hover:bg-surface2 transition-colors group"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xs font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -295,8 +295,8 @@ export default function AdminHubPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-border-main flex items-center justify-between">
+        <div className="lg:col-span-3 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden flex flex-col">
+          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-accent" />
               <h2 className="text-sm font-bold text-text">Activity Log Terbaru</h2>
@@ -314,7 +314,7 @@ export default function AdminHubPage() {
             ) : recentActivity.map((a, i) => {
               const type = TYPE_MAP[a.t] || TYPE_MAP.e;
               return (
-                <div key={i} className="flex items-start gap-3 px-5 py-3.5 hover:bg-surface2 transition-colors">
+                <div key={i} className="flex items-start gap-4 px-6 py-4 hover:bg-surface2 transition-colors">
                   {/* Timeline dot */}
                   <div className="flex flex-col items-center shrink-0 mt-1">
                     <div className={`w-2 h-2 rounded-full ${type.color.split(' ')[0]}`} />
