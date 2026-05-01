@@ -2,105 +2,30 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { Shield, Lock, Hexagon, LayoutDashboard, Database, Activity, Users, LogOut, ChevronRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Shield, Lock } from 'lucide-react';
+import AdminSidebar from '@/components/AdminSidebar';
 
-/* ── Breadcrumb path → label map ── */
-const PAGE_LABEL: Record<string, string> = {
-  '/admin': 'Command Center',
-  '/admin/data': 'Input Data Performa',
-  '/admin/activity': 'Kelola Activity Log',
-  '/admin/clients': 'Manajemen Klien',
+const PAGE_TITLE: Record<string, { title: string; sub: string }> = {
+  '/admin':          { title: 'Command Center',    sub: 'Ringkasan performa dan navigasi cepat modul admin.' },
+  '/admin/data':     { title: 'Input Data Performa', sub: 'Tambah atau update data iklan bulanan per klien dan channel.' },
+  '/admin/activity': { title: 'Kelola Activity Log', sub: 'Tambah, edit, atau hapus catatan promo, event, dan launching.' },
+  '/admin/clients':  { title: 'Manajemen Klien',    sub: 'Tambah atau ubah konfigurasi klien dan channel yang ditrack.' },
 };
 
-function AdminTopbar({ onLogout }: { onLogout: () => void }) {
+function AdminHeader() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const NAV = [
-    { href: '/admin',          icon: LayoutDashboard, label: 'Hub' },
-    { href: '/admin/data',     icon: Database,        label: 'Input Data' },
-    { href: '/admin/activity', icon: Activity,        label: 'Activity' },
-    { href: '/admin/clients',  icon: Users,           label: 'Klien' },
-  ];
-
-  const crumbs = [
-    { label: 'Admin', href: '/admin' },
-    ...(pathname !== '/admin' ? [{ label: PAGE_LABEL[pathname] || pathname.split('/').pop()!, href: pathname }] : []),
-  ];
+  const page = PAGE_TITLE[pathname] || { title: 'Admin', sub: '' };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 border-b border-border-main"
-      style={{ backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}>
-      <div className="flex items-center justify-between h-[60px] px-6 max-w-7xl mx-auto">
-
-        {/* Left: Logo + Breadcrumb */}
-        <div className="flex items-center gap-4">
-          {/* Logo */}
-          <Link href="/admin" className="flex items-center gap-2.5 shrink-0">
-            <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-              <Hexagon className="w-4.5 h-4.5 text-white fill-white" />
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-sm font-bold text-text leading-none">Real Advertise</div>
-              <div className="text-[9px] font-bold text-text3 uppercase tracking-widest leading-tight mt-0.5">Admin</div>
-            </div>
-          </Link>
-
-          {/* Divider */}
-          <div className="h-5 w-px bg-border-main hidden sm:block" />
-
-          {/* Breadcrumb */}
-          <nav className="hidden sm:flex items-center gap-1 text-xs text-text3">
-            {crumbs.map((c, i) => (
-              <React.Fragment key={c.href}>
-                {i > 0 && <ChevronRight className="w-3 h-3 text-text4" />}
-                {i < crumbs.length - 1
-                  ? <Link href={c.href} className="hover:text-text transition-colors font-medium">{c.label}</Link>
-                  : <span className="font-semibold text-text">{c.label}</span>
-                }
-              </React.Fragment>
-            ))}
-          </nav>
-        </div>
-
-        {/* Center: Nav links */}
-        <nav className="flex items-center gap-1">
-          {NAV.map(item => {
-            const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                  isActive
-                    ? 'bg-accent text-white shadow-sm'
-                    : 'text-text2 hover:bg-surface2 hover:text-text'
-                }`}
-              >
-                <item.icon className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden md:block">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Right: Go to dashboard + Logout */}
-        <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-text2 hover:bg-surface2 hover:text-text transition-all"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            Dashboard
-          </Link>
-          <button
-            onClick={onLogout}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span className="hidden sm:block">Keluar</span>
-          </button>
+    <header
+      className="sticky top-0 z-30 bg-bg/90 border-b border-border-main/60"
+      style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+    >
+      <div className="h-16 px-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-base font-bold text-text leading-tight">{page.title}</h1>
+          {page.sub && <p className="text-xs text-text3 mt-0.5 leading-tight">{page.sub}</p>}
         </div>
       </div>
     </header>
@@ -109,10 +34,10 @@ function AdminTopbar({ onLogout }: { onLogout: () => void }) {
 
 export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState(false);
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const [shake, setShake] = useState(false);
+  const [password, setPassword]     = useState('');
+  const [error, setError]           = useState(false);
+  const [checking, setChecking]     = useState(true);
+  const [shake, setShake]           = useState(false);
 
   useEffect(() => {
     const isAuth = localStorage.getItem('ra_admin_auth') === 'true';
@@ -126,8 +51,7 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
       localStorage.setItem('ra_admin_auth', 'true');
       setAuthorized(true);
     } else {
-      setError(true);
-      setShake(true);
+      setError(true); setShake(true);
       setTimeout(() => { setError(false); setShake(false); }, 2000);
     }
   };
@@ -144,15 +68,14 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
   if (!authorized) {
     return (
       <div className="fixed inset-0 flex items-center justify-center p-6 z-[9999] bg-bg">
-        {/* Decorative blobs */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Blobs */}
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/3 right-1/4 w-56 h-56 bg-accent/8 rounded-full blur-3xl pointer-events-none" />
 
         <div
-          className={`relative bg-white rounded-2xl p-8 border border-border-main max-w-sm w-full text-center transition-transform ${shake ? 'animate-[shake_0.3s_ease]' : ''}`}
+          className={`relative bg-white rounded-2xl p-8 border border-border-main max-w-sm w-full text-center ${shake ? 'animate-[shake_0.3s_ease]' : ''}`}
           style={{ boxShadow: '0 20px 60px -12px rgba(0,0,0,0.1)' }}
         >
-          {/* Icon */}
           <div className="w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <Shield className="w-7 h-7 text-accent" />
           </div>
@@ -175,19 +98,16 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
                 }`}
               />
             </div>
-
             <button
               type="submit"
-              className="w-full h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all duration-200"
             >
               Masuk ke Admin
             </button>
           </form>
 
           {error && (
-            <p className="text-red-500 text-xs font-semibold mt-4 animate-fade-in">
-              ✗ Password salah. Coba lagi.
-            </p>
+            <p className="text-red-500 text-xs font-semibold mt-4 animate-fade-in">✗ Password salah. Coba lagi.</p>
           )}
 
           <div className="mt-6 pt-5 border-t border-border-main">
@@ -200,13 +120,16 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
     );
   }
 
-  /* ── Authorized: admin shell WITHOUT global Sidebar/Header ── */
+  /* ── Authorized shell: Sidebar + Header + Content ── */
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-bg">
-      <AdminTopbar onLogout={handleLogout} />
-      <main className="flex-1 px-6 py-7 max-w-7xl mx-auto w-full">
-        {children}
-      </main>
-    </div>
+    <>
+      <AdminSidebar onLogout={handleLogout} />
+      <div className="flex-1 ml-[240px] flex flex-col min-h-screen bg-bg">
+        <AdminHeader />
+        <main className="flex-1 p-8">
+          {children}
+        </main>
+      </div>
+    </>
   );
 }

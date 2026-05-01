@@ -118,20 +118,11 @@ export default function ClientsAdminPage() {
     <div className="space-y-6 max-w-5xl animate-fade-in">
       <Toast toast={toast} />
 
-      {/* ── Page Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-1.5 text-xs text-text3 mb-2">
-            <span>Admin</span>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-text font-semibold">Manajemen Klien</span>
-          </div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">Manajemen Klien</h1>
-          <p className="text-sm text-text3 mt-1">Tambah atau ubah konfigurasi klien dan channel yang ditrack.</p>
-        </div>
+      {/* ── Top Actions ── */}
+      <div className="flex justify-end">
         <button
           onClick={openNew}
-          className="flex items-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm shrink-0 self-start"
+          className="flex items-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4" /> Tambah Klien
         </button>

@@ -117,16 +117,6 @@ export default function DataInputPage() {
     <div className="space-y-6 max-w-5xl animate-fade-in">
       <Toast toast={toast} />
 
-      {/* ── Page Header ── */}
-      <div>
-        <div className="flex items-center gap-1.5 text-xs text-text3 mb-2">
-          <span>Admin</span>
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-text font-semibold">Input Data Performa</span>
-        </div>
-        <h1 className="text-2xl font-bold text-text tracking-tight">Input Data Performa</h1>
-        <p className="text-sm text-text3 mt-1">Tambah atau update data iklan bulanan per klien dan channel.</p>
-      </div>
 
       {/* ── Step 1: Client & Period ── */}
       <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">

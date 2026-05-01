@@ -95,21 +95,10 @@ export default function AdminHubPage() {
   return (
     <div className="space-y-7 animate-fade-in">
 
-      {/* ── Page Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-accent" />
-            </div>
-            <span className="text-[10px] font-black text-text3 uppercase tracking-[0.14em]">Admin Hub</span>
-          </div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">Command Center</h1>
-          <p className="text-sm text-text3 mt-1">Kelola data dan konfigurasi Real Advertise — semua dalam satu tempat.</p>
-        </div>
-
+      {/* ── Top Actions ── */}
+      <div className="flex justify-end">
         {/* Active period badge */}
-        <div className="flex items-center gap-2 bg-white border border-border-main rounded-xl px-4 py-2.5 shadow-sm shrink-0 self-start">
+        <div className="flex items-center gap-2 bg-white border border-border-main rounded-xl px-4 py-2.5 shadow-sm shrink-0">
           <CalendarClock className="w-4 h-4 text-text3" />
           <span className="text-sm font-bold text-text">{curPeriod}</span>
           <span className="text-[10px] bg-gg-bg text-gg-text px-2 py-0.5 rounded-full font-bold">Aktif</span>
