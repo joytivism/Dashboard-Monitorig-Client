@@ -7,6 +7,10 @@ CREATE TABLE clients (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   client_key VARCHAR(255) UNIQUE NOT NULL, -- contoh: 'clientA', 'klien_b'
   name VARCHAR(255) NOT NULL,
+  industry VARCHAR(255),
+  pic_name VARCHAR(255),
+  brand_category VARCHAR(255),
+  account_strategist VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
