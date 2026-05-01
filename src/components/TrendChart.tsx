@@ -32,10 +32,10 @@ interface TrendChartProps {
 }
 
 const TM = [
-  { k: 'revenue', l: 'Revenue', f: 'rp', color: '#00a1a6', activeClass: 'bg-[#00a1a6] text-white border-[#00a1a6]' },
-  { k: 'roas', l: 'ROAS', f: 'x', color: '#e50000', activeClass: 'bg-[#e50000] text-white border-[#e50000]' },
-  { k: 'spend', l: 'Spend', f: 'rp', color: '#ff6301', activeClass: 'bg-[#ff6301] text-white border-[#ff6301]' },
-  { k: 'reach', l: 'Reach', f: 'k', color: '#737373', activeClass: 'bg-[#737373] text-white border-[#737373]' },
+  { k: 'revenue', l: 'Revenue', f: 'rp', color: '#10B981', activeClass: 'bg-gg text-white border-gg' },
+  { k: 'roas', l: 'ROAS', f: 'x', color: '#F59E0B', activeClass: 'bg-or text-white border-or' },
+  { k: 'spend', l: 'Spend', f: 'rp', color: '#F43F5E', activeClass: 'bg-rr text-white border-rr' },
+  { k: 'reach', l: 'Reach', f: 'k', color: '#0EA5E9', activeClass: 'bg-gd text-white border-gd' },
 ];
 
 export default function TrendChart({ clientKey }: TrendChartProps) {

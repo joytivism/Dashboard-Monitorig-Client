@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ORD, LM } from '@/lib/data';
 import { totals, clientWorst, fRp, pct as getPct } from '@/lib/utils';
@@ -23,7 +23,36 @@ const STATUS_DOT: Record<string, string> = {
   rr: '#DC2626', or: '#EA580C', yy: '#D97706', nn: '#9CA3AF', gg: '#059669', gd: '#0284C7',
 };
 
-/* ── Metric card ── */
+/* ── Sparkline component ── */
+function Sparkline({ data, color }: { data: number[], color: string }) {
+  if (!data || data.length < 2) return null;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const width = 60;
+  const height = 16;
+  const padding = 2;
+  
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - padding - ((v - min) / range) * (height - 2 * padding);
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <svg width={width} height={height} className="overflow-visible">
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points}
+      />
+    </svg>
+  );
+}
+
 function MetricCard({
   title, value, icon: Icon, growth, lastMonth, highlight,
 }: {
@@ -67,17 +96,29 @@ function OverviewContent() {
   const searchParams = useSearchParams();
   const { CLIENTS, DATA, PERIODS, PL } = useDashboardData();
   const curPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
+  
   const [search, setSearch] = useState('');
+  const [filterInd, setFilterInd] = useState('');
+  const [filterPIC, setFilterPIC] = useState('');
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'status', direction: 'asc' });
 
-  let tRev = 0, tSp = 0, tOrd = 0, pRev = 0, pSp = 0;
   const prevIdx = PERIODS.indexOf(curPeriod) - 1;
   const prevPeriod = prevIdx >= 0 ? PERIODS[prevIdx] : '';
 
-  CLIENTS.forEach(cl => {
-    const t  = totals(CLIENTS, DATA, cl.key, curPeriod);
-    const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
-    tRev += t.rev; tSp += t.sp; tOrd += t.ord; pRev += tp.rev; pSp += tp.sp;
-  });
+  // Get unique filters
+  const industries = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.ind))).filter(i => i !== '—').sort(), [CLIENTS]);
+  const pics = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.as))).filter(i => i !== '—').sort(), [CLIENTS]);
+
+  // Aggregate Metrics
+  const { tRev, tSp, pRev, pSp } = useMemo(() => {
+    let tr = 0, ts = 0, pr = 0, ps = 0;
+    CLIENTS.forEach(cl => {
+      const t = totals(CLIENTS, DATA, cl.key, curPeriod);
+      const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+      tr += t.rev; ts += t.sp; pr += tp.rev; ps += tp.sp;
+    });
+    return { tRev: tr, tSp: ts, pRev: pr, pSp: ps };
+  }, [CLIENTS, DATA, curPeriod, prevPeriod]);
 
   const aRoas   = tSp > 0 ? tRev / tSp : null;
   const paRoas  = pSp > 0 ? pRev / pSp : null;
@@ -86,9 +127,43 @@ function OverviewContent() {
   const probs = CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
   const wins  = CLIENTS.filter(cl => ['gg', 'gd'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
 
-  const sortedClients = [...CLIENTS]
-    .filter(cl => !search || cl.key.toLowerCase().includes(search.toLowerCase()) || cl.ind.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => ORD.indexOf(clientWorst(CLIENTS, DATA, PERIODS, a.key, curPeriod)) - ORD.indexOf(clientWorst(CLIENTS, DATA, PERIODS, b.key, curPeriod)));
+  const sortedClients = useMemo(() => {
+    return [...CLIENTS]
+      .filter(cl => {
+        const matchesSearch = !search || cl.key.toLowerCase().includes(search.toLowerCase()) || cl.ind.toLowerCase().includes(search.toLowerCase());
+        const matchesInd = !filterInd || cl.ind === filterInd;
+        const matchesPIC = !filterPIC || cl.as === filterPIC;
+        return matchesSearch && matchesInd && matchesPIC;
+      })
+      .sort((a, b) => {
+        const { key, direction } = sortConfig;
+        let valA: any, valB: any;
+
+        if (key === 'status') {
+          valA = ORD.indexOf(clientWorst(CLIENTS, DATA, PERIODS, a.key, curPeriod));
+          valB = ORD.indexOf(clientWorst(CLIENTS, DATA, PERIODS, b.key, curPeriod));
+        } else if (key === 'rev' || key === 'sp' || key === 'roas') {
+          const tA = totals(CLIENTS, DATA, a.key, curPeriod);
+          const tB = totals(CLIENTS, DATA, b.key, curPeriod);
+          valA = tA[key as 'rev' | 'sp' | 'roas'] || 0;
+          valB = tB[key as 'rev' | 'sp' | 'roas'] || 0;
+        } else {
+          valA = (a as any)[key] || '';
+          valB = (b as any)[key] || '';
+        }
+
+        if (valA < valB) return direction === 'asc' ? -1 : 1;
+        if (valA > valB) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+  }, [CLIENTS, search, filterInd, filterPIC, sortConfig, DATA, curPeriod, PERIODS]);
+
+  const toggleSort = (key: string) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
 
   const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
@@ -264,33 +339,79 @@ function OverviewContent() {
 
       {/* ── Client Table ── */}
       <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-6 py-5 border-b border-border-main">
-          <h2 className="text-sm font-bold text-text">Semua Klien</h2>
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Cari klien..."
-              className="pl-9 pr-4 h-9 bg-surface2 border border-border-main rounded-xl text-xs font-medium w-48 focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
-            />
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 px-6 py-5 border-b border-border-main bg-white">
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-bold text-text shrink-0 mr-4">Semua Klien</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-text4 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Cari klien..."
+                  className="pl-8 pr-4 h-8 bg-surface2 border border-border-main rounded-lg text-[11px] font-semibold w-40 focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+                />
+              </div>
+
+              {/* Industry Filter */}
+              <select
+                value={filterInd}
+                onChange={e => setFilterInd(e.target.value)}
+                className="h-8 pl-3 pr-8 bg-surface2 border border-border-main rounded-lg text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[100px]"
+              >
+                <option value="">Semua Industri</option>
+                {industries.map((ind: string) => <option key={ind} value={ind}>{ind}</option>)}
+              </select>
+
+              {/* PIC Filter */}
+              <select
+                value={filterPIC}
+                onChange={e => setFilterPIC(e.target.value)}
+                className="h-8 pl-3 pr-8 bg-surface2 border border-border-main rounded-lg text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[100px]"
+              >
+                <option value="">Semua PIC</option>
+                {pics.map((pic: string) => <option key={pic} value={pic}>{pic}</option>)}
+              </select>
+            </div>
+          </div>
+          
+          <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">
+            Total {sortedClients.length} Klien
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[700px]">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="border-b border-border-main bg-surface2/50">
-                {['Klien', 'Industri', 'Status', 'Revenue', 'Spend', 'ROAS', 'CG'].map((h, i) => (
-                  <th key={h} className={`py-3 text-[10px] font-black text-text4 uppercase tracking-wider ${i === 0 ? 'pl-6' : ''} ${i === 6 ? 'pr-6 text-right' : ''}`}>
-                    {h}
+              <tr className="border-b border-border-main bg-surface2/30">
+                {[
+                  { label: 'Klien', key: 'key' },
+                  { label: 'Industri', key: 'ind' },
+                  { label: 'Status', key: 'status' },
+                  { label: 'Revenue', key: 'rev' },
+                  { label: 'Spend', key: 'sp' },
+                  { label: 'ROAS', key: 'roas' },
+                  { label: 'CG', key: 'as' }
+                ].map((h, i) => (
+                  <th 
+                    key={h.key} 
+                    onClick={() => toggleSort(h.key)}
+                    className={`py-3.5 px-4 text-[10px] font-black uppercase tracking-wider cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : ''} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : 'text-text4'}`}
+                  >
+                    <div className={`flex items-center gap-1.5 ${i === 6 ? 'justify-end' : 'justify-start'}`}>
+                      {h.label}
+                      {sortConfig.key === h.key && (
+                        <span className="text-[8px]">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>
+                      )}
+                    </div>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-surface2">
-              {sortedClients.map(cl => {
+              {sortedClients.map((cl: any) => {
                 const t  = totals(CLIENTS, DATA, cl.key, curPeriod);
                 const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
                 const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
@@ -318,7 +439,13 @@ function OverviewContent() {
                       </span>
                     </td>
                     <td className="py-3.5">
-                      <span className="text-sm font-semibold text-text">{fRp(t.rev)}</span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-semibold text-text">{fRp(t.rev)}</span>
+                        <Sparkline 
+                          data={PERIODS.map(p => totals(CLIENTS, DATA, cl.key, p).rev)} 
+                          color={wc === 'rr' || wc === 'or' ? '#DC2626' : wc === 'gg' || wc === 'gd' ? '#059669' : '#9CA3AF'} 
+                        />
+                      </div>
                     </td>
                     <td className="py-3.5">
                       <span className="text-sm text-text3">{fRp(t.sp)}</span>
