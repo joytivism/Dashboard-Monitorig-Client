@@ -11,10 +11,10 @@ import {
 import { useRouter } from 'next/navigation';
 
 const TYPE_MAP = {
-  p: { l: 'Promo',     icon: Megaphone, cls: 'bg-gg-bg text-gg-text border-gg-border',   dot: 'bg-gg'   },
-  e: { l: 'Event',     icon: Calendar,  cls: 'bg-gd-bg text-gd-text border-gd-border',   dot: 'bg-gd'   },
-  c: { l: 'Content',   icon: TrendingUp, cls: 'bg-or-bg text-or-text border-or-border',   dot: 'bg-or'   },
-  l: { l: 'Launching', icon: Rocket,     cls: 'bg-rr-bg text-rr-text border-rr-border',   dot: 'bg-rr'   },
+  p: { l: 'Promo',     icon: Megaphone, cls: 'badge-gg', dot: 'bg-gg' },
+  e: { l: 'Event',     icon: Calendar,  cls: 'badge-gd', dot: 'bg-gd' },
+  c: { l: 'Content',   icon: TrendingUp, cls: 'badge-or', dot: 'bg-or' },
+  l: { l: 'Launching', icon: Rocket,     cls: 'badge-rr', dot: 'bg-rr' },
 } as const;
 
 type ActivityType = keyof typeof TYPE_MAP;
@@ -22,7 +22,7 @@ type ActivityType = keyof typeof TYPE_MAP;
 function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
   if (!toast) return null;
   return (
-    <div className={`fixed top-[76px] right-6 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
+    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
       toast.type === 'success' ? 'bg-white border-gg-border text-gg-text' : 'bg-white border-rr-border text-rr-text'
     }`}>
       {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
@@ -66,7 +66,6 @@ export default function ActivityPage() {
     });
   }, [ACTIVITY, search, filterClient, filterType]);
 
-  // Stats calculation
   const stats = useMemo(() => {
     const counts = { p: 0, e: 0, c: 0, l: 0 };
     filtered.forEach(a => {
@@ -75,7 +74,6 @@ export default function ActivityPage() {
     return counts;
   }, [filtered]);
 
-  // Group by Date helper
   const groupedData = useMemo(() => {
     const groups: { [key: string]: any[] } = {};
     const today = new Date().toISOString().split('T')[0];
@@ -147,18 +145,18 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in pb-12">
+    <div className="space-y-7 animate-fade-in pb-12">
       <Toast toast={toast} />
 
       {/* ── Header Area ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
-          <p className="text-sm text-text3 mt-1">Pantau semua promo, event, dan launching klien secara real-time.</p>
+          <p className="text-xs text-text3 mt-1">Manajemen catatan promo, event, dan launching klien.</p>
         </div>
         <button
           onClick={openNew}
-          className="flex items-center justify-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent/90 transition-all shadow-sm shrink-0"
+          className="bg-accent text-white rounded-xl font-bold text-sm px-5 h-11 hover:bg-accent/90 transition-all flex items-center gap-2 shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4" /> Tambah Activity
         </button>
@@ -170,51 +168,43 @@ export default function ActivityPage() {
           const Icon = config.icon;
           const count = stats[key as ActivityType];
           return (
-            <div key={key} className="bg-white rounded-2xl border border-border-main p-4 shadow-sm hover:shadow-md transition-all group">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${config.cls}`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-[10px] font-black text-text4 uppercase tracking-wider">{config.l}</div>
-                  <div className="text-xl font-bold text-text">{count}</div>
+            <div key={key} className="bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all group">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-semibold text-text3 uppercase tracking-wider">{config.l}</span>
+                <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text4 group-hover:bg-accent/10 group-hover:text-accent transition-all">
+                  <Icon className="w-4 h-4" />
                 </div>
               </div>
+              <div className="text-3xl font-bold text-text tracking-tight">{count}</div>
             </div>
           );
         })}
       </div>
 
       {/* ── Interactive Filters ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-5 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text"
-                placeholder="Cari klien atau catatan..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-surface2 border border-border-main rounded-xl text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
-              />
-            </div>
-            <div className="hidden md:flex items-center gap-2 text-xs font-bold text-text3 px-3 py-2 bg-surface2 rounded-xl border border-border-main">
-              <Filter className="w-3.5 h-3.5" />
-              <span>Filters</span>
-            </div>
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
+        <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
+          <div className="relative flex-1 max-w-md">
+            <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input 
+              type="text"
+              placeholder="Cari klien atau catatan..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 pl-10 pr-4 bg-surface2 border border-border-main rounded-xl text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+            />
           </div>
-          <div className="flex items-center gap-2 text-xs font-bold text-text3 shrink-0">
+          <div className="flex items-center gap-2 text-xs font-semibold text-text3 shrink-0">
             <Activity className="w-4 h-4 text-accent" />
-            <span>Showing {filtered.length} entries</span>
+            <span>Menampilkan {filtered.length} entri</span>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-border-main/50">
+        <div className="px-5 py-4 bg-surface2/50 border-t border-border-main flex flex-wrap gap-2">
           <button
             onClick={() => setFilterClient('')}
-            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
-              !filterClient ? 'bg-text text-white border-text' : 'bg-surface2 text-text3 border-transparent hover:bg-surface3'
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+              !filterClient ? 'bg-text text-white border-text shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
             }`}
           >
             Semua Klien
@@ -223,8 +213,8 @@ export default function ActivityPage() {
             <button
               key={cl.key}
               onClick={() => setFilterClient(cl.key)}
-              className={`px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
-                filterClient === cl.key ? 'bg-accent text-white border-accent' : 'bg-surface2 text-text3 border-transparent hover:bg-surface3'
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                filterClient === cl.key ? 'bg-accent text-white border-accent shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
               }`}
             >
               {cl.key}
@@ -234,26 +224,26 @@ export default function ActivityPage() {
       </div>
 
       {/* ── Activity Stream ── */}
-      <div className="space-y-8 relative">
+      <div className="space-y-10 relative">
         {/* Continuous timeline line */}
         <div className="absolute left-[19px] top-4 bottom-4 w-px bg-border-main hidden md:block" />
 
         {Object.keys(groupedData).length === 0 ? (
-          <div className="bg-white rounded-2xl border border-border-main p-20 text-center flex flex-col items-center">
+          <div className="bg-white rounded-2xl border border-border-main p-20 text-center flex flex-col items-center shadow-sm">
             <div className="w-16 h-16 rounded-full bg-surface2 flex items-center justify-center mb-4">
               <Activity className="w-8 h-8 text-text4" />
             </div>
-            <h3 className="text-base font-bold text-text">No activities found</h3>
-            <p className="text-sm text-text3 mt-1">Try adjusting your filters or search terms.</p>
+            <h3 className="text-sm font-bold text-text">Data tidak ditemukan</h3>
+            <p className="text-xs text-text3 mt-1">Coba sesuaikan filter atau kata kunci pencarian Anda.</p>
           </div>
         ) : Object.entries(groupedData).map(([label, items]) => (
-          <div key={label} className="space-y-4">
+          <div key={label} className="space-y-5">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-white border border-border-main shadow-sm flex items-center justify-center shrink-0 z-10 hidden md:flex">
                 <CalendarDays className="w-5 h-5 text-text3" />
               </div>
-              <h2 className="text-xs font-black text-text3 uppercase tracking-[0.2em]">{label}</h2>
-              <div className="flex-1 h-px bg-border-main/50" />
+              <h2 className="text-[9px] font-black text-text4 uppercase tracking-[0.15em]">{label}</h2>
+              <div className="flex-1 h-px bg-border-main" />
             </div>
 
             <div className="grid grid-cols-1 gap-4 pl-0 md:pl-14">
@@ -261,37 +251,42 @@ export default function ActivityPage() {
                 const config = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
                 const Icon = config.icon;
                 return (
-                  <div key={i} className="group relative bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all hover:border-accent/20">
+                  <div key={i} className="group relative bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all duration-200">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${config.cls}`}>
-                          <Icon className="w-5 h-5" />
+                        <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                          <span className="text-xs font-black">{a.c.slice(0, 2).toUpperCase()}</span>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-bold text-text">{a.c}</span>
-                            <span className="text-text4 text-[10px]">•</span>
-                            <span className="text-[10px] font-bold text-text3 uppercase tracking-wider">{config.l}</span>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-bold text-text tracking-tight">{a.c}</span>
+                            <span className={`badge ${config.cls}`}>{config.l}</span>
                           </div>
-                          <p className="text-sm text-text2 leading-relaxed">{a.n}</p>
+                          <p className="text-sm font-medium text-text2 leading-relaxed max-w-2xl">{a.n}</p>
+                          <div className="flex items-center gap-4 mt-3">
+                             <div className="flex items-center gap-1.5 text-xs text-text3">
+                                <CalendarDays className="w-3.5 h-3.5" />
+                                {a.dLabel || a.d}
+                             </div>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                      <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-all">
                         <button
                           onClick={() => openEdit(a)}
                           className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 hover:text-text transition-all"
                           title="Edit"
                         >
-                          <Edit3 className="w-3.5 h-3.5" />
+                          <Edit3 className="w-4 h-4" />
                         </button>
                         {a.id && (
                           <button
                             onClick={() => handleDelete(a.id!)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
                             title="Hapus"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         )}
                       </div>
@@ -365,11 +360,11 @@ export default function ActivityPage() {
                         onClick={() => setForm(f => ({ ...f, log_type: k as ActivityType }))}
                         className={`h-11 rounded-xl border text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
                           form.log_type === k 
-                            ? v.cls + ' shadow-sm ring-2 ring-accent/20' 
+                            ? `bg-accent text-white ring-2 ring-accent/20 border-accent/20 shadow-sm` 
                             : 'bg-surface2 text-text3 border-border-main hover:bg-surface3 hover:text-text'
                         }`}
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${form.log_type === k ? v.dot : 'bg-text4'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${form.log_type === k ? 'bg-white' : 'bg-text4'}`} />
                         {v.l}
                       </button>
                     ))}
@@ -401,7 +396,7 @@ export default function ActivityPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 px-5 bg-text text-white rounded-xl font-bold text-sm h-12 hover:bg-accent transition-all disabled:opacity-50"
+                  className="bg-text text-white rounded-xl font-bold text-sm px-6 h-12 hover:bg-accent transition-all flex items-center gap-2 shadow-sm"
                 >
                   {loading
                     ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
