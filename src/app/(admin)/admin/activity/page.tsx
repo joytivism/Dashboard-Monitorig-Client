@@ -1,16 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
-import { Plus, Edit3, Trash2, X, CheckCircle2, AlertCircle, Save, CalendarDays, Activity, ListFilter } from 'lucide-react';
+import { 
+  Plus, Edit3, Trash2, X, CheckCircle2, AlertCircle, Save, 
+  CalendarDays, Activity, ListFilter, Search, Tag, 
+  TrendingUp, Megaphone, Calendar, Rocket, Filter
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const TYPE_MAP = {
-  p: { l: 'Promo',     cls: 'bg-gg-bg text-gg-text border-gg-border',   dot: 'bg-gg'   },
-  e: { l: 'Event',     cls: 'bg-gd-bg text-gd-text border-gd-border',   dot: 'bg-gd'   },
-  c: { l: 'Content',   cls: 'bg-or-bg text-or-text border-or-border',   dot: 'bg-or'   },
-  l: { l: 'Launching', cls: 'bg-rr-bg text-rr-text border-rr-border',   dot: 'bg-rr'   },
+  p: { l: 'Promo',     icon: Megaphone, cls: 'bg-gg-bg text-gg-text border-gg-border',   dot: 'bg-gg'   },
+  e: { l: 'Event',     icon: Calendar,  cls: 'bg-gd-bg text-gd-text border-gd-border',   dot: 'bg-gd'   },
+  c: { l: 'Content',   icon: TrendingUp, cls: 'bg-or-bg text-or-text border-or-border',   dot: 'bg-or'   },
+  l: { l: 'Launching', icon: Rocket,     cls: 'bg-rr-bg text-rr-text border-rr-border',   dot: 'bg-rr'   },
 } as const;
 
 type ActivityType = keyof typeof TYPE_MAP;
@@ -31,6 +35,7 @@ export default function ActivityPage() {
   const { CLIENTS, ACTIVITY } = useDashboardData();
   const router = useRouter();
 
+  const [search, setSearch] = useState('');
   const [filterClient, setFilterClient] = useState('');
   const [filterType, setFilterType] = useState<ActivityType | ''>('');
   
@@ -50,11 +55,46 @@ export default function ActivityPage() {
     if (toast) { const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t); }
   }, [toast]);
 
-  const filtered = ACTIVITY.filter(a => {
-    if (filterClient && a.c !== filterClient) return false;
-    if (filterType && a.t !== filterType) return false;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    return ACTIVITY.filter(a => {
+      const matchesSearch = search === '' || 
+        a.c.toLowerCase().includes(search.toLowerCase()) || 
+        a.n.toLowerCase().includes(search.toLowerCase());
+      const matchesClient = filterClient === '' || a.c === filterClient;
+      const matchesType = filterType === '' || a.t === filterType;
+      return matchesSearch && matchesClient && matchesType;
+    });
+  }, [ACTIVITY, search, filterClient, filterType]);
+
+  // Stats calculation
+  const stats = useMemo(() => {
+    const counts = { p: 0, e: 0, c: 0, l: 0 };
+    filtered.forEach(a => {
+      if (a.t in counts) counts[a.t as ActivityType]++;
+    });
+    return counts;
+  }, [filtered]);
+
+  // Group by Date helper
+  const groupedData = useMemo(() => {
+    const groups: { [key: string]: any[] } = {};
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+    filtered.forEach(a => {
+      let label = a.dLabel || a.d;
+      if (a.d === today) label = 'Hari Ini';
+      else if (a.d === yesterday) label = 'Kemarin';
+      else {
+        const date = new Date(a.d);
+        label = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      }
+
+      if (!groups[label]) groups[label] = [];
+      groups[label].push(a);
+    });
+    return groups;
+  }, [filtered]);
 
   const openNew = () => {
     setEditId(null);
@@ -107,11 +147,15 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-12">
       <Toast toast={toast} />
 
-      {/* ── Top Actions ── */}
-      <div className="flex justify-end">
+      {/* ── Header Area ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
+          <p className="text-sm text-text3 mt-1">Pantau semua promo, event, dan launching klien secara real-time.</p>
+        </div>
         <button
           onClick={openNew}
           className="flex items-center justify-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent/90 transition-all shadow-sm shrink-0"
@@ -120,149 +164,144 @@ export default function ActivityPage() {
         </button>
       </div>
 
-      {/* ── Filter bar ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-4 flex flex-col md:flex-row justify-between gap-4">
-        <div className="flex flex-col gap-3">
-          {/* Client Filter */}
-          <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar">
-            <span className="text-[10px] font-black text-text4 uppercase tracking-[0.1em] shrink-0 w-12">Klien</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilterClient('')}
-                className={`px-4 h-8 rounded-full text-xs font-bold transition-all shrink-0 ${
-                  !filterClient ? 'bg-text text-white shadow-sm' : 'bg-surface2 text-text3 hover:bg-surface3'
-                }`}
-              >
-                Semua
-              </button>
-              {CLIENTS.map(cl => (
-                <button
-                  key={cl.key}
-                  onClick={() => setFilterClient(cl.key)}
-                  className={`px-4 h-8 rounded-full text-xs font-bold transition-all shrink-0 ${
-                    filterClient === cl.key ? 'bg-accent text-white shadow-sm' : 'bg-surface2 text-text3 hover:bg-surface3'
-                  }`}
-                >
-                  {cl.key}
-                </button>
-              ))}
+      {/* ── Stats Overview ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Object.entries(TYPE_MAP).map(([key, config]) => {
+          const Icon = config.icon;
+          const count = stats[key as ActivityType];
+          return (
+            <div key={key} className="bg-white rounded-2xl border border-border-main p-4 shadow-sm hover:shadow-md transition-all group">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${config.cls}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-black text-text4 uppercase tracking-wider">{config.l}</div>
+                  <div className="text-xl font-bold text-text">{count}</div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Interactive Filters ── */}
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-5 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text"
+                placeholder="Cari klien atau catatan..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 bg-surface2 border border-border-main rounded-xl text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+              />
+            </div>
+            <div className="hidden md:flex items-center gap-2 text-xs font-bold text-text3 px-3 py-2 bg-surface2 rounded-xl border border-border-main">
+              <Filter className="w-3.5 h-3.5" />
+              <span>Filters</span>
             </div>
           </div>
-          
-          {/* Type Filter */}
-          <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar">
-            <span className="text-[10px] font-black text-text4 uppercase tracking-[0.1em] shrink-0 w-12">Tipe</span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilterType('')}
-                className={`px-4 h-8 rounded-full text-xs font-bold transition-all shrink-0 ${
-                  !filterType ? 'bg-text text-white shadow-sm' : 'bg-surface2 text-text3 hover:bg-surface3'
-                }`}
-              >
-                Semua
-              </button>
-              {Object.entries(TYPE_MAP).map(([k, v]) => (
-                <button
-                  key={k}
-                  onClick={() => setFilterType(k as ActivityType)}
-                  className={`px-3 h-8 rounded-full text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 border ${
-                    filterType === k ? v.cls + ' shadow-sm' : 'bg-surface2 text-text3 border-transparent hover:bg-surface3'
-                  }`}
-                >
-                  <span className={`w-1.5 h-1.5 rounded-full ${filterType === k ? v.dot : 'bg-text4'}`} />
-                  {v.l}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-text3 shrink-0">
+            <Activity className="w-4 h-4 text-accent" />
+            <span>Showing {filtered.length} entries</span>
           </div>
         </div>
 
-        <div className="shrink-0 flex md:flex-col items-center justify-between md:items-end md:justify-center gap-1 border-t md:border-t-0 md:border-l border-border-main pt-3 md:pt-0 md:pl-4">
-          <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">Total Hasil</div>
-          <div className="flex items-center gap-1.5 text-text">
-            <ListFilter className="w-4 h-4 text-accent" />
-            <span className="text-xl font-black">{filtered.length}</span>
-          </div>
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-border-main/50">
+          <button
+            onClick={() => setFilterClient('')}
+            className={`px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+              !filterClient ? 'bg-text text-white border-text' : 'bg-surface2 text-text3 border-transparent hover:bg-surface3'
+            }`}
+          >
+            Semua Klien
+          </button>
+          {CLIENTS.map(cl => (
+            <button
+              key={cl.key}
+              onClick={() => setFilterClient(cl.key)}
+              className={`px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+                filterClient === cl.key ? 'bg-accent text-white border-accent' : 'bg-surface2 text-text3 border-transparent hover:bg-surface3'
+              }`}
+            >
+              {cl.key}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* ── Table Activity List ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
-          <div className="py-20 text-center flex flex-col items-center">
-            <Activity className="w-12 h-12 text-border-main mb-4" />
-            <div className="text-base font-bold text-text mb-1">Tidak ada activity ditemukan</div>
-            <p className="text-sm text-text3 mb-4">Ubah filter atau tambahkan activity baru.</p>
-            <button onClick={openNew} className="text-sm font-bold text-accent hover:underline flex items-center gap-1">
-              <Plus className="w-4 h-4" /> Tambahkan sekarang
-            </button>
+      {/* ── Activity Stream ── */}
+      <div className="space-y-8 relative">
+        {/* Continuous timeline line */}
+        <div className="absolute left-[19px] top-4 bottom-4 w-px bg-border-main hidden md:block" />
+
+        {Object.keys(groupedData).length === 0 ? (
+          <div className="bg-white rounded-2xl border border-border-main p-20 text-center flex flex-col items-center">
+            <div className="w-16 h-16 rounded-full bg-surface2 flex items-center justify-center mb-4">
+              <Activity className="w-8 h-8 text-text4" />
+            </div>
+            <h3 className="text-base font-bold text-text">No activities found</h3>
+            <p className="text-sm text-text3 mt-1">Try adjusting your filters or search terms.</p>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="border-b border-border-main bg-surface2/50">
-                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider pl-6 w-[250px]">Klien & Tipe</th>
-                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider px-4">Deskripsi / Catatan</th>
-                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider px-4 w-[160px]">Tanggal</th>
-                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider pr-6 w-[120px] text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface2">
-                {filtered.map((a, i) => {
-                  const type = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
-                  return (
-                    <tr key={i} className="hover:bg-surface2/70 transition-all duration-150 group animate-fade-in" style={{ animationDelay: `${i * 30}ms` }}>
-                      <td className="py-3.5 pl-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-accent/10 flex shrink-0 items-center justify-center text-accent text-xs font-black group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                            {a.c.slice(0, 2).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="text-sm font-bold text-text mb-0.5">{a.c}</div>
-                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${type.cls}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${type.dot}`} />
-                              {type.l}
-                            </span>
-                          </div>
+        ) : Object.entries(groupedData).map(([label, items]) => (
+          <div key={label} className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-white border border-border-main shadow-sm flex items-center justify-center shrink-0 z-10 hidden md:flex">
+                <CalendarDays className="w-5 h-5 text-text3" />
+              </div>
+              <h2 className="text-xs font-black text-text3 uppercase tracking-[0.2em]">{label}</h2>
+              <div className="flex-1 h-px bg-border-main/50" />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 pl-0 md:pl-14">
+              {items.map((a, i) => {
+                const config = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
+                const Icon = config.icon;
+                return (
+                  <div key={i} className="group relative bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all hover:border-accent/20">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${config.cls}`}>
+                          <Icon className="w-5 h-5" />
                         </div>
-                      </td>
-                      <td className="py-3.5 px-4 align-top">
-                        <p className="text-sm font-medium text-text mt-1.5">{a.n}</p>
-                      </td>
-                      <td className="py-3.5 px-4 align-top">
-                        <div className="flex items-center gap-1.5 text-xs text-text3 mt-1.5">
-                          <CalendarDays className="w-3.5 h-3.5" />
-                          {a.dLabel || a.d}
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-bold text-text">{a.c}</span>
+                            <span className="text-text4 text-[10px]">•</span>
+                            <span className="text-[10px] font-bold text-text3 uppercase tracking-wider">{config.l}</span>
+                          </div>
+                          <p className="text-sm text-text2 leading-relaxed">{a.n}</p>
                         </div>
-                      </td>
-                      <td className="py-3.5 pr-6 align-top text-right">
-                        <div className="flex items-center justify-end gap-1 mt-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                      </div>
+
+                      <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                        <button
+                          onClick={() => openEdit(a)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 hover:text-text transition-all"
+                          title="Edit"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        {a.id && (
                           <button
-                            onClick={() => openEdit(a)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 transition-all"
-                            title="Edit"
+                            onClick={() => handleDelete(a.id!)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"
+                            title="Hapus"
                           >
-                            <Edit3 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                          {a.id && (
-                            <button
-                              onClick={() => handleDelete(a.id!)}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
-                              title="Hapus"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        )}
+        ))}
       </div>
 
       {/* ── Modal ── */}
