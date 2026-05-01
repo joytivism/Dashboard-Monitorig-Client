@@ -114,10 +114,10 @@ export default function ClientsAdminPage() {
 
   const FORM_FIELDS = [
     { label: 'Client Key', key: 'client_key', ph: 'NamaKlien', disabled: !!editKey, required: true, span: true },
-    { label: 'Industri', key: 'industry', ph: 'Fashion / Kecantikan' },
-    { label: 'PIC', key: 'pic_name', ph: 'Nama PIC' },
-    { label: 'Account Strategist', key: 'account_strategist', ph: 'Nama Strategist' },
-    { label: 'Brand Category (CG)', key: 'brand_category', ph: 'Dica / Bara' },
+    { label: 'Industri', key: 'industry', ph: 'Contoh: Fashion / Kecantikan' },
+    { label: 'PIC', key: 'pic_name', ph: 'Contoh: Joy' },
+    { label: 'Account Strategist', key: 'account_strategist', ph: 'Contoh: Fahmi' },
+    { label: 'Brand Category (CG)', key: 'brand_category', ph: 'Contoh: Dica / Bara' },
   ];
 
   return (
