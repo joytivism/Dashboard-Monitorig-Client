@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { CH_DEF } from '@/lib/data';
 import {
   Plus, Edit3, Trash2, X, CheckCircle2, AlertCircle,
-  Save, Users, Search, ChevronRight, Building2, User, Briefcase
+  Save, Users, Search, ChevronRight, Building2, User, Briefcase, Tag
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -212,6 +212,10 @@ export default function ClientsAdminPage() {
                   <div className="flex items-center gap-2.5 text-xs text-text3">
                     <Building2 className="w-3.5 h-3.5 text-text4 shrink-0" />
                     <span className="truncate">{cl.ind && cl.ind !== '—' ? cl.ind : 'Industri belum diatur'}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                    <Tag className="w-3.5 h-3.5 text-text4 shrink-0" />
+                    <span className="truncate">CG: <span className="font-medium text-text2">{cl.cg && cl.cg !== '—' ? cl.cg : '-'}</span></span>
                   </div>
                   <div className="flex items-center gap-2.5 text-xs text-text3">
                     <User className="w-3.5 h-3.5 text-text4 shrink-0" />
