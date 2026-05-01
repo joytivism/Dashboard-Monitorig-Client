@@ -164,8 +164,6 @@ export default function ClientsAdminPage() {
             const hasData = dataCount > 0;
             return (
               <div key={cl.key} className="group bg-white rounded-2xl p-5 border border-border-main shadow-sm hover:shadow-md transition-all flex flex-col relative overflow-hidden">
-                {/* Status Indicator Bar */}
-                <div className={`absolute top-0 left-0 w-full h-1 ${hasData ? 'bg-gg' : 'bg-or'}`} />
                 
                 {/* Top: Avatar & Actions */}
                 <div className="flex items-start justify-between gap-3 mb-4 mt-1">
