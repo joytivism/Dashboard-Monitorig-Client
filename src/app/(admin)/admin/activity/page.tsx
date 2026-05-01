@@ -221,10 +221,11 @@ export default function ActivityPage() {
 
       {/* ── Modal ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-5 bg-black/25 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-border-main overflow-hidden animate-fade-in">
+        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[10vh] pb-[10vh] px-5">
+          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-border-main">
+            <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b border-border-main">
               <div>
                 <h3 className="text-base font-bold text-text">{editId ? 'Edit Activity' : 'Tambah Activity Baru'}</h3>
                 <p className="text-xs text-text3 mt-0.5">Catat promo, event, content, atau launching klien.</p>
@@ -234,77 +235,79 @@ export default function ActivityPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6 space-y-4">
-              {/* Client */}
-              <div>
-                <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Klien</label>
-                <select
-                  value={form.client_key}
-                  onChange={e => setForm(f => ({ ...f, client_key: e.target.value }))}
-                  required
-                  className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
-                >
-                  <option value="">— Pilih Klien —</option>
-                  {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                {/* Date */}
+            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {/* Client */}
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tanggal</label>
-                  <div className="relative">
-                    <CalendarDays className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="date"
-                      value={form.log_date}
-                      onChange={e => setForm(f => ({ ...f, log_date: e.target.value }))}
-                      required
-                      className="w-full h-11 pl-9 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
-                    />
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Klien</label>
+                  <select
+                    value={form.client_key}
+                    onChange={e => setForm(f => ({ ...f, client_key: e.target.value }))}
+                    required
+                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
+                  >
+                    <option value="">— Pilih Klien —</option>
+                    {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Date */}
+                  <div>
+                    <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tanggal</label>
+                    <div className="relative">
+                      <CalendarDays className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <input
+                        type="date"
+                        value={form.log_date}
+                        onChange={e => setForm(f => ({ ...f, log_date: e.target.value }))}
+                        required
+                        className="w-full h-11 pl-9 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Type */}
+                  <div>
+                    <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tipe</label>
+                    <div className="relative">
+                      <Tag className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <select
+                        value={form.log_type}
+                        onChange={e => setForm(f => ({ ...f, log_type: e.target.value as ActivityType }))}
+                        className="w-full h-11 pl-9 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all appearance-none"
+                      >
+                        {Object.entries(TYPE_MAP).map(([k, v]) => (
+                          <option key={k} value={k}>{v.l}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Type */}
-                <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tipe</label>
-                  <div className="relative">
-                    <Tag className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <select
-                      value={form.log_type}
-                      onChange={e => setForm(f => ({ ...f, log_type: e.target.value as ActivityType }))}
-                      className="w-full h-11 pl-9 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all appearance-none"
-                    >
-                      {Object.entries(TYPE_MAP).map(([k, v]) => (
-                        <option key={k} value={k}>{v.l}</option>
-                      ))}
-                    </select>
+                {/* Type preview */}
+                {form.log_type && (
+                  <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${TYPE_MAP[form.log_type].cls}`}>
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${TYPE_MAP[form.log_type].dot}`} />
+                    <span className="text-xs font-semibold">{TYPE_MAP[form.log_type].l}</span>
                   </div>
-                </div>
-              </div>
+                )}
 
-              {/* Type preview */}
-              {form.log_type && (
-                <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${TYPE_MAP[form.log_type].cls}`}>
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${TYPE_MAP[form.log_type].dot}`} />
-                  <span className="text-xs font-semibold">{TYPE_MAP[form.log_type].l}</span>
+                {/* Note */}
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Catatan</label>
+                  <textarea
+                    value={form.note}
+                    onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
+                    required rows={3}
+                    placeholder="Deskripsi singkat activity ini..."
+                    className="w-full px-4 py-3 rounded-xl border border-border-main bg-surface2 text-sm font-medium text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all resize-none"
+                  />
                 </div>
-              )}
-
-              {/* Note */}
-              <div>
-                <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Catatan</label>
-                <textarea
-                  value={form.note}
-                  onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
-                  required rows={3}
-                  placeholder="Deskripsi singkat activity ini..."
-                  className="w-full px-4 py-3 rounded-xl border border-border-main bg-surface2 text-sm font-medium text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all resize-none"
-                />
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between gap-4 pt-1">
+              <div className="shrink-0 px-6 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-between gap-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

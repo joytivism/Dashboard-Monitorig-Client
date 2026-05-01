@@ -236,10 +236,11 @@ export default function ClientsAdminPage() {
 
       {/* ── Modal ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-5 bg-black/25 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-border-main overflow-hidden animate-fade-in">
+        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[10vh] pb-[10vh] px-5">
+          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
             {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-border-main">
+            <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b border-border-main">
               <div>
                 <h3 className="text-base font-bold text-text">
                   {editKey ? `Edit Klien: ${editKey}` : 'Tambah Klien Baru'}
@@ -256,72 +257,74 @@ export default function ClientsAdminPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="overflow-y-auto max-h-[72vh]">
-              {/* Basic info */}
-              <div className="p-6 space-y-4 border-b border-border-main">
-                <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Informasi Dasar</div>
-                <div className="grid grid-cols-2 gap-4">
-                  {FORM_FIELDS.map(f => (
-                    <div key={f.key} className={f.span ? 'col-span-2' : ''}>
-                      <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">{f.label}</label>
-                      <input
-                        type="text"
-                        value={(form as any)[f.key]}
-                        disabled={f.disabled}
-                        onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
-                        required={f.required}
-                        placeholder={f.ph}
-                        className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Channels */}
-              <div className="p-6 space-y-3">
-                <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Channel yang Ditrack</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(CH_DEF).map(([ch, def]) => {
-                    const active = form.chs.includes(ch);
-                    const stage = def.stage || 'bofu';
-                    const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;
-                    return (
-                      <div key={ch} className="space-y-1">
-                        <button
-                          type="button"
-                          onClick={() => toggleCh(ch)}
-                          className={`w-full px-4 py-2.5 rounded-xl border text-left text-sm font-semibold transition-all flex items-center gap-2.5 ${
-                            active ? 'bg-text text-white border-text shadow-sm' : 'bg-surface2 text-text2 border-border-main hover:border-border-alt'
-                          }`}
-                        >
-                          <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-white/80' : s.dot}`} />
-                          <span className="flex-1 truncate">{def.l}</span>
-                          <span className={`text-[9px] font-bold uppercase tracking-wider ${active ? 'text-white/50' : 'text-text4'}`}>
-                            {def.stage}
-                          </span>
-                        </button>
-                        {active && (
-                          <div className="flex items-center gap-2 px-2 py-1 bg-surface2 rounded-lg">
-                            <span className="text-[10px] text-text3 shrink-0">Target ROAS:</span>
-                            <input
-                              type="number" step="0.1"
-                              value={form.troas[ch] || ''}
-                              onChange={e => setForm(f => ({ ...f, troas: { ...f.troas, [ch]: e.target.value } }))}
-                              placeholder="misal: 4"
-                              className="flex-1 h-7 px-2 rounded-lg border border-border-main bg-white text-xs font-semibold text-text focus:outline-none focus:border-accent transition-all"
-                            />
-                            <span className="text-[10px] text-text3">x</span>
-                          </div>
-                        )}
+            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 overflow-y-auto">
+                {/* Basic info */}
+                <div className="p-6 space-y-4 border-b border-border-main">
+                  <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Informasi Dasar</div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {FORM_FIELDS.map(f => (
+                      <div key={f.key} className={f.span ? 'col-span-2' : ''}>
+                        <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">{f.label}</label>
+                        <input
+                          type="text"
+                          value={(form as any)[f.key]}
+                          disabled={f.disabled}
+                          onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                          required={f.required}
+                          placeholder={f.ph}
+                          className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        />
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
+                </div>
+
+                {/* Channels */}
+                <div className="p-6 space-y-3">
+                  <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Channel yang Ditrack</div>
+                  <div className="grid grid-cols-2 gap-2 items-start">
+                    {Object.entries(CH_DEF).map(([ch, def]) => {
+                      const active = form.chs.includes(ch);
+                      const stage = def.stage || 'bofu';
+                      const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;
+                      return (
+                        <div key={ch} className="space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleCh(ch)}
+                            className={`w-full px-4 py-2.5 rounded-xl border text-left text-sm font-semibold transition-all flex items-center gap-2.5 ${
+                              active ? 'bg-text text-white border-text shadow-sm' : 'bg-surface2 text-text2 border-border-main hover:border-border-alt'
+                            }`}
+                          >
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-white/80' : s.dot}`} />
+                            <span className="flex-1 truncate">{def.l}</span>
+                            <span className={`text-[9px] font-bold uppercase tracking-wider ${active ? 'text-white/50' : 'text-text4'}`}>
+                              {def.stage}
+                            </span>
+                          </button>
+                          {active && (
+                            <div className="flex items-center gap-2 px-2 py-1 bg-surface2 rounded-lg">
+                              <span className="text-[10px] text-text3 shrink-0">Target ROAS:</span>
+                              <input
+                                type="number" step="0.1"
+                                value={form.troas[ch] || ''}
+                                onChange={e => setForm(f => ({ ...f, troas: { ...f.troas, [ch]: e.target.value } }))}
+                                placeholder="misal: 4"
+                                className="flex-1 h-7 px-2 rounded-lg border border-border-main bg-white text-xs font-semibold text-text focus:outline-none focus:border-accent transition-all"
+                              />
+                              <span className="text-[10px] text-text3">x</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-between gap-4">
+              <div className="shrink-0 px-6 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-between gap-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
