@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { CH_DEF } from '@/lib/data';
 import {
   Plus, Edit3, Trash2, X, CheckCircle2, AlertCircle,
-  Save, Users, Search, ChevronRight, Building2,
+  Save, Users, Search, ChevronRight, Building2, User, Briefcase
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -128,111 +128,129 @@ export default function ClientsAdminPage() {
         </button>
       </div>
 
-      {/* ── Client List Card ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-        {/* List header */}
-        <div className="px-6 py-4 border-b border-border-main flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-              <Users className="w-4 h-4 text-accent" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-text">{CLIENTS.length} Klien Aktif</div>
-              <div className="text-xs text-text3">Periode: <span className="font-semibold text-text">{curPeriod}</span></div>
-            </div>
+      {/* ── Filter Bar ── */}
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5 text-accent" />
           </div>
-          {/* Search */}
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Cari klien..."
-              className="pl-9 pr-4 h-9 bg-surface2 border border-border-main rounded-xl text-xs font-medium w-44 focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
-            />
+          <div>
+            <div className="text-sm font-bold text-text">{CLIENTS.length} Klien Aktif</div>
+            <div className="text-xs text-text3">Periode: <span className="font-semibold text-text">{curPeriod}</span></div>
           </div>
         </div>
+        {/* Search */}
+        <div className="relative w-full md:w-auto">
+          <Search className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Cari klien..."
+            className="w-full md:w-64 pl-9 pr-4 h-10 bg-surface2 border border-border-main rounded-xl text-sm font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+          />
+        </div>
+      </div>
 
-        {/* Rows */}
-        <div className="divide-y divide-surface2">
-          {filteredClients.length === 0 ? (
-            <div className="py-16 text-center text-sm text-text3">
-              {search ? 'Tidak ada klien yang cocok.' : 'Belum ada klien.'}
-            </div>
-          ) : filteredClients.map(cl => {
+      {/* ── Client Grid ── */}
+      {filteredClients.length === 0 ? (
+        <div className="py-16 text-center text-sm text-text3 bg-white rounded-2xl border border-border-main shadow-sm">
+          {search ? 'Tidak ada klien yang cocok dengan pencarian.' : 'Belum ada klien yang terdaftar.'}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredClients.map(cl => {
             const dataCount = DATA.filter(d => d.c === cl.key && d.p === curPeriod).length;
             const hasData = dataCount > 0;
             return (
-              <div key={cl.key} className="group flex items-center gap-4 px-6 py-4 hover:bg-surface2/60 transition-all">
-                {/* Avatar */}
-                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                  {cl.key.slice(0, 2).toUpperCase()}
+              <div key={cl.key} className="group bg-white rounded-2xl p-5 border border-border-main shadow-sm hover:shadow-md transition-all flex flex-col relative overflow-hidden">
+                {/* Status Indicator Bar */}
+                <div className={`absolute top-0 left-0 w-full h-1 ${hasData ? 'bg-gg' : 'bg-or'}`} />
+                
+                {/* Top: Avatar & Actions */}
+                <div className="flex items-start justify-between gap-3 mb-4 mt-1">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg font-black group-hover:bg-accent group-hover:text-white transition-all duration-200 shrink-0">
+                      {cl.key.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-base font-bold text-text truncate pr-2" title={cl.key}>{cl.key}</h3>
+                      <span className={`inline-flex items-center gap-1.5 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        hasData ? 'bg-gg-bg text-gg-text border border-gg-border/50' : 'bg-or-bg text-or-text border border-or-border/50'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${hasData ? 'bg-gg' : 'bg-or'}`} />
+                        {hasData ? `Data ${curPeriod}` : 'No Data'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => openEdit(cl)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-gd-bg hover:text-gd-text transition-all"
+                      title="Edit"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cl.key)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"
+                      title="Hapus"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-bold text-text">{cl.key}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      hasData ? 'bg-gg-bg text-gg-text' : 'bg-or-bg text-or-text'
-                    }`}>
-                      {hasData ? `✓ Data ${curPeriod}` : `⚠ Belum ada data`}
-                    </span>
+                {/* Meta Info */}
+                <div className="space-y-2 mb-5 flex-1">
+                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                    <Building2 className="w-3.5 h-3.5 text-text4 shrink-0" />
+                    <span className="truncate">{cl.ind && cl.ind !== '—' ? cl.ind : 'Industri belum diatur'}</span>
                   </div>
-                  <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                    <span className="text-xs text-text3 flex items-center gap-1">
-                      <Building2 className="w-3 h-3" /> {cl.ind || '—'}
-                    </span>
-                    <span className="text-xs text-text4">·</span>
-                    <span className="text-xs text-text3">{cl.chs.length} channel</span>
-                    {cl.pic && cl.pic !== '—' && (
-                      <>
-                        <span className="text-xs text-text4">·</span>
-                        <span className="text-xs text-text3">PIC: {cl.pic}</span>
-                      </>
-                    )}
+                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                    <User className="w-3.5 h-3.5 text-text4 shrink-0" />
+                    <span className="truncate">PIC: <span className="font-medium text-text2">{cl.pic && cl.pic !== '—' ? cl.pic : '-'}</span></span>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                    <Briefcase className="w-3.5 h-3.5 text-text4 shrink-0" />
+                    <span className="truncate">AS: <span className="font-medium text-text2">{cl.as && cl.as !== '—' ? cl.as : '-'}</span></span>
                   </div>
                 </div>
 
                 {/* Channels */}
-                <div className="hidden md:flex items-center flex-wrap gap-1 max-w-[220px]">
-                  {cl.chs.slice(0, 4).map(ch => {
-                    const stage = CH_DEF[ch]?.stage || 'bofu';
-                    const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;
-                    return (
-                      <span key={ch} className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${s.bg}`}>
-                        {CH_DEF[ch]?.l || ch}
+                <div className="pt-4 border-t border-border-main">
+                  <div className="text-[10px] font-black text-text4 uppercase tracking-wider mb-2.5 flex items-center justify-between">
+                    <span>Channels</span>
+                    <span className="bg-surface2 text-text3 px-1.5 py-0.5 rounded-md">{cl.chs.length}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {cl.chs.slice(0, 4).map(ch => {
+                      const stage = CH_DEF[ch]?.stage || 'bofu';
+                      const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;
+                      return (
+                        <span key={ch} className={`text-[10px] font-bold px-2 py-1 rounded-md border ${s.bg} flex items-center gap-1.5`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+                          {CH_DEF[ch]?.l || ch}
+                        </span>
+                      );
+                    })}
+                    {cl.chs.length > 4 && (
+                      <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-surface3 text-text3 border border-border-main">
+                        +{cl.chs.length - 4} lagi
                       </span>
-                    );
-                  })}
-                  {cl.chs.length > 4 && (
-                    <span className="text-[10px] text-text4 font-medium">+{cl.chs.length - 4}</span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                  <button
-                    onClick={() => openEdit(cl)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-gd-bg hover:text-gd-text transition-all"
-                    title="Edit"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(cl.key)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"
-                    title="Hapus"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                    )}
+                    {cl.chs.length === 0 && (
+                      <span className="text-xs text-text4 italic">Belum ada channel</span>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
+      )}
 
       {/* ── Modal ── */}
       {showModal && (
