@@ -7,7 +7,8 @@ import { CH_DEF, STAGE_COLOR, STAGE_LABEL, LM } from '@/lib/data';
 import { totals, gd, isAware, prev, pct, popCls, fRp, fK, roas, clientWorst, chWorstKey } from '@/lib/utils';
 import TrendChart from '@/components/TrendChart';
 import { 
-  ChevronLeft, 
+  ChevronLeft,
+  ChevronRight,
   DollarSign,
   CreditCard,
   TrendingUp,
@@ -21,7 +22,8 @@ import {
   Smartphone,
   Filter,
   Layers,
-  Sparkles
+  Sparkles,
+  Calendar
 } from 'lucide-react';
 import AISummary from '@/components/AISummary';
 
@@ -124,6 +126,34 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
               <span>CG: <strong className="text-text2">{cl.cg}</strong></span>
               <span>TikTok: <strong className="text-text2">{cl.at}</strong></span>
               <span>Shopee: <strong className="text-text2">{cl.as}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative group">
+            <Calendar className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-accent transition-colors" />
+            <select
+              value={curPeriod}
+              onChange={(e) => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('period', e.target.value);
+                router.push(`?${params.toString()}`);
+              }}
+              className="h-11 pl-10 pr-10 bg-white border border-border-main rounded-xl text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all appearance-none cursor-pointer shadow-sm min-w-[160px]"
+            >
+              {PERIODS.map(p => (
+                <option key={p} value={p}>
+                  {(() => {
+                    const [y, m] = p.split('-');
+                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    return `${months[parseInt(m) - 1]} ${y}`;
+                  })()}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-text4">
+              <ChevronRight className="w-4 h-4 rotate-90" />
             </div>
           </div>
         </div>

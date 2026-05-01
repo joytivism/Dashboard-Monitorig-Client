@@ -8,7 +8,7 @@ import { useDashboardData } from '@/components/DataProvider';
 import {
   Users, DollarSign, TrendingUp, CreditCard,
   Search, ArrowUpRight, ArrowDownRight, AlertTriangle, Sparkles,
-  ChevronRight, Activity,
+  ChevronRight, Activity, Calendar
 } from 'lucide-react';
 
 const STATUS_BG: Record<string, string> = {
@@ -95,14 +95,44 @@ function OverviewContent() {
   return (
     <div className="space-y-7 animate-fade-in max-w-[1400px]">
 
-      {/* ── Page title ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <Activity className="w-4 h-4 text-text3" />
-          <span className="text-[10px] font-black text-text3 uppercase tracking-[0.14em]">Overview</span>
+      {/* ── Page Header ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Activity className="w-4 h-4 text-text3" />
+            <span className="text-[10px] font-black text-text3 uppercase tracking-[0.14em]">Overview</span>
+          </div>
+          <h1 className="text-2xl font-bold text-text tracking-tight">Dashboard</h1>
+          <p className="text-xs text-text3 mt-1">Ringkasan performa semua klien.</p>
         </div>
-        <h1 className="text-2xl font-bold text-text tracking-tight">Dashboard</h1>
-        <p className="text-sm text-text3 mt-1">Ringkasan performa semua klien untuk periode <span className="font-semibold text-text">{curPeriod}</span>.</p>
+
+        <div className="flex items-center gap-3">
+          <div className="relative group">
+            <Calendar className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-accent transition-colors" />
+            <select
+              value={curPeriod}
+              onChange={(e) => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('period', e.target.value);
+                router.push(`?${params.toString()}`);
+              }}
+              className="h-11 pl-10 pr-10 bg-white border border-border-main rounded-xl text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all appearance-none cursor-pointer shadow-sm min-w-[160px]"
+            >
+              {PERIODS.map(p => (
+                <option key={p} value={p}>
+                  {(() => {
+                    const [y, m] = p.split('-');
+                    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    return `${months[parseInt(m) - 1]} ${y}`;
+                  })()}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-text4">
+              <ChevronRight className="w-4 h-4 rotate-90" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Metrics ── */}
