@@ -2,35 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Shield, Lock } from 'lucide-react';
 import AdminSidebar from '@/components/AdminSidebar';
-
-const PAGE_TITLE: Record<string, { title: string; sub: string }> = {
-  '/admin':          { title: 'Command Center',    sub: 'Ringkasan performa dan navigasi cepat modul admin.' },
-  '/admin/data':     { title: 'Input Data Performa', sub: 'Tambah atau update data iklan bulanan per klien dan channel.' },
-  '/admin/activity': { title: 'Kelola Activity Log', sub: 'Tambah, edit, atau hapus catatan promo, event, dan launching.' },
-  '/admin/clients':  { title: 'Manajemen Klien',    sub: 'Tambah atau ubah konfigurasi klien dan channel yang ditrack.' },
-};
-
-function AdminHeader() {
-  const pathname = usePathname();
-  const page = PAGE_TITLE[pathname] || { title: 'Admin', sub: '' };
-
-  return (
-    <header
-      className="sticky top-0 z-30 bg-bg/90 border-b border-border-main/60"
-      style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-    >
-      <div className="h-16 px-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-base font-bold text-text leading-tight">{page.title}</h1>
-          {page.sub && <p className="text-xs text-text3 mt-0.5 leading-tight">{page.sub}</p>}
-        </div>
-      </div>
-    </header>
-  );
-}
 
 export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState(false);
@@ -120,12 +93,11 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
     );
   }
 
-  /* ── Authorized shell: Sidebar + Header + Content ── */
+  /* ── Authorized shell: Sidebar + Content ── */
   return (
     <>
       <AdminSidebar onLogout={handleLogout} />
       <div className="flex-1 ml-[240px] flex flex-col min-h-screen bg-bg">
-        <AdminHeader />
         <main className="flex-1 p-8 w-full max-w-7xl mx-auto">
           {children}
         </main>
