@@ -126,7 +126,7 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
       <AdminSidebar onLogout={handleLogout} />
       <div className="flex-1 ml-[240px] flex flex-col min-h-screen bg-bg">
         <AdminHeader />
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-8 w-full max-w-7xl mx-auto">
           {children}
         </main>
       </div>

@@ -101,7 +101,7 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <Toast toast={toast} />
 
       {/* ── Top Actions ── */}

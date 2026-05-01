@@ -114,7 +114,7 @@ export default function DataInputPage() {
   const INPUT_CLS = 'w-full h-10 px-3 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all';
 
   return (
-    <div className="space-y-6 max-w-5xl animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <Toast toast={toast} />
 
 
