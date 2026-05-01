@@ -72,15 +72,20 @@ export default function ClientsAdminPage() {
     if (!form.client_key) return;
     setLoading(true);
     try {
-      await supabase.from('clients').upsert({
+      const { error: err1 } = await supabase.from('clients').upsert({
         client_key: form.client_key, industry: form.industry, pic_name: form.pic_name,
         brand_category: form.brand_category, account_strategist: form.account_strategist, name: form.client_key,
       });
-      await supabase.from('client_channels').delete().eq('client_key', form.client_key);
+      if (err1) throw err1;
+
+      const { error: err2 } = await supabase.from('client_channels').delete().eq('client_key', form.client_key);
+      if (err2) throw err2;
+
       if (form.chs.length > 0) {
-        await supabase.from('client_channels').insert(
+        const { error: err3 } = await supabase.from('client_channels').insert(
           form.chs.map(ch => ({ client_key: form.client_key, channel_key: ch, target_roas: form.troas[ch] ? Number(form.troas[ch]) : null }))
         );
+        if (err3) throw err3;
       }
       setToast({ type: 'success', text: `Klien ${form.client_key} berhasil disimpan.` });
       setShowModal(false);
@@ -94,7 +99,8 @@ export default function ClientsAdminPage() {
     if (!confirm(`Hapus klien "${key}"? Semua data terkait akan dihapus.`)) return;
     setLoading(true);
     try {
-      await supabase.from('clients').delete().eq('client_key', key);
+      const { error } = await supabase.from('clients').delete().eq('client_key', key);
+      if (error) throw error;
       setToast({ type: 'success', text: `Klien ${key} dihapus.` });
       router.refresh();
     } catch (err: any) {
