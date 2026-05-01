@@ -186,8 +186,8 @@ export default function ActivityPage() {
         </div>
       </div>
 
-      {/* ── Timeline Activity List ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-6 md:p-8">
+      {/* ── Table Activity List ── */}
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
           <div className="py-20 text-center flex flex-col items-center">
             <Activity className="w-12 h-12 text-border-main mb-4" />
@@ -198,67 +198,69 @@ export default function ActivityPage() {
             </button>
           </div>
         ) : (
-          <div className="relative pl-4 md:pl-8">
-            {/* Main continuous vertical line */}
-            <div className="absolute left-4 md:left-8 top-4 bottom-4 w-px bg-border-main/60" />
-            
-            <div className="space-y-8">
-              {filtered.map((a, i) => {
-                const type = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
-                return (
-                  <div key={i} className="relative group animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
-                    {/* Timeline dot */}
-                    <div className={`absolute -left-[27px] md:-left-[43px] top-4 w-7 h-7 rounded-full border-[4px] border-white flex items-center justify-center ${type.cls.split(' ')[0]} shadow-sm z-10 transition-transform group-hover:scale-110`}>
-                      <div className={`w-2 h-2 rounded-full ${type.dot}`} />
-                    </div>
-
-                    {/* Content Card */}
-                    <div className="bg-white rounded-xl border border-border-main shadow-sm p-5 ml-4 hover:shadow-md transition-all duration-300 group-hover:border-accent/30 relative overflow-hidden">
-                      {/* Subtle hover gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-accent/0 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                      
-                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 relative">
-                        <div className="flex-1">
-                          <div className="flex items-center flex-wrap gap-2 mb-2.5">
-                            <span className="text-sm font-black text-accent">{a.c}</span>
-                            <span className="text-text4 text-xs">•</span>
-                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${type.cls}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead>
+                <tr className="border-b border-border-main bg-surface2/50">
+                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider pl-6 w-[250px]">Klien & Tipe</th>
+                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider px-4">Deskripsi / Catatan</th>
+                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider px-4 w-[160px]">Tanggal</th>
+                  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider pr-6 w-[120px] text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-surface2">
+                {filtered.map((a, i) => {
+                  const type = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
+                  return (
+                    <tr key={i} className="hover:bg-surface2/70 transition-all duration-150 group animate-fade-in" style={{ animationDelay: `${i * 30}ms` }}>
+                      <td className="py-3.5 pl-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-accent/10 flex shrink-0 items-center justify-center text-accent text-xs font-black group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                            {a.c.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="text-sm font-bold text-text mb-0.5">{a.c}</div>
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${type.cls}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${type.dot}`} />
                               {type.l}
                             </span>
-                            <span className="text-text4 text-xs">•</span>
-                            <span className="text-xs font-semibold text-text3 flex items-center gap-1.5">
-                              <CalendarDays className="w-3.5 h-3.5" /> 
-                              {a.dLabel || a.d}
-                            </span>
                           </div>
-                          <p className="text-sm text-text2 leading-relaxed">{a.n}</p>
                         </div>
-                        
-                        {/* Actions */}
-                        <div className="flex items-center gap-1.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0 md:pt-1">
+                      </td>
+                      <td className="py-3.5 px-4 align-top">
+                        <p className="text-sm font-medium text-text mt-1.5">{a.n}</p>
+                      </td>
+                      <td className="py-3.5 px-4 align-top">
+                        <div className="flex items-center gap-1.5 text-xs text-text3 mt-1.5">
+                          <CalendarDays className="w-3.5 h-3.5" />
+                          {a.dLabel || a.d}
+                        </div>
+                      </td>
+                      <td className="py-3.5 pr-6 align-top text-right">
+                        <div className="flex items-center justify-end gap-1 mt-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => openEdit(a)}
-                            className="w-8 h-8 rounded-xl flex items-center justify-center text-text3 bg-surface2 hover:bg-gd-bg hover:text-gd-text transition-all"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 transition-all"
                             title="Edit"
                           >
-                            <Edit3 className="w-3.5 h-3.5" />
+                            <Edit3 className="w-4 h-4" />
                           </button>
                           {a.id && (
                             <button
                               onClick={() => handleDelete(a.id!)}
-                              className="w-8 h-8 rounded-xl flex items-center justify-center text-text3 bg-surface2 hover:bg-rr-bg hover:text-rr-text transition-all"
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
                               title="Hapus"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
