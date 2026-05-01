@@ -75,7 +75,7 @@ export default function ClientsAdminPage() {
       const { error: err1 } = await supabase.from('clients').upsert({
         client_key: form.client_key, industry: form.industry, pic_name: form.pic_name,
         brand_category: form.brand_category, account_strategist: form.account_strategist, name: form.client_key,
-      });
+      }, { onConflict: 'client_key' });
       if (err1) throw err1;
 
       const { error: err2 } = await supabase.from('client_channels').delete().eq('client_key', form.client_key);
