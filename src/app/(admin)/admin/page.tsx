@@ -173,72 +173,99 @@ export default function AdminHubPage() {
         ))}
       </div>
 
-      {/* ── Data Ingestion Velocity ── */}
-      <div className="bg-white rounded-3xl border border-border-main shadow-sm p-8 group hover:shadow-md transition-all overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+      {/* ── Data Ingestion Velocity (Strict Design System Rebuild) ── */}
+      <div className="bg-white rounded-[32px] border border-border-main shadow-sm p-8 group hover:shadow-md transition-all overflow-hidden relative">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-accent/5 rounded-full -mr-32 -mt-32 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gd/5 rounded-full -ml-32 -mb-32 blur-[80px] pointer-events-none" />
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
-          <div className="flex-1 space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center text-accent shadow-sm border border-border-main/50">
-                <ClipboardCheck className="w-6 h-6" />
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-12 relative z-10">
+          <div className="flex-1 space-y-8">
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-surface2 flex items-center justify-center text-accent shadow-sm border border-border-main/60">
+                <ClipboardCheck className="w-7 h-7" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-text">Data Ingestion Velocity</h3>
-                <p className="text-xs text-text3 font-medium">Pelacakan kemajuan input data portfolio periode <span className="text-accent font-bold">{curPeriod}</span></p>
+                <h3 className="text-xl font-bold text-text tracking-tight">Data Ingestion Velocity</h3>
+                <div className="flex items-center gap-2 mt-1">
+                   <CalendarClock className="w-3.5 h-3.5 text-text4" />
+                   <p className="text-xs text-text3 font-medium">Monitoring pengisian data portfolio bulan <span className="text-accent font-bold">{curPeriod}</span></p>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
                <div className="flex items-end justify-between">
-                  <div className="flex items-center gap-2">
-                     <span className="text-3xl font-black text-text">{stats.updatedCount}</span>
-                     <span className="text-sm font-bold text-text4 uppercase tracking-widest">/ {stats.total} Klien</span>
+                  <div className="flex items-center gap-3">
+                     <span className="text-4xl font-black text-text tracking-tighter">{stats.updatedCount}</span>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-text4 uppercase tracking-[0.14em]">Clients Ready</span>
+                        <span className="text-xs font-bold text-text3">dari total {stats.total} portfolio</span>
+                     </div>
                   </div>
-                  <span className="text-sm font-black text-accent">{stats.progress.toFixed(0)}% Selesai</span>
+                  <div className="text-right">
+                     <span className="text-sm font-black text-accent tracking-wider">{stats.progress.toFixed(0)}% COMPLETE</span>
+                  </div>
                </div>
-               <div className="h-3 bg-surface2 rounded-full overflow-hidden border border-border-main/30">
-                  <div 
-                    className="h-full bg-accent rounded-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(255,99,1,0.3)]"
-                    style={{ width: `${stats.progress}%` }}
-                  />
+               
+               <div className="relative">
+                  <div className="h-[10px] bg-surface2 rounded-full overflow-hidden border border-border-main/40">
+                     <div 
+                       className="h-full bg-accent rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(255,99,1,0.2)] relative"
+                       style={{ width: `${stats.progress}%` }}
+                     >
+                        {/* Subtle highlight on bar */}
+                        <div className="absolute inset-0 bg-white/10" />
+                     </div>
+                  </div>
                </div>
             </div>
           </div>
 
-          <div className="w-full lg:w-[400px] bg-surface2/50 rounded-2xl border border-border-main p-5 flex flex-col gap-4">
-             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                   <Clock className="w-3.5 h-3.5 text-text4" />
-                   <span className="text-[10px] font-black text-text3 uppercase tracking-widest">Pending Updates</span>
+          {/* Pending List Sidebar */}
+          <div className="w-full lg:w-[440px] bg-surface2/60 backdrop-blur-sm rounded-3xl border border-border-main p-6 flex flex-col gap-6">
+             <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2.5">
+                   <div className="w-2 h-2 rounded-full bg-rr animate-pulse-soft" />
+                   <span className="text-[10px] font-black text-text2 uppercase tracking-[0.16em]">Pending Updates</span>
                 </div>
-                <span className="text-[10px] font-bold text-rr-text bg-rr-bg px-2 py-0.5 rounded-full border border-rr-border/50">{stats.pending.length} Klien</span>
+                <span className="badge badge-rr">{stats.pending.length} Klien</span>
              </div>
              
-             <div className="flex flex-wrap gap-2">
+             <div className="flex flex-wrap gap-2.5">
                 {stats.pending.length > 0 ? (
-                  stats.pending.slice(0, 6).map(cl => (
-                    <div key={cl.key} className="px-3 py-1.5 bg-white border border-border-main rounded-xl text-[10px] font-bold text-text shadow-sm hover:border-accent/30 transition-colors">
+                  stats.pending.slice(0, 8).map(cl => (
+                    <div 
+                      key={cl.key} 
+                      className="px-3 py-2 bg-white border border-border-main/80 rounded-xl text-[10px] font-bold text-text shadow-sm hover:border-accent/40 hover:shadow-md transition-all cursor-default group/chip flex items-center gap-2"
+                    >
+                       <div className="w-4 h-4 rounded-md bg-surface3 flex items-center justify-center text-[8px] font-black group-hover/chip:bg-accent group-hover/chip:text-white transition-colors">
+                          {cl.key.slice(0, 2).toUpperCase()}
+                       </div>
                        {cl.key}
                     </div>
                   ))
                 ) : (
-                  <div className="flex items-center gap-2 text-gd-text font-bold text-[11px] py-2">
-                     <CheckCircle2 className="w-4 h-4" /> Portfolio is up to date!
+                  <div className="w-full py-6 flex flex-col items-center gap-3 bg-white/40 rounded-2xl border border-dashed border-gd-border/60">
+                     <CheckCircle2 className="w-8 h-8 text-gd" />
+                     <p className="text-[10px] font-black text-gd-text uppercase tracking-widest text-center">Portfolio completely<br/>up to date</p>
                   </div>
                 )}
-                {stats.pending.length > 6 && (
-                   <div className="px-3 py-1.5 bg-surface3 border border-border-main rounded-xl text-[10px] font-bold text-text4">
-                      +{stats.pending.length - 6} more
+                {stats.pending.length > 8 && (
+                   <div className="px-3 py-2 bg-surface3/80 border border-border-main rounded-xl text-[10px] font-bold text-text3 flex items-center gap-1.5">
+                      <Zap className="w-3 h-3" /> +{stats.pending.length - 8} More
                    </div>
                 )}
              </div>
 
              <Link 
               href="/admin/data" 
-              className="mt-2 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-text text-white text-[10px] font-black uppercase tracking-widest hover:bg-accent transition-all shadow-sm active:scale-95"
+              className="mt-2 group/btn relative h-12 flex items-center justify-center gap-2.5 w-full rounded-xl bg-text text-white text-[10px] font-black uppercase tracking-[0.16em] hover:bg-accent transition-all duration-300 shadow-md active:scale-[0.98] overflow-hidden"
              >
-                Lanjutkan Input Data <ArrowRight className="w-3.5 h-3.5" />
+                <span className="relative z-10 flex items-center gap-2">
+                   Lanjutkan Input Data 
+                   <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </span>
              </Link>
           </div>
         </div>
