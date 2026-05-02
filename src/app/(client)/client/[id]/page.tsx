@@ -444,11 +444,9 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
               )}
             </tbody>
           </table>
-        </div>
       </div>
     </div>
-      <div className="h-10"></div>
-    </div>
+  </div>
   );
 }
 export default function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
