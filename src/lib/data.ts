@@ -1,6 +1,23 @@
 import { supabase } from './supabase';
 import { CH_DEF, STAGE_COLOR, STAGE_LABEL, TC, ORD, LM } from '@/data/constants';
 
+export const STATUS_BG: Record<string, string> = {
+  rr: 'bg-rr-bg text-rr-text border-rr-border',
+  or: 'bg-or-bg text-or-text border-or-border',
+  yy: 'bg-yy-bg text-yy-text border-yy-border',
+  nn: 'bg-nn-bg text-nn-text border-nn-border',
+  gg: 'bg-gg-bg text-gg-text border-gg-border',
+  gd: 'bg-gd-bg text-gd-text border-gd-border',
+};
+
+export const STATUS_DOT: Record<string, string> = {
+  rr: '#DC2626', or: '#EA580C', yy: '#D97706', nn: '#9CA3AF', gg: '#059669', gd: '#0284C7',
+};
+
+export const STATUS_LABEL: Record<string, string> = {
+  rr: 'Kritis', or: 'Perlu Perhatian', yy: 'Waspada', nn: 'Tidak ada data', gg: 'Performa Baik', gd: 'Sangat Baik',
+};
+
 export interface Client {
   key: string;
   ind: string;
