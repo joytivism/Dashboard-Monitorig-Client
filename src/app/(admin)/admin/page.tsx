@@ -247,49 +247,74 @@ export default function AdminHubPage() {
         </div>
 
 
-        {/* Global Stats Vertical Stack (Bento Small) */}
+        {/* Global Stats Vertical Stack (The Power Stack) */}
         <div className="lg:col-span-4 grid grid-cols-1 gap-8">
-           <div className="bg-text rounded-[2rem] p-8 text-white flex flex-col justify-between shadow-2xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
-              <div className="flex items-center justify-between mb-4">
-                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
-                    <TrendingUp className="w-6 h-6 text-accent" />
+           <div className="bg-text rounded-[2.5rem] p-8 text-white flex flex-col justify-between shadow-2xl relative overflow-hidden group/stat cursor-pointer">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-accent/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 opacity-0 group-hover/stat:opacity-100 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
+              
+              <div className="flex items-center justify-between mb-8 relative z-10">
+                 <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-xl border border-white/10 shadow-inner group-hover/stat:scale-110 transition-transform">
+                    <TrendingUp className="w-7 h-7 text-accent" />
                  </div>
-                 <div className="px-3 py-1 rounded-full bg-accent text-[10px] font-bold tracking-wider uppercase">Global ROAS</div>
+                 <div className="px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-[9px] font-black tracking-widest uppercase text-accent">Agency Pulse</div>
               </div>
-              <div>
-                 <div className="text-3xl font-bold text-white tracking-tight mb-2">{stats.totalRoas.toFixed(2)}x</div>
-                 <p className="text-xs text-white/50 font-medium">Rata-rata performa seluruh portfolio klien aktif.</p>
+              
+              <div className="relative z-10">
+                 <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-5xl font-black text-white tracking-tighter group-hover/stat:translate-x-1 transition-transform inline-block">
+                       {stats.totalRoas.toFixed(2)}x
+                    </span>
+                    <div className="w-2 h-2 rounded-full bg-gg shadow-[0_0_8px_#10b981]" />
+                 </div>
+                 <h3 className="text-xs font-bold text-white/50 uppercase tracking-[0.2em] mb-4">Global Avg. ROAS</h3>
+                 <p className="text-[11px] text-white/40 font-semibold leading-relaxed max-w-[200px]">Rata-rata performa seluruh portfolio klien aktif periode ini.</p>
               </div>
            </div>
 
-           <div className="bg-white rounded-[2rem] p-8 border border-border-main shadow-sm flex flex-col justify-between group hover:border-rr/30 transition-all">
-              <div className="flex items-center justify-between mb-4">
-                 <div className="w-12 h-12 rounded-2xl bg-rr-bg flex items-center justify-center text-rr border border-rr-border/30">
-                    <AlertCircle className="w-6 h-6" />
+           <div className="bg-white rounded-[2.5rem] p-8 border border-border-main shadow-sm flex flex-col justify-between group/critical cursor-pointer hover:border-rr/30 transition-all duration-500 overflow-hidden relative">
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-rr/5 rounded-full blur-3xl opacity-0 group-hover/critical:opacity-100 transition-opacity" />
+              
+              <div className="flex items-center justify-between mb-8 relative z-10">
+                 <div className="w-14 h-14 rounded-2xl bg-rr-bg flex items-center justify-center text-rr border border-rr-border/30 group-hover/critical:rotate-[-6deg] transition-all">
+                    <AlertCircle className="w-7 h-7" />
                  </div>
-                 {stats.attnCount > 0 && <span className="flex h-3 w-3 rounded-full bg-rr animate-ping" />}
+                 {stats.attnCount > 0 && (
+                   <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rr/10 border border-rr/20">
+                      <span className="flex h-2 w-2 rounded-full bg-rr animate-ping" />
+                      <span className="text-[9px] font-black text-rr uppercase tracking-widest">Action Required</span>
+                   </div>
+                 )}
               </div>
-              <div>
-                 <div className="text-3xl font-bold text-text tracking-tight mb-1">{stats.attnCount}</div>
-                 <div className="text-[10px] font-bold text-rr uppercase tracking-wider">Critical Clients</div>
-                 <p className="text-xs text-text4 mt-3 font-medium">Memerlukan penanganan strategi segera.</p>
+              
+              <div className="relative z-10">
+                 <div className="text-5xl font-black text-text tracking-tighter mb-2 group-hover/critical:scale-105 transition-transform origin-left">
+                    {stats.attnCount}
+                 </div>
+                 <h3 className="text-xs font-bold text-rr uppercase tracking-[0.2em] mb-4">Critical At-Risk</h3>
+                 <p className="text-[11px] text-text3 font-semibold leading-relaxed max-w-[200px]">Klien yang memerlukan optimasi strategi segera hari ini.</p>
               </div>
            </div>
         </div>
 
-        {/* Quick Actions (Bento Medium) */}
+        {/* Quick Actions (The Interaction Bar) */}
         <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-6">
            {QUICK_ACTIONS.map(action => (
-             <Link key={action.href} href={action.href} className="bg-white rounded-[1.5rem] p-6 border border-border-main shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all group flex items-center gap-5">
-                <div className={`w-14 h-14 rounded-2xl ${action.bg} ${action.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
-                   <action.icon className="w-7 h-7" />
+             <Link key={action.href} href={action.href} className="group relative bg-white rounded-[2rem] p-6 border border-border-main shadow-sm hover:shadow-2xl hover:border-accent/20 transition-all duration-500 overflow-hidden flex items-center gap-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className={`w-16 h-16 rounded-[1.25rem] ${action.bg} ${action.color} flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 relative z-10`}>
+                   <action.icon className="w-8 h-8" />
                 </div>
-                <div>
-                   <div className="text-sm font-bold text-text tracking-tight">{action.title}</div>
-                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">{action.badge}</div>
+                
+                <div className="relative z-10 flex-1 min-w-0">
+                   <div className="text-[10px] font-black text-text4 uppercase tracking-widest mb-1 opacity-60">{action.badge}</div>
+                   <div className="text-sm font-black text-text tracking-tight group-hover:text-accent transition-colors">{action.title}</div>
                 </div>
-                <ChevronRight className="ml-auto w-4 h-4 text-text4 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
+                
+                <div className="w-8 h-8 rounded-full bg-surface2 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                   <ChevronRight className="w-4 h-4 text-accent" />
+                </div>
              </Link>
            ))}
         </div>
