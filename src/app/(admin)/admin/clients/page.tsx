@@ -292,84 +292,91 @@ export default function ClientsAdminPage() {
 
       {/* ── Modal Form ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowModal(false)} />
+        <>
+          {/* Backdrop - Hitam Full dengan cakupan penuh */}
+          <div 
+            className="fixed inset-0 bg-black/80 z-[10001] animate-fade-in" 
+            onClick={() => setShowModal(false)} 
+          />
           
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
-               <h3 className="text-base font-bold text-text">{editKey ? 'Edit Klien' : 'Tambah Klien'}</h3>
-               <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
-                  <X className="w-4 h-4" />
-               </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {FORM_FIELDS.map(f => (
-                  <div key={f.key} className={f.span ? 'md:col-span-2' : ''}>
-                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">{f.label}</label>
-                    <input
-                      type="text"
-                      value={(form as any)[f.key]}
-                      onChange={e => setForm({ ...form, [f.key]: e.target.value })}
-                      placeholder={f.ph}
-                      disabled={f.disabled}
-                      required={f.required}
-                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all disabled:opacity-50"
-                    />
-                  </div>
-                ))}
+          {/* Modal Container */}
+          <div className="fixed inset-0 z-[10002] flex items-center justify-center p-6 pointer-events-none">
+            <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-[90vh] pointer-events-auto">
+              <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
+                 <h3 className="text-base font-bold text-text">{editKey ? 'Edit Klien' : 'Tambah Klien'}</h3>
+                 <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
+                    <X className="w-4 h-4" />
+                 </button>
               </div>
 
-              <div className="space-y-4">
-                <label className="text-xs font-semibold text-text3 uppercase tracking-wider block px-1">Channels & Targets</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                   {CHANNELS.map(ch => {
-                     const active = form.chs.includes(ch);
-                     return (
-                       <button
-                         key={ch}
-                         type="button"
-                         onClick={() => {
-                           const nextChs = active ? form.chs.filter(c => c !== ch) : [...form.chs, ch];
-                           setForm({ ...form, chs: nextChs });
-                         }}
-                         className={`h-10 rounded-xl border text-xs font-bold transition-all ${
-                           active ? 'bg-accent text-white border-accent' : 'bg-surface2 border-border-main text-text3'
-                         }`}
-                       >
-                         {ch}
-                       </button>
-                     );
-                   })}
+              <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {FORM_FIELDS.map(f => (
+                    <div key={f.key} className={f.span ? 'md:col-span-2' : ''}>
+                      <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">{f.label}</label>
+                      <input
+                        type="text"
+                        value={(form as any)[f.key]}
+                        onChange={e => setForm({ ...form, [f.key]: e.target.value })}
+                        placeholder={f.ph}
+                        disabled={f.disabled}
+                        required={f.required}
+                        className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all disabled:opacity-50"
+                      />
+                    </div>
+                  ))}
                 </div>
 
-                {form.chs.length > 0 && (
-                   <div className="bg-surface2 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {form.chs.map(ch => (
-                        <div key={ch} className="space-y-1.5">
-                           <label className="text-[10px] font-bold text-text3 uppercase">{ch} Target (x)</label>
-                           <input
-                             type="number"
-                             step="0.1"
-                             value={form.troas[ch] || ''}
-                             onChange={e => setForm({ ...form, troas: { ...form.troas, [ch]: e.target.value } })}
-                             placeholder="5.0"
-                             className="w-full h-9 px-3 rounded-lg border border-border-main bg-white text-xs font-bold text-text"
-                           />
-                        </div>
-                      ))}
-                   </div>
-                )}
-              </div>
-            </form>
+                <div className="space-y-4">
+                  <label className="text-xs font-semibold text-text3 uppercase tracking-wider block px-1">Channels & Targets</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                     {CHANNELS.map(ch => {
+                       const active = form.chs.includes(ch);
+                       return (
+                         <button
+                           key={ch}
+                           type="button"
+                           onClick={() => {
+                             const nextChs = active ? form.chs.filter(c => c !== ch) : [...form.chs, ch];
+                             setForm({ ...form, chs: nextChs });
+                           }}
+                           className={`h-10 rounded-xl border text-xs font-bold transition-all ${
+                             active ? 'bg-accent text-white border-accent' : 'bg-surface2 border-border-main text-text3'
+                           }`}
+                         >
+                           {ch}
+                         </button>
+                       );
+                     })}
+                  </div>
 
-            <div className="p-6 border-t border-border-main bg-surface2/50 flex gap-3">
-               <button type="button" onClick={() => setShowModal(false)} className="flex-1 h-11 rounded-xl bg-white border border-border-main text-text2 font-bold text-sm">Batal</button>
-               <button onClick={handleSubmit} disabled={loading} className="flex-1 h-11 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent disabled:opacity-50">Simpan</button>
+                  {form.chs.length > 0 && (
+                     <div className="bg-surface2 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {form.chs.map(ch => (
+                          <div key={ch} className="space-y-1.5">
+                             <label className="text-[10px] font-bold text-text3 uppercase">{ch} Target (x)</label>
+                             <input
+                               type="number"
+                               step="0.1"
+                               value={form.troas[ch] || ''}
+                               onChange={e => setForm({ ...form, troas: { ...form.troas, [ch]: e.target.value } })}
+                               placeholder="5.0"
+                               className="w-full h-9 px-3 rounded-lg border border-border-main bg-white text-xs font-bold text-text"
+                             />
+                          </div>
+                        ))}
+                     </div>
+                  )}
+                </div>
+              </form>
+
+              <div className="p-6 border-t border-border-main bg-surface2/50 flex gap-3">
+                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 h-11 rounded-xl bg-white border border-border-main text-text2 font-bold text-sm">Batal</button>
+                 <button onClick={handleSubmit} disabled={loading} className="flex-1 h-11 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent disabled:opacity-50">Simpan</button>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

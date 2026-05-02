@@ -186,99 +186,106 @@ export default function ActivityPage() {
 
       {/* ── Modal Form ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowModal(false)} />
+        <>
+          {/* Backdrop - Hitam Full dengan cakupan penuh */}
+          <div 
+            className="fixed inset-0 bg-black/80 z-[10001] animate-fade-in" 
+            onClick={() => setShowModal(false)} 
+          />
           
-          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in">
-            <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
-               <h3 className="text-base font-bold text-text">Tambah Activity</h3>
-               <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
-                  <X className="w-4 h-4" />
-               </button>
+          {/* Modal Container */}
+          <div className="fixed inset-0 z-[10002] flex items-center justify-center p-6 pointer-events-none">
+            <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in pointer-events-auto">
+              <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
+                 <h3 className="text-base font-bold text-text">Tambah Activity</h3>
+                 <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
+                    <X className="w-4 h-4" />
+                 </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Klien</label>
+                    <div className="relative">
+                       <select
+                         value={form.client_key}
+                         onChange={e => setForm({ ...form, client_key: e.target.value })}
+                         className="w-full h-11 px-4 pr-10 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
+                         required
+                       >
+                         <option value="">— Pilih Klien —</option>
+                         {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
+                       </select>
+                       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Tipe Aktivitas</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.entries(TYPE_MAP).map(([k, v]) => (
+                        <button
+                          key={k}
+                          type="button"
+                          onClick={() => setForm({ ...form, type: k })}
+                          className={`h-11 rounded-xl border text-xs font-bold transition-all ${
+                            form.type === k 
+                            ? 'bg-accent text-white border-accent shadow-sm' 
+                            : 'bg-surface2 border-border-main text-text3 hover:bg-gray-200'
+                          }`}
+                        >
+                          {v.l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Nama Aktivitas / Catatan</label>
+                    <input
+                      type="text"
+                      value={form.name}
+                      onChange={e => setForm({ ...form, name: e.target.value })}
+                      placeholder="Contoh: Launching Promo Buy 1 Get 1"
+                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Tanggal</label>
+                    <input
+                      type="date"
+                      value={form.date}
+                      onChange={e => setForm({ ...form, date: e.target.value })}
+                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                   <button
+                     type="button"
+                     onClick={() => setShowModal(false)}
+                     className="flex-1 h-11 rounded-xl bg-surface2 text-text2 font-bold text-sm hover:bg-gray-200 transition-all"
+                   >
+                     Batal
+                   </button>
+                   <button
+                     type="submit"
+                     disabled={loading}
+                     className="flex-1 h-11 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                   >
+                     {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus className="w-4 h-4" />}
+                     Simpan
+                   </button>
+                </div>
+              </form>
             </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Klien</label>
-                  <div className="relative">
-                     <select
-                       value={form.client_key}
-                       onChange={e => setForm({ ...form, client_key: e.target.value })}
-                       className="w-full h-11 px-4 pr-10 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
-                       required
-                     >
-                       <option value="">— Pilih Klien —</option>
-                       {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
-                     </select>
-                     <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Tipe Aktivitas</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(TYPE_MAP).map(([k, v]) => (
-                      <button
-                        key={k}
-                        type="button"
-                        onClick={() => setForm({ ...form, type: k })}
-                        className={`h-11 rounded-xl border text-xs font-bold transition-all ${
-                          form.type === k 
-                          ? 'bg-accent text-white border-accent shadow-sm' 
-                          : 'bg-surface2 border-border-main text-text3 hover:bg-gray-200'
-                        }`}
-                      >
-                        {v.l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Nama Aktivitas / Catatan</label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={e => setForm({ ...form, name: e.target.value })}
-                    placeholder="Contoh: Launching Promo Buy 1 Get 1"
-                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Tanggal</label>
-                  <input
-                    type="date"
-                    value={form.date}
-                    onChange={e => setForm({ ...form, date: e.target.value })}
-                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                 <button
-                   type="button"
-                   onClick={() => setShowModal(false)}
-                   className="flex-1 h-11 rounded-xl bg-surface2 text-text2 font-bold text-sm hover:bg-gray-200 transition-all"
-                 >
-                   Batal
-                 </button>
-                 <button
-                   type="submit"
-                   disabled={loading}
-                   className="flex-1 h-11 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                 >
-                   {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus className="w-4 h-4" />}
-                   Simpan
-                 </button>
-              </div>
-            </form>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
