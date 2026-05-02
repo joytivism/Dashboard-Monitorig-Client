@@ -95,12 +95,12 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
       <div className="p-6 sm:p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center text-white shadow-lg shadow-accent/20">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20">
+              <Sparkles className="w-6 h-6 fill-white/20" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-text">AI Strategy Insights</h3>
-              <p className="text-[11px] text-text3 font-medium tracking-wide">Command Center Intelligence</p>
+              <h3 className="text-sm font-bold text-text uppercase tracking-tight">AI Strategy Insights</h3>
+              <p className="text-[10px] font-bold text-text4 uppercase tracking-[0.2em]">Powered by Advanced Analytics</p>
             </div>
           </div>
 
