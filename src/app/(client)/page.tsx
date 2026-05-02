@@ -8,7 +8,7 @@ import { useDashboardData } from '@/components/DataProvider';
 import {
   Users, DollarSign, TrendingUp, CreditCard,
   Search, ArrowUpRight, ArrowDownRight, AlertTriangle, Sparkles,
-  ChevronRight, Activity, Calendar
+  ChevronRight, Activity, Calendar, Filter
 } from 'lucide-react';
 
 const STATUS_BG: Record<string, string> = {
@@ -100,6 +100,7 @@ function OverviewContent() {
   const [search, setSearch] = useState('');
   const [filterInd, setFilterInd] = useState('');
   const [filterPIC, setFilterPIC] = useState('');
+  const [filterCG, setFilterCG] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'status', direction: 'asc' });
 
   const prevIdx = PERIODS.indexOf(curPeriod) - 1;
@@ -108,6 +109,7 @@ function OverviewContent() {
   // Get unique filters
   const industries = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.ind))).filter(i => i !== '—').sort(), [CLIENTS]);
   const pics = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.as))).filter(i => i !== '—').sort(), [CLIENTS]);
+  const channelGroups = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.cg))).filter(i => i && i !== '—').sort(), [CLIENTS]);
 
   // Aggregate Metrics
   const { tRev, tSp, pRev, pSp } = useMemo(() => {
@@ -133,7 +135,8 @@ function OverviewContent() {
         const matchesSearch = !search || cl.key.toLowerCase().includes(search.toLowerCase()) || cl.ind.toLowerCase().includes(search.toLowerCase());
         const matchesInd = !filterInd || cl.ind === filterInd;
         const matchesPIC = !filterPIC || cl.as === filterPIC;
-        return matchesSearch && matchesInd && matchesPIC;
+        const matchesCG = !filterCG || cl.cg === filterCG;
+        return matchesSearch && matchesInd && matchesPIC && matchesCG;
       })
       .sort((a, b) => {
         const { key, direction } = sortConfig;
@@ -156,7 +159,7 @@ function OverviewContent() {
         if (valA > valB) return direction === 'asc' ? 1 : -1;
         return 0;
       });
-  }, [CLIENTS, search, filterInd, filterPIC, sortConfig, DATA, curPeriod, PERIODS]);
+  }, [CLIENTS, search, filterInd, filterPIC, filterCG, sortConfig, DATA, curPeriod, PERIODS]);
 
   const toggleSort = (key: string) => {
     setSortConfig(prev => ({
@@ -339,51 +342,82 @@ function OverviewContent() {
 
       {/* ── Client Table ── */}
       <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 px-6 py-5 border-b border-border-main bg-white">
-          <div className="flex items-center gap-3">
-            <h2 className="text-sm font-bold text-text shrink-0 mr-4">Semua Klien</h2>
-            <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 px-6 py-5 border-b border-border-main bg-white">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
+            <h2 className="text-base font-bold text-text shrink-0">Semua Klien</h2>
+            
+            <div className="flex flex-wrap items-center gap-3">
               {/* Search */}
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 text-text4 absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="relative group">
+                <Search className="w-4 h-4 text-text4 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-accent transition-colors" />
                 <input
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Cari klien..."
-                  className="pl-8 pr-4 h-8 bg-surface2 border border-border-main rounded-lg text-[11px] font-semibold w-40 focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+                  className="pl-9 pr-4 h-9 bg-surface2 border border-border-main rounded-xl text-xs font-semibold w-48 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
                 />
               </div>
 
+              <div className="h-4 w-px bg-border-main hidden md:block mx-1" />
+
+              {/* CG Filter */}
+              <div className="relative">
+                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text4 pointer-events-none">
+                    <Filter className="w-3 h-3" />
+                 </div>
+                 <select
+                  value={filterCG}
+                  onChange={e => setFilterCG(e.target.value)}
+                  className="h-9 pl-8 pr-8 bg-surface2 border border-border-main rounded-xl text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[110px]"
+                >
+                  <option value="">Semua CG</option>
+                  {channelGroups.map((cg: string) => <option key={cg} value={cg}>{cg}</option>)}
+                </select>
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-text4">
+                   <ChevronRight className="w-3 h-3 rotate-90" />
+                </div>
+              </div>
+
               {/* Industry Filter */}
-              <select
-                value={filterInd}
-                onChange={e => setFilterInd(e.target.value)}
-                className="h-8 pl-3 pr-8 bg-surface2 border border-border-main rounded-lg text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[100px]"
-              >
-                <option value="">Semua Industri</option>
-                {industries.map((ind: string) => <option key={ind} value={ind}>{ind}</option>)}
-              </select>
+              <div className="relative">
+                <select
+                  value={filterInd}
+                  onChange={e => setFilterInd(e.target.value)}
+                  className="h-9 pl-4 pr-8 bg-surface2 border border-border-main rounded-xl text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[130px]"
+                >
+                  <option value="">Semua Industri</option>
+                  {industries.map((ind: string) => <option key={ind} value={ind}>{ind}</option>)}
+                </select>
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-text4">
+                   <ChevronRight className="w-3 h-3 rotate-90" />
+                </div>
+              </div>
 
               {/* PIC Filter */}
-              <select
-                value={filterPIC}
-                onChange={e => setFilterPIC(e.target.value)}
-                className="h-8 pl-3 pr-8 bg-surface2 border border-border-main rounded-lg text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[100px]"
-              >
-                <option value="">Semua PIC</option>
-                {pics.map((pic: string) => <option key={pic} value={pic}>{pic}</option>)}
-              </select>
+              <div className="relative">
+                <select
+                  value={filterPIC}
+                  onChange={e => setFilterPIC(e.target.value)}
+                  className="h-9 pl-4 pr-8 bg-surface2 border border-border-main rounded-xl text-[11px] font-bold text-text3 focus:outline-none focus:border-accent appearance-none cursor-pointer hover:bg-surface3 transition-all min-w-[110px]"
+                >
+                  <option value="">Semua PIC</option>
+                  {pics.map((pic: string) => <option key={pic} value={pic}>{pic}</option>)}
+                </select>
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-text4">
+                   <ChevronRight className="w-3 h-3 rotate-90" />
+                </div>
+              </div>
             </div>
           </div>
           
-          <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">
+          <div className="text-[10px] font-black text-text4 uppercase tracking-widest bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
             Total {sortedClients.length} Klien
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="border-b border-border-main bg-surface2/30">
                 {[
@@ -393,12 +427,12 @@ function OverviewContent() {
                   { label: 'Revenue', key: 'rev' },
                   { label: 'Spend', key: 'sp' },
                   { label: 'ROAS', key: 'roas' },
-                  { label: 'CG', key: 'as' }
+                  { label: 'Channel', key: 'cg' }
                 ].map((h, i) => (
                   <th 
                     key={h.key} 
                     onClick={() => toggleSort(h.key)}
-                    className={`py-3.5 px-4 text-[10px] font-black uppercase tracking-wider cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : ''} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : 'text-text4'}`}
+                    className={`py-4 px-4 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : ''} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : 'text-text4'}`}
                   >
                     <div className={`flex items-center gap-1.5 ${i === 6 ? 'justify-end' : 'justify-start'}`}>
                       {h.label}
@@ -421,7 +455,7 @@ function OverviewContent() {
                     onClick={() => router.push(`/client/${cl.key}${qs}`)}
                     className="cursor-pointer hover:bg-surface2/70 transition-all duration-150 group"
                   >
-                    <td className="py-3.5 pl-6">
+                    <td className="py-4 pl-6">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-[10px] font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
                           {cl.key.slice(0, 2).toUpperCase()}
@@ -429,40 +463,45 @@ function OverviewContent() {
                         <span className="text-sm font-bold text-text">{cl.key}</span>
                       </div>
                     </td>
-                    <td className="py-3.5">
-                      <span className="text-sm text-text3">{cl.ind}</span>
+                    <td className="py-4">
+                      <span className="text-xs font-medium text-text3 bg-surface2 px-2 py-1 rounded-md">{cl.ind}</span>
                     </td>
-                    <td className="py-3.5">
+                    <td className="py-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${STATUS_BG[wc] || STATUS_BG.nn}`}>
                         <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dotColor }} />
                         {LM[wc]}
                       </span>
                     </td>
-                    <td className="py-3.5">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-semibold text-text">{fRp(t.rev)}</span>
+                    <td className="py-4">
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-sm font-bold text-text">{fRp(t.rev)}</span>
                         <Sparkline 
                           data={PERIODS.map(p => totals(CLIENTS, DATA, cl.key, p).rev)} 
                           color={wc === 'rr' || wc === 'or' ? '#DC2626' : wc === 'gg' || wc === 'gd' ? '#059669' : '#9CA3AF'} 
                         />
                       </div>
                     </td>
-                    <td className="py-3.5">
-                      <span className="text-sm text-text3">{fRp(t.sp)}</span>
+                    <td className="py-4">
+                      <span className="text-sm font-medium text-text3">{fRp(t.sp)}</span>
                     </td>
-                    <td className="py-3.5">
-                      <span className="text-sm font-medium text-text">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
+                    <td className="py-4">
+                      <span className="text-sm font-bold text-text">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
                     </td>
-                    <td className="py-3.5 pr-6 text-right">
-                      <span className="text-sm text-text3">{cl.cg}</span>
+                    <td className="py-4 pr-6 text-right">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-text2 bg-surface3 px-2.5 py-1 rounded-lg border border-border-main/50 uppercase tracking-tighter">
+                         {cl.cg}
+                      </span>
                     </td>
                   </tr>
                 );
               })}
               {sortedClients.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-14 text-center text-sm text-text3">
-                    Tidak ada klien yang cocok dengan pencarian.
+                  <td colSpan={7} className="py-20 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                       <Filter className="w-8 h-8 text-text4 opacity-20" />
+                       <p className="text-sm font-bold text-text4 uppercase tracking-widest">No clients found</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -476,7 +515,7 @@ function OverviewContent() {
 
 export default function OverviewPage() {
   return (
-    <React.Suspense fallback={<div className="p-8 text-text3 text-sm">Memuat data...</div>}>
+    <React.Suspense fallback={<div className="p-8 text-text3 text-sm font-medium">Memuat data dashboard...</div>}>
       <OverviewContent />
     </React.Suspense>
   );
