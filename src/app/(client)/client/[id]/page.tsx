@@ -72,11 +72,11 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 rounded-3xl bg-accent/10 flex items-center justify-center text-accent text-xl font-bold border border-accent/10 shadow-sm">
-              {id.slice(0, 2).toUpperCase()}
+              {cl.name.slice(0, 2).toUpperCase()}
             </div>
             <div>
               <h1 className="text-3xl font-bold text-text flex items-center gap-4">
-                {id}
+                {cl.name}
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-${wc}-bg text-${wc}-text border border-${wc}-border/30`}>
                   {LM[wc]}
                 </span>

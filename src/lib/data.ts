@@ -20,6 +20,7 @@ export const STATUS_LABEL: Record<string, string> = {
 
 export interface Client {
   key: string;
+  name: string;
   ind: string;
   cg: string;
   at: string;
@@ -78,6 +79,7 @@ export async function getDashboardData() {
     
     return {
       key: c.client_key,
+      name: c.name || c.client_key,
       ind: c.industry || '—',
       cg: c.brand_category || '—',
       at: '—', // Reserved for future

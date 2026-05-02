@@ -138,9 +138,9 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                   <td className="py-4 pl-6">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-[10px] font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                        {cl.key.slice(0, 2).toUpperCase()}
+                        {cl.name.slice(0, 2).toUpperCase()}
                       </div>
-                      <span className="text-sm font-bold text-text">{cl.key}</span>
+                      <span className="text-sm font-bold text-text">{cl.name}</span>
                     </div>
                   </td>
                   <td className="py-4">

@@ -220,11 +220,11 @@ export default function AdminHubPage() {
                   href={`/client/${encodeURIComponent(cl.key)}`}
                   className="flex items-center gap-4 px-8 py-5 hover:bg-surface2 transition-colors group/row"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black shrink-0 group-hover/row:bg-accent group-hover/row:text-white transition-all">
-                    {cl.key.slice(0, 2).toUpperCase()}
+                  <div className="w-10 h-10 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black shrink-0 group/row-hover:bg-accent group-hover/row:text-white transition-all">
+                    {cl.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-text truncate group-hover/row:text-accent transition-colors">{cl.key}</div>
+                    <div className="text-sm font-bold text-text truncate group-hover/row:text-accent transition-colors">{cl.name}</div>
                     <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">{cl.ind}</div>
                   </div>
                   <div className="text-right shrink-0">

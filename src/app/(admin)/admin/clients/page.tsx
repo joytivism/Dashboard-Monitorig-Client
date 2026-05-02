@@ -66,7 +66,7 @@ export default function ClientsAdminPage() {
     setEditKey(c.key);
     setForm({
       client_key: c.key,
-      name: c.key,
+      name: c.name,
       industry: c.ind,
       pic_name: c.pic,
       account_strategist: c.as,
