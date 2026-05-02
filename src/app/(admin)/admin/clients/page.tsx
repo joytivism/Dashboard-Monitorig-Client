@@ -374,7 +374,7 @@ export default function ClientsAdminPage() {
       {/* ── Modal ── */}
       {showModal && (
         <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[10vh]">
-          <div className="absolute inset-0 bg-black/40 animate-fade-in" onClick={() => setShowModal(false)} />
+          {/* Overlay removed per request */}
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-[85vh]">
             <div className="flex shrink-0 items-center justify-between px-7 py-6 border-b border-border-main bg-surface1/50">
               <div>
