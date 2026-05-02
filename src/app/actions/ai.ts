@@ -20,19 +20,27 @@ export async function generateAISummary(clientName: string, metrics: any) {
   const roas = parseFloat(metrics.roas) || 0;
   const growth = parseFloat(metrics.growth) || 0;
 
-  const prompt = `
-    Analisis data iklan klien "${clientName}":
-    - Spend: ${metrics.spend}, Revenue: ${metrics.revenue}, ROAS: ${roas}x, Trend: ${growth}%
+  const dbPrompt = settings.ai_prompt || `Analisis data iklan klien "{clientName}":
+    - Spend: {spend}, Revenue: {revenue}, ROAS: {roas}x, Trend: {growth}%
     
     Berikan jawaban dalam format JSON saja:
     {
-      "status": "${roas >= 4 ? 'positive' : roas < 3 ? 'negative' : 'neutral'}",
+      "status": "{status}",
       "summary": "1-2 kalimat analisis strategis Bahasa Indonesia.",
       "actions": ["Tindakan konkret 1", "Tindakan konkret 2"]
     }
     
-    PENTING: Hanya keluarkan objek JSON. Tanpa kata pembuka, tanpa markdown.
-  `;
+    PENTING: Hanya keluarkan objek JSON. Tanpa kata pembuka, tanpa markdown.`;
+
+  const status = roas >= 4 ? 'positive' : roas < 3 ? 'negative' : 'neutral';
+  
+  const prompt = dbPrompt
+    .replace('{clientName}', clientName)
+    .replace('{spend}', String(metrics.spend))
+    .replace('{revenue}', String(metrics.revenue))
+    .replace('{roas}', String(roas))
+    .replace('{growth}', String(growth))
+    .replace('{status}', status);
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {

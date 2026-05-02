@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Database, Activity, Users,
-  Hexagon, LogOut, ChevronRight, ShieldCheck,
+  Hexagon, LogOut, ChevronRight, ShieldCheck, Settings,
 } from 'lucide-react';
 
 const NAV = [
@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin/data',     icon: Database,        label: 'Input Data',     sub: 'Performa per channel' },
   { href: '/admin/activity', icon: Activity,        label: 'Activity Log',   sub: 'Promo & event' },
   { href: '/admin/clients',  icon: Users,           label: 'Klien',          sub: 'Manajemen klien' },
+  { href: '/admin/settings', icon: Settings,        label: 'Settings',       sub: 'API & Konfigurasi AI' },
 ];
 
 interface AdminSidebarProps {
