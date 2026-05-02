@@ -111,7 +111,7 @@ export default function SettingsPage() {
       {/* Header Section */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
             <Settings className="w-7 h-7 text-accent" />
             Pengaturan Sistem
           </h1>

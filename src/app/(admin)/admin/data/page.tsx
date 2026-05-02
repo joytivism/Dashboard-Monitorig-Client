@@ -120,7 +120,7 @@ export default function DataInputPage() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
             <Database className="w-7 h-7 text-accent" />
             Input Data Performa
           </h1>
@@ -133,7 +133,7 @@ export default function DataInputPage() {
       <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
         {/* Step label */}
         <div className="px-6 py-5 border-b border-border-main flex items-center gap-3 bg-surface1/50">
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white text-xs font-black shrink-0 shadow-sm shadow-accent/20">1</div>
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm shadow-accent/20">1</div>
           <div>
             <h2 className="text-sm font-bold text-text">Pilih Klien & Periode</h2>
             <p className="text-xs text-text3">Tentukan klien dan bulan periode data yang akan diinput.</p>
@@ -226,7 +226,7 @@ export default function DataInputPage() {
           {/* Step label */}
           <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface1/50">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white text-xs font-black shrink-0 shadow-sm shadow-accent/20">2</div>
+              <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm shadow-accent/20">2</div>
               <div>
                 <h2 className="text-sm font-bold text-text">Input Data per Channel</h2>
                 <p className="text-xs text-text3">
@@ -271,23 +271,23 @@ export default function DataInputPage() {
                   <div className="p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {/* Spend — always */}
                     <div>
-                      <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Ad Spend (Rp)</label>
+                      <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Ad Spend (Rp)</label>
                       <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                     </div>
 
                     {/* Revenue channel fields */}
                     {!aware && <>
                       <div>
-                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Revenue (Rp)</label>
+                        <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Revenue (Rp)</label>
                         <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       <div>
-                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Orders</label>
+                        <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Orders</label>
                         <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       {chDef?.stage === 'mofu' && (
                         <div>
-                          <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Visitors</label>
+                          <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Visitors</label>
                           <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                         </div>
                       )}
@@ -296,15 +296,15 @@ export default function DataInputPage() {
                     {/* Awareness channel fields */}
                     {aware && <>
                       <div>
-                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Reach</label>
+                        <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Reach</label>
                         <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       <div>
-                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Impressions</label>
+                        <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Impressions</label>
                         <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       <div>
-                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Results</label>
+                        <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block mb-2">Results</label>
                         <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                     </>}

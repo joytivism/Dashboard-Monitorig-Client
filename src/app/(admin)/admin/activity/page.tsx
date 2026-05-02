@@ -255,7 +255,7 @@ export default function ActivityPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-start gap-4">
                         <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                          <span className="text-xs font-black">{a.c.slice(0, 2).toUpperCase()}</span>
+                          <span className="text-xs font-bold">{a.c.slice(0, 2).toUpperCase()}</span>
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-2">

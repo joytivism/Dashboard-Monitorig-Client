@@ -127,7 +127,7 @@ export default function ClientsAdminPage() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
             <Users className="w-7 h-7 text-accent" />
             Manajemen Klien
           </h1>
@@ -148,8 +148,8 @@ export default function ClientsAdminPage() {
             <Users className="w-6 h-6 text-text2" />
           </div>
           <div>
-            <div className="text-sm font-black text-text tracking-tight">{CLIENTS.length} Klien Terdaftar</div>
-            <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">Status: <span className="text-gg-text font-black">All Active</span></div>
+            <div className="text-sm font-bold text-text tracking-tight">{CLIENTS.length} Klien Terdaftar</div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">Status: <span className="text-gg-text font-bold">All Active</span></div>
           </div>
         </div>
         {/* Search */}
@@ -186,7 +186,7 @@ export default function ClientsAdminPage() {
                 {/* Top: Avatar & Actions */}
                 <div className="flex items-start justify-between gap-4 mb-5">
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black group-hover:bg-accent group-hover:text-white transition-all duration-300 shrink-0">
+                    <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold group-hover:bg-accent group-hover:text-white transition-all duration-300 shrink-0">
                       {cl.key.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0">
@@ -271,7 +271,7 @@ export default function ClientsAdminPage() {
             {/* Modal header */}
             <div className="flex shrink-0 items-center justify-between px-7 py-6 border-b border-border-main bg-surface1/50">
               <div>
-                <h3 className="text-lg font-black text-text tracking-tight">
+                <h3 className="text-lg font-bold text-text tracking-tight">
                   {editKey ? `Edit Klien: ${editKey}` : 'Tambah Klien Baru'}
                 </h3>
                 <p className="text-xs text-text3 mt-0.5">Konfigurasi metadata klien dan channel iklan.</p>
@@ -288,7 +288,7 @@ export default function ClientsAdminPage() {
               <div className="flex-1 overflow-y-auto p-7 space-y-8">
                 {/* Basic info */}
                 <div className="space-y-5">
-                  <div className="text-[10px] font-black text-text4 uppercase tracking-[0.15em] flex items-center gap-2">
+                  <div className="text-[10px] font-bold text-text4 uppercase tracking-[0.15em] flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     Informasi Dasar
                   </div>
@@ -312,7 +312,7 @@ export default function ClientsAdminPage() {
 
                 {/* Channels */}
                 <div className="space-y-5">
-                   <div className="text-[10px] font-black text-text4 uppercase tracking-[0.15em] flex items-center gap-2">
+                   <div className="text-[10px] font-bold text-text4 uppercase tracking-[0.15em] flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     Konfigurasi Channels
                   </div>
