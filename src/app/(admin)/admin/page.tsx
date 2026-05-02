@@ -116,170 +116,133 @@ export default function AdminHubPage() {
       {/* ── BENTO GRID LAYOUT ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
         
-        {/* Main AI Monitor (Bento Large) — POWERFUL COMMAND CENTER OVERHAUL */}
-        <div className="lg:col-span-8 bg-white rounded-[2.5rem] border border-border-main shadow-sm overflow-hidden flex flex-col group/engine transition-all duration-700 relative">
+        {/* ── Client Health Leaderboard (Operational) ── */}
+        <div className="lg:col-span-8 bg-white rounded-[2.5rem] border border-border-main shadow-sm overflow-hidden flex flex-col group/leaderboard transition-all duration-500">
            
-           {/* ── Header Area: Advanced Meta ── */}
-           <div className="p-8 border-b border-border-main bg-surface2/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-              
-              <div className="flex items-center gap-6 relative z-10">
-                 <div className="w-16 h-16 rounded-[1.5rem] bg-text shadow-2xl flex items-center justify-center shrink-0 relative group/icon cursor-pointer overflow-hidden">
-                    <div className="absolute inset-0 bg-accent opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500" />
-                    <Zap className="w-8 h-8 text-white relative z-20" />
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] opacity-50" />
+           {/* Header: Operational Status */}
+           <div className="p-8 border-b border-border-main bg-surface2/10 flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                 <div className="w-14 h-14 rounded-2xl bg-text flex items-center justify-center shadow-xl shadow-text/10 group-hover/leaderboard:bg-accent transition-colors duration-500">
+                    <Activity className="w-6 h-6 text-white" />
                  </div>
-                 
-                 <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                       <h2 className="text-xl font-black text-text tracking-tighter">AI Intelligence Engine</h2>
-                       <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gg/10 border border-gg/20">
-                          <div className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse shadow-[0_0_8px_#10b981]" />
-                          <span className="text-[9px] font-black text-gg-text uppercase tracking-widest">System Optimal</span>
+                 <div className="space-y-1.5">
+                    <div className="flex items-center gap-2.5">
+                       <h2 className="text-base font-black text-text tracking-tight">Client Health Leaderboard</h2>
+                       <div className="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20">
+                          <span className="text-[9px] font-black text-accent uppercase tracking-widest">Real-time Radar</span>
                        </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-4">
-                       <div className="flex items-center gap-2">
-                          <span className="text-[9px] font-black text-text4 uppercase tracking-widest">Model:</span>
-                          <div className="px-2.5 py-1 rounded-lg bg-white border border-border-main shadow-sm flex items-center gap-2">
-                             <div className="w-1 h-1 rounded-full bg-or" />
-                             <span className="text-[10px] font-black text-text uppercase tracking-tight">Nemotron-3 V1.0</span>
-                          </div>
-                       </div>
-                       <div className="h-4 w-px bg-border-main" />
-                       <div className="flex items-center gap-2">
-                          <Activity className="w-3 h-3 text-accent" />
-                          <span className="text-[10px] font-black text-accent uppercase tracking-widest">Latency: 24ms</span>
-                       </div>
-                    </div>
+                    <p className="text-[10px] font-bold text-text4 uppercase tracking-widest opacity-60">Monitoring performa & budget pacing aktif</p>
                  </div>
               </div>
-
-              <div className="flex items-center gap-3 shrink-0 relative z-10">
-                 <div className="flex flex-col items-end mr-2">
-                    <span className="text-[9px] font-black text-text4 uppercase tracking-widest">Uptime</span>
-                    <span className="text-xs font-bold text-text tracking-tight">99.98%</span>
+              <div className="flex items-center gap-2">
+                 <div className="flex -space-x-2 mr-4">
+                    {[1,2,3].map(i => (
+                       <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-surface3 flex items-center justify-center text-[10px] font-bold text-text3">
+                          {String.fromCharCode(64 + i)}
+                       </div>
+                    ))}
+                    <div className="w-8 h-8 rounded-full border-2 border-white bg-accent text-white flex items-center justify-center text-[10px] font-bold">
+                       +{CLIENTS.length - 3}
+                    </div>
                  </div>
-                 <button className="w-12 h-12 rounded-2xl bg-white border border-border-main flex items-center justify-center text-text3 hover:text-accent hover:border-accent transition-all shadow-sm">
-                    <Settings2 className="w-5 h-5" />
-                 </button>
-                 <button className="w-12 h-12 rounded-2xl bg-text text-white flex items-center justify-center hover:bg-accent transition-all shadow-xl shadow-text/10">
-                    <ArrowUpRight className="w-5 h-5" />
-                 </button>
+                 <Link href="/admin/clients" className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-text3 hover:text-accent hover:border-accent transition-all shadow-sm">
+                    <Users className="w-4 h-4" />
+                 </Link>
               </div>
            </div>
 
-           {/* ── Main Engine Modules Grid ── */}
-           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-main/50 relative">
+           {/* Metrics Grid: Performance Split */}
+           <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border-main/50 flex-1">
               
-              {/* Module 1: Requests Matrix */}
-              <div className="p-10 flex flex-col hover:bg-surface2/30 transition-all duration-500 group/mod cursor-default">
-                 <div className="flex-1 mb-10">
-                    <div className="flex items-center justify-between mb-8">
-                       <div className="flex flex-col">
-                          <span className="text-[10px] font-black text-text4 uppercase tracking-[0.2em]">Requests Engine</span>
-                          <span className="text-[8px] font-bold text-accent/60 uppercase tracking-widest mt-0.5">Live Processing</span>
-                       </div>
-                       <div className="flex gap-1.5 p-1.5 rounded-lg bg-surface2 border border-border-main/50">
-                          {[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-border-main group-hover/mod:bg-accent transition-all duration-300" />)}
-                       </div>
+              {/* Column 1: Top Gainers */}
+              <div className="p-8 flex flex-col hover:bg-gg/5 transition-colors group/gainers">
+                 <div className="flex items-center justify-between mb-8">
+                    <div className="flex flex-col">
+                       <span className="text-[10px] font-black text-text4 uppercase tracking-[0.2em]">Top Performers</span>
+                       <span className="text-[8px] font-bold text-gg uppercase tracking-widest mt-0.5">Highest Growth</span>
                     </div>
-                    <div className="relative">
-                       <div className="text-6xl font-black text-text tracking-tighter mb-4 group-hover/mod:scale-[1.02] transition-transform origin-left">
-                          {stats.aiStats.totalRequests}
-                       </div>
-                       <div className="absolute -top-2 -right-2 w-12 h-12 bg-accent/5 rounded-full blur-xl opacity-0 group-hover/mod:opacity-100 transition-opacity" />
-                    </div>
-                    <p className="text-xs font-semibold text-text3 leading-relaxed max-w-[200px]">Total analisis yang telah dioptimasi oleh mesin kecerdasan buatan.</p>
+                    <TrendingUp className="w-4 h-4 text-gg" />
                  </div>
                  
-                 <div className="bg-white border border-border-main/80 p-5 rounded-[2rem] shadow-sm relative overflow-hidden group/pulse">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-accent/5 to-transparent opacity-0 group-hover/pulse:opacity-100 transition-opacity" />
-                    <div className="flex items-center justify-between relative z-10">
-                       <div className="grid grid-cols-4 gap-1.5">
-                          {[...Array(12)].map((_, i) => (
-                             <div key={i} className={`w-2 h-2 rounded-full transition-all duration-500 ${i < (stats.aiStats.todayRequests % 12) ? 'bg-accent scale-110' : 'bg-surface2 border border-border-main'}`} />
-                          ))}
-                       </div>
-                       <div className="text-right">
-                          <div className="text-lg font-black text-accent tracking-tighter leading-none">+{stats.aiStats.todayRequests}</div>
-                          <div className="text-[9px] font-black text-text4 uppercase tracking-widest mt-1">Today</div>
-                       </div>
-                    </div>
+                 <div className="space-y-4 flex-1">
+                    {CLIENTS.slice(0, 3).map((cl, i) => {
+                       const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
+                       return (
+                          <div key={cl.key} className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border-main hover:border-gg/30 hover:shadow-md transition-all cursor-pointer group/item">
+                             <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-gg/10 text-gg flex items-center justify-center text-[10px] font-black group-hover/item:bg-gg group-hover/item:text-white transition-colors">
+                                   {cl.key.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                   <div className="text-xs font-bold text-text">{cl.name}</div>
+                                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">{cl.ind}</div>
+                                </div>
+                             </div>
+                             <div className="text-right">
+                                <div className="text-sm font-black text-gg tracking-tighter">{t.roas?.toFixed(2) || '0.00'}x</div>
+                                <div className="text-[9px] font-bold text-gg-text opacity-60">ROAS Peak</div>
+                             </div>
+                          </div>
+                       );
+                    })}
                  </div>
               </div>
 
-              {/* Module 2: Data Throughput & Flow */}
-              <div className="p-10 flex flex-col hover:bg-surface2/30 transition-all duration-500 group/mod border-x border-border-main/50 cursor-default">
-                 <div className="flex-1 mb-10">
-                    <div className="flex items-center justify-between mb-8">
-                       <div className="flex flex-col">
-                          <span className="text-[10px] font-black text-text4 uppercase tracking-[0.2em]">Data Throughput</span>
-                          <span className="text-[8px] font-bold text-accent/60 uppercase tracking-widest mt-0.5">Token Optimization</span>
-                       </div>
-                       <div className="w-10 h-10 rounded-xl bg-surface2 border border-border-main/50 flex items-center justify-center">
-                          <Zap className="w-4 h-4 text-accent group-hover/mod:scale-125 transition-transform" />
-                       </div>
+              {/* Column 2: At-Risk */}
+              <div className="p-8 flex flex-col hover:bg-rr/5 transition-colors group/risk">
+                 <div className="flex items-center justify-between mb-8">
+                    <div className="flex flex-col">
+                       <span className="text-[10px] font-black text-text4 uppercase tracking-[0.2em]">At-Risk Clients</span>
+                       <span className="text-[8px] font-bold text-rr uppercase tracking-widest mt-0.5">Urgent Attention</span>
                     </div>
-                    <div className="text-6xl font-black text-text tracking-tighter mb-4 transition-transform group-hover/mod:translate-x-1">
-                       {(stats.aiStats.totalTokens/1000).toFixed(1)}K
-                    </div>
-                    <p className="text-xs font-semibold text-text3 leading-relaxed max-w-[200px]">Volume data mentah yang telah diproses dan dikonversi menjadi insight strategis.</p>
+                    <AlertCircle className="w-4 h-4 text-rr animate-pulse" />
                  </div>
-                 
-                 <div className="space-y-4">
-                    <div className="flex justify-between items-end">
-                       <div className="flex flex-col gap-0.5">
-                          <span className="text-[9px] font-black text-text4 uppercase tracking-[0.2em]">Load Status</span>
-                          <span className="text-[11px] font-black text-text uppercase tracking-tight">Optimal Performance</span>
-                       </div>
-                       <span className="text-sm font-black text-accent tracking-tighter">82.4%</span>
-                    </div>
-                    <div className="h-2 w-full bg-surface2 rounded-full overflow-hidden border border-border-main/40 relative">
-                       <div className="h-full bg-gradient-to-r from-accent via-or to-accent bg-[length:200%_100%] animate-[move-stripe_3s_linear_infinite] w-[82.4%] shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)]" />
-                    </div>
+
+                 <div className="space-y-4 flex-1">
+                    {CLIENTS.filter(c => clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, c.key, curPeriod) === 'rr' || clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, c.key, curPeriod) === 'or').slice(0, 3).map((cl, i) => {
+                       const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
+                       const status = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
+                       return (
+                          <div key={cl.key} className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border-main hover:border-rr/30 hover:shadow-md transition-all cursor-pointer group/item">
+                             <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-rr/10 text-rr flex items-center justify-center text-[10px] font-black group-hover/item:bg-rr group-hover/item:text-white transition-colors">
+                                   {cl.key.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                   <div className="text-xs font-bold text-text">{cl.name}</div>
+                                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">{status === 'rr' ? 'Kritis' : 'Waspada'}</div>
+                                </div>
+                             </div>
+                             <div className="text-right">
+                                <div className="text-sm font-black text-rr tracking-tighter">{t.roas?.toFixed(2) || '0.00'}x</div>
+                                <div className="text-[9px] font-bold text-rr-text opacity-60">ROAS Low</div>
+                             </div>
+                          </div>
+                       );
+                    })}
                  </div>
               </div>
+           </div>
 
-              {/* Module 3: Burn & Financial Forecast */}
-              <div className="p-10 flex flex-col hover:bg-surface2/30 transition-all duration-500 group/mod cursor-default bg-surface2/10">
-                 <div className="flex-1 mb-10">
-                    <div className="flex items-center justify-between mb-8">
-                       <div className="flex flex-col">
-                          <span className="text-[10px] font-black text-text4 uppercase tracking-[0.2em]">Burn Estimation</span>
-                          <span className="text-[8px] font-bold text-rr uppercase tracking-widest mt-0.5">Live Billing</span>
-                       </div>
-                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rr/10 border border-rr/20">
-                          <div className="w-1.5 h-1.5 rounded-full bg-rr animate-pulse" />
-                          <span className="text-[10px] font-black text-rr-text tracking-tighter">$USD</span>
-                       </div>
-                    </div>
-                    <div className="text-6xl font-black text-text tracking-tighter mb-4 transition-transform group-hover/mod:-translate-y-1">
-                       ${stats.aiStats.totalCost.toFixed(4)}
-                    </div>
-                    <p className="text-xs font-semibold text-text3 leading-relaxed max-w-[200px]">Akumulasi biaya operasional API untuk periode berjalan saat ini.</p>
+           {/* Footer: Budget Pacing Summary */}
+           <div className="p-8 bg-surface2/5 border-t border-border-main">
+              <div className="flex items-center justify-between mb-4">
+                 <div className="flex items-center gap-3">
+                    <Database className="w-4 h-4 text-text3" />
+                    <span className="text-[10px] font-black text-text3 uppercase tracking-[0.2em]">Agency Budget Pacing</span>
                  </div>
-
-                 <div className="bg-text p-7 rounded-[2.5rem] shadow-2xl shadow-text/20 relative overflow-hidden group/forecast">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover/forecast:opacity-100 transition-opacity" />
-                    <div className="absolute top-0 right-0 p-5 opacity-10 group-hover/forecast:opacity-20 transition-all duration-500 group-hover/forecast:rotate-12">
-                       <Activity className="w-12 h-12 text-white" />
-                    </div>
-                    <div className="relative z-10 space-y-4">
-                       <div className="flex items-center gap-2.5">
-                          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                          <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Monthly Forecast</span>
-                       </div>
-                       <div className="flex items-baseline gap-2">
-                          <span className="text-2xl font-black text-white tracking-tighter">
-                             ${(stats.aiStats.totalCost * 30).toFixed(2)}
-                          </span>
-                          <span className="text-[10px] font-black text-white/25 uppercase tracking-widest">Est / Period</span>
-                        </div>
-                    </div>
+                 <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-black text-text tracking-tighter">74.2%</span>
+                    <span className="text-[9px] font-black text-text4 uppercase tracking-widest">Deployed</span>
                  </div>
               </div>
-
+              <div className="h-2 w-full bg-surface2 rounded-full overflow-hidden border border-border-main/50 relative">
+                 <div className="h-full bg-gradient-to-r from-accent to-or w-[74.2%] shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] relative overflow-hidden">
+                    <div className="absolute inset-0 bg-white/20 animate-[move-stripe_2s_linear_infinite]" 
+                         style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.1) 50%, rgba(255,255,255,.1) 75%, transparent 75%, transparent)', backgroundSize: '1rem 1rem' }} />
+                 </div>
+              </div>
            </div>
         </div>
 
