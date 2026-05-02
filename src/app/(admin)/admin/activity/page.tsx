@@ -302,7 +302,7 @@ export default function ActivityPage() {
       {/* ── Modal ── */}
       {showModal && (
         <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[14vh] px-5">
-          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm transition-opacity" onClick={() => setShowModal(false)} />
+          <div className="absolute inset-0 bg-black/40 transition-opacity" onClick={() => setShowModal(false)} />
           <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-border-main">

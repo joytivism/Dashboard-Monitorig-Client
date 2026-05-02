@@ -60,7 +60,7 @@ function HeaderContent() {
   return (
     <>
       <header className="h-[68px] px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30 bg-bg/90"
-        style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(229,231,235,0.6)' }}>
+        style={{ borderBottom: '1px solid rgba(229,231,235,0.8)' }}>
 
         {/* Search trigger */}
         <div className="flex-1 flex justify-center max-w-lg mx-auto">
@@ -111,7 +111,7 @@ function HeaderContent() {
           className="fixed inset-0 z-[200] flex items-start justify-center pt-[14vh]"
           onClick={() => setSearchOpen(false)}
         >
-          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/40 transition-opacity" />
           <div
             className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in"
             onClick={e => e.stopPropagation()}

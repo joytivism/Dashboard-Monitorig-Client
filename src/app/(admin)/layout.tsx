@@ -41,9 +41,7 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
   if (!authorized) {
     return (
       <div className="fixed inset-0 flex items-center justify-center p-6 z-[9999] bg-bg">
-        {/* Blobs */}
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/3 right-1/4 w-56 h-56 bg-accent/8 rounded-full blur-3xl pointer-events-none" />
+        {/* Blobs removed for sharpness */}
 
         <div
           className={`relative bg-white rounded-2xl p-8 border border-border-main max-w-sm w-full text-center ${shake ? 'animate-[shake_0.3s_ease]' : ''}`}
