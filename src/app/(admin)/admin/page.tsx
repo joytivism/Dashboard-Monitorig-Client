@@ -167,17 +167,29 @@ export default function AdminHubPage() {
                    <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Analisis diproses dalam sesi aktif periode ini.</p>
                 </div>
                 
-                <div className="mt-10 flex items-center justify-between bg-surface2/30 p-4 rounded-2xl border border-border-main/40 shadow-inner h-[80px]">
-                   <div className="flex -space-x-3">
+                <div className="mt-10 flex items-center justify-between bg-surface2/30 p-4 rounded-2xl border border-border-main/40 shadow-inner h-[80px] relative overflow-hidden group/pulse">
+                   <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-transparent opacity-0 group-hover/pulse:opacity-100 transition-opacity" />
+                   
+                   <div className="flex -space-x-3 relative z-10">
                       {[1,2,3,4].map(i => (
-                        <div key={i} className="w-10 h-10 rounded-2xl border-2 border-white bg-white flex items-center justify-center shadow-sm">
-                           <div className="w-2 h-2 rounded-full bg-accent/30" />
+                        <div key={i} className="relative">
+                           <div className="absolute inset-0 rounded-2xl bg-accent/20 animate-ping opacity-20" style={{ animationDuration: `${2 + i*0.5}s` }} />
+                           <div className="w-10 h-10 rounded-2xl border-2 border-white bg-white flex items-center justify-center shadow-sm relative z-20 overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(var(--accent-rgb),0.8)]" />
+                           </div>
                         </div>
                       ))}
                    </div>
-                   <div className="text-right">
-                      <div className="text-sm font-bold text-accent uppercase tracking-wider">+{stats.aiStats.todayRequests} Today</div>
-                      <div className="text-[9px] font-bold text-text4 uppercase tracking-widest opacity-60">Live Pulse</div>
+
+                   <div className="text-right relative z-10">
+                      <div className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-br from-or to-accent uppercase tracking-tighter leading-none mb-0.5">
+                         +{stats.aiStats.todayRequests} Today
+                      </div>
+                      <div className="flex items-center justify-end gap-1.5">
+                         <div className="w-1 h-1 rounded-full bg-gg animate-pulse shadow-[0_0_5px_#10b981]" />
+                         <div className="text-[9px] font-bold text-text4 uppercase tracking-widest opacity-60">Engine Active</div>
+                      </div>
                    </div>
                 </div>
              </div>
