@@ -32,7 +32,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function AdminHubPage() {
-  const { CLIENTS, DATA, PERIODS, ACTIVITY, CH_DEF } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, ACTIVITY, CH_DEF, AI_LOGS } = useDashboardData();
   const curPeriod = PERIODS[PERIODS.length - 1];
 
   const stats = useMemo(() => {
@@ -57,11 +57,12 @@ export default function AdminHubPage() {
     const updatedClients = CLIENTS.filter(cl => DATA.some(d => d.c === cl.key && d.p === curPeriod));
     const ingestionProgress = (updatedClients.length / CLIENTS.length) * 100;
 
-    const { AI_LOGS } = useDashboardData();
+    const today = new Date().toDateString();
     const aiStats = {
       totalRequests: AI_LOGS.length,
+      todayRequests: AI_LOGS.filter(l => new Date(l.d).toDateString() === today).length,
       totalTokens: AI_LOGS.reduce((acc, l) => acc + (l.tk || 0), 0),
-      totalCost: AI_LOGS.reduce((acc, l) => acc + (l.cost || 0), 0)
+      totalCost: AI_LOGS.reduce((acc, l) => acc + (Number(l.cost) || 0), 0)
     };
 
     return { 
@@ -72,7 +73,7 @@ export default function AdminHubPage() {
       progress: ingestionProgress,
       aiStats
     };
-  }, [CLIENTS, DATA, PERIODS, curPeriod, useDashboardData()]);
+  }, [CLIENTS, DATA, PERIODS, curPeriod, AI_LOGS]);
 
   const QUICK_ACTIONS = [
     { href: '/admin/data', icon: Database, title: 'Data Input', badge: 'Active', color: 'text-accent', bg: 'bg-accent/10' },
@@ -173,17 +174,17 @@ export default function AdminHubPage() {
                    <p className="text-xs font-medium text-text3 leading-relaxed">Analisis diproses dalam sesi aktif periode ini.</p>
                 </div>
                 
-                <div className="mt-8 flex items-center justify-between">
-                   <div className="flex -space-x-2.5">
+                <div className="mt-10 flex items-center justify-between bg-surface2/30 p-5 rounded-2xl border border-border-main/40 shadow-inner">
+                   <div className="flex -space-x-3">
                       {[1,2,3,4].map(i => (
-                        <div key={i} className="w-8 h-8 rounded-xl border-2 border-white bg-surface3 flex items-center justify-center shadow-sm">
-                           <div className="w-1.5 h-1.5 rounded-full bg-text4/20" />
+                        <div key={i} className="w-11 h-11 rounded-2xl border-2 border-white bg-white flex items-center justify-center shadow-md group-hover/col:rotate-3 transition-transform">
+                           <div className="w-2 h-2 rounded-full bg-accent/30" />
                         </div>
                       ))}
                    </div>
                    <div className="text-right">
-                      <div className="text-[10px] font-bold text-accent uppercase tracking-wider">+{(Math.random()*10).toFixed(0)} Today</div>
-                      <div className="text-[9px] font-medium text-text4 uppercase tracking-tight">Real-time Pulse</div>
+                      <div className="text-sm font-bold text-accent uppercase tracking-wider">+{stats.aiStats.todayRequests} Today</div>
+                      <div className="text-[10px] font-bold text-text4 uppercase tracking-widest opacity-60">Real-time Pulse</div>
                    </div>
                 </div>
              </div>
@@ -192,20 +193,20 @@ export default function AdminHubPage() {
              <div className="p-10 flex flex-col justify-between bg-surface2/5 hover:bg-surface2/20 transition-colors cursor-default group/eff">
                 <div>
                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6">Data Throughput</div>
-                   <div className="text-3xl font-bold text-text tracking-tight mb-2 group-hover/eff:scale-105 transition-transform origin-left">
+                   <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/eff:scale-105 transition-transform origin-left">
                       {(stats.aiStats.totalTokens/1000).toFixed(1)}K
                    </div>
                    <p className="text-xs font-medium text-text3 leading-relaxed">Total token yang dikonsumsi oleh model strategi.</p>
                 </div>
                 
-                <div className="mt-8 space-y-4">
-                   <div className="flex justify-between items-end mb-1">
-                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">Efficiency Status</span>
-                      <span className="text-[11px] font-bold text-text tracking-tighter">82.4%</span>
+                <div className="mt-10 space-y-5">
+                   <div className="flex justify-between items-end">
+                      <span className="text-xs font-bold text-text4 uppercase tracking-widest">Efficiency Status</span>
+                      <span className="text-sm font-bold text-text tracking-tighter">82.4%</span>
                    </div>
-                   <div className="w-full h-2 bg-white rounded-full border border-border-main/50 overflow-hidden p-0.5 shadow-inner">
-                      <div className="h-full bg-gradient-to-r from-accent/80 to-accent rounded-full w-3/4 shadow-[0_0_12px_rgba(var(--accent-rgb),0.3)] relative overflow-hidden">
-                         <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:1rem_1rem] animate-[move-stripe_1s_linear_infinite]" />
+                   <div className="w-full h-3 bg-white rounded-full border border-border-main/50 overflow-hidden p-0.5 shadow-inner">
+                      <div className="h-full bg-gradient-to-r from-accent/80 to-accent rounded-full w-3/4 shadow-[0_0_15px_rgba(var(--accent-rgb),0.4)] relative overflow-hidden">
+                         <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:1.2rem_1.2rem] animate-[move-stripe_1s_linear_infinite]" />
                       </div>
                    </div>
                 </div>
