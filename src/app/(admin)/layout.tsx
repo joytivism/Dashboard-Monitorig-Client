@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Shield, Lock } from 'lucide-react';
-import AdminTopbar from '@/components/AdminTopbar';
+import AdminSidebar from '@/components/AdminSidebar';
+import AdminHeader from '@/components/AdminHeader';
 
 export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState(false);
@@ -41,8 +42,6 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
   if (!authorized) {
     return (
       <div className="fixed inset-0 flex items-center justify-center p-6 z-[9999] bg-bg">
-        {/* Blobs removed for sharpness */}
-
         <div
           className={`relative bg-white rounded-2xl p-8 border border-border-main max-w-sm w-full text-center ${shake ? 'animate-[shake_0.3s_ease]' : ''}`}
           style={{ boxShadow: '0 20px 60px -12px rgba(0,0,0,0.1)' }}
@@ -91,13 +90,22 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
     );
   }
 
-  /* ── Authorized Admin Shell: Topbar + Max-width Content ── */
+  /* ── Authorized Admin Shell: Sidebar + Header + Content ── */
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-bg">
-      <AdminTopbar onLogout={handleLogout} />
-      <main className="flex-1 px-6 py-10 max-w-7xl mx-auto w-full">
-        {children}
-      </main>
+    <div className="flex min-h-screen bg-bg">
+      {/* Sidebar - Fixed width */}
+      <AdminSidebar onLogout={handleLogout} />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <AdminHeader />
+        
+        <main className="flex-1 p-8 md:p-10">
+          <div className="max-w-7xl mx-auto w-full h-full">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
