@@ -239,30 +239,56 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         </div>
       </div>
 
-      {/* Strategic Calculation Matrix (Aligned with design-system.md) */}
-      <div className="bg-white rounded-3xl border border-border-main p-6 shadow-sm group hover:shadow-md transition-shadow animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        <div className="flex items-center gap-2 mb-8">
-           <div className="w-5 h-5 rounded-md bg-gg/10 flex items-center justify-center text-gg border border-gg/20">
-             <div className="w-2.5 h-0.5 bg-gg" />
-             <div className="w-0.5 h-2.5 bg-gg absolute" />
-           </div>
-           <h3 className="text-[10px] font-black text-gg uppercase tracking-[0.12em]">Metrik Kalkulasi Otomatis dari 4 Input</h3>
-        </div>
+      {/* Strategic Efficiency Matrix — Power Rebuild (Typography Corrected) */}
+      <div className="relative group overflow-hidden">
+        <div className="absolute -inset-1 bg-gradient-to-r from-gg/10 to-accent/10 rounded-[32px] blur opacity-25 group-hover:opacity-40 transition duration-1000" />
         
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-y-8 gap-x-12">
-          {[
-            { l: 'ROAS', v: bRoas ? bRoas.toFixed(2) + 'x' : '—', sub: 'rev ÷ spend' },
-            { l: 'CIR', v: blCir ? blCir.toFixed(1) + '%' : '—', sub: 'spend ÷ rev' },
-            { l: 'CPO', v: blCpo ? fRp(blCpo) : '—', sub: 'spend ÷ orders' },
-            { l: 'CR', v: blCr ? blCr.toFixed(2) + '%' : '—', sub: 'orders ÷ visitors' },
-            { l: 'AOV', v: blAov ? fRp(blAov) : '—', sub: 'rev ÷ orders' },
-          ].map((m, i) => (
-            <div key={i} className="relative">
-              <div className="text-[10px] font-bold text-text4 uppercase tracking-[0.16em] mb-2">{m.l}</div>
-              <div className="text-2xl font-black text-text tracking-tighter mb-1.5">{m.v}</div>
-              <div className="text-[9px] font-bold text-text3/50 uppercase tracking-widest">{m.sub}</div>
+        <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-border-main p-8 shadow-sm transition-all duration-500 hover:shadow-md">
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gg text-white flex items-center justify-center shadow-lg shadow-gg/10">
+                 <Zap className="w-6 h-6 fill-white/20" />
+              </div>
+              <div>
+                 <h3 className="text-sm font-bold text-text uppercase tracking-tight">Strategic Efficiency Matrix</h3>
+                 <p className="text-[10px] font-bold text-text4 uppercase tracking-[0.2em]">Automated Intelligence Output</p>
+              </div>
             </div>
-          ))}
+            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-surface2 rounded-xl border border-border-main/50">
+               <div className="w-2 h-2 rounded-full bg-gg animate-pulse" />
+               <span className="text-[9px] font-bold text-text3 uppercase tracking-widest">Real-time Data Sync</span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+            {[
+              { l: 'Ad ROAS', v: bRoas ? bRoas.toFixed(2) + 'x' : '—', sub: 'Revenue / Spend', c: bRoas, p: pbRoas, i: TrendingUp },
+              { l: 'CIR Index', v: blCir ? blCir.toFixed(1) + '%' : '—', sub: 'Spend / Revenue', c: blCir, p: (pb_sp > 0 && pb_rev > 0 ? pb_sp / pb_rev * 100 : 0), i: Activity },
+              { l: 'CPO Target', v: blCpo ? fRp(blCpo) : '—', sub: 'Spend / Orders', c: blCpo, p: (pb_sp > 0 && pb_ord > 0 ? pb_sp / pb_ord : 0), i: Target },
+              { l: 'Conv. Rate', v: blCr ? blCr.toFixed(2) + '%' : '—', sub: 'Orders / Visitors', c: blCr, p: (pm_vis > 0 && pm_ord > 0 ? pm_ord / pm_vis * 100 : 0), i: Layers },
+              { l: 'Avg. Order', v: blAov ? fRp(blAov) : '—', sub: 'Revenue / Orders', c: blAov, p: (pb_rev > 0 && pb_ord > 0 ? pb_rev / pb_ord : 0), i: ShoppingCart },
+            ].map((m, i) => {
+              const g = m.c && m.p ? ((m.c - m.p) / m.p * 100) : null;
+              const isGood = m.l === 'CIR Index' || m.l === 'CPO Target' ? (g !== null && g < 0) : (g !== null && g > 0);
+              return (
+                <div key={i} className="group/item">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-[10px] font-bold text-text4 uppercase tracking-[0.16em] group-hover/item:text-accent transition-colors">{m.l}</div>
+                    <m.i className="w-3.5 h-3.5 text-text4 opacity-30 group-hover/item:opacity-100 group-hover/item:text-accent transition-all" />
+                  </div>
+                  <div className="text-3xl font-bold text-text tracking-tight mb-2 group-hover/item:scale-105 transition-transform origin-left">{m.v}</div>
+                  <div className="flex items-center gap-2">
+                    {g !== null && (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isGood ? 'bg-gg-bg text-gg-text' : 'bg-rr-bg text-rr-text'}`}>
+                        {g > 0 ? '+' : ''}{g.toFixed(1)}%
+                      </span>
+                    )}
+                    <span className="text-[9px] font-bold text-text3/40 uppercase tracking-widest">{m.sub}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
