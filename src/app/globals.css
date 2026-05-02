@@ -163,3 +163,8 @@
 /* ── No scrollbar ── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Typography Utilities ── */
+.label-premium {
+  @apply text-[10px] font-black text-text4 uppercase tracking-[0.12em];
+}

@@ -5,7 +5,7 @@ import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
 import { 
   Plus, Save, Trash2, CheckCircle2, AlertCircle, 
-  Settings2, Hash, Type, Layers, Info
+  Settings2, Hash, Type, Info
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -86,7 +86,7 @@ export default function ChannelSettingsPage() {
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-text tracking-tight">Pengaturan Channel</h1>
+          <h1 className="text-2xl font-bold text-text tracking-tight">Pengaturan Channel</h1>
           <p className="text-sm font-medium text-text3 mt-1.5">Kelola definisi, kategori, dan tahap funnel untuk setiap saluran iklan.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -99,15 +99,15 @@ export default function ChannelSettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface2/50 border-b border-border-main">
-              <th className="py-5 px-6 text-xs font-bold text-text3 uppercase tracking-widest w-1/4">ID Channel (Unique)</th>
-              <th className="py-5 px-6 text-xs font-bold text-text3 uppercase tracking-widest w-1/4">Nama Tampilan</th>
-              <th className="py-5 px-6 text-xs font-bold text-text3 uppercase tracking-widest w-1/6">Stage</th>
-              <th className="py-5 px-6 text-xs font-bold text-text3 uppercase tracking-widest w-1/6">Type</th>
-              <th className="py-5 px-6 text-xs font-bold text-text3 uppercase tracking-widest w-[80px]">Aksi</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/4">ID Channel (Unique)</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/4">Nama Tampilan</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/6">Stage</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/6">Type</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-[80px]">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-main/40">
@@ -179,7 +179,7 @@ export default function ChannelSettingsPage() {
         )}
       </div>
 
-      <div className="bg-surface2/50 rounded-3xl p-8 border border-border-main/50 flex gap-6 items-start">
+      <div className="bg-surface2/50 rounded-2xl p-8 border border-border-main/50 flex gap-6 items-start">
         <div className="w-12 h-12 rounded-2xl bg-white border border-border-main flex items-center justify-center text-accent shadow-sm shrink-0">
           <Info className="w-6 h-6" />
         </div>

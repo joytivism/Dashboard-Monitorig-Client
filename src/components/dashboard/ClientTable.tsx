@@ -45,7 +45,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
   const { CH_DEF } = useDashboardData();
 
   return (
-    <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
       {/* Table Controls */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 px-6 py-5 border-b border-border-main bg-white">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
@@ -171,7 +171,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                     <span className="text-sm font-bold text-text">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
                   </td>
                   <td className="py-4 pr-6 text-right">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-text2 bg-surface3 px-2.5 py-1 rounded-lg border border-border-main/50 uppercase tracking-tighter">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-text2 bg-surface3 px-2.5 py-1 rounded-lg border border-border-main/50 uppercase tracking-wider">
                        {cl.cg}
                     </span>
                   </td>
