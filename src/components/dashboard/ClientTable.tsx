@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, Filter, ChevronRight, Zap } from 'lucide-react';
+import { useDashboardData } from '@/components/DataProvider';
 import { STATUS_BG, STATUS_DOT, ORD, LM } from '@/lib/data';
 import { totals, clientWorst, fRp } from '@/lib/utils';
 import Sparkline from '@/components/ui/Sparkline';
@@ -41,6 +42,8 @@ export const ClientTable: React.FC<ClientTableProps> = ({
   onSort,
   metadata
 }) => {
+  const { CH_DEF } = useDashboardData();
+
   return (
     <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden">
       {/* Table Controls */}
@@ -124,8 +127,8 @@ export const ClientTable: React.FC<ClientTableProps> = ({
           </thead>
           <tbody className="divide-y divide-surface2">
             {clients.map((cl) => {
-              const t  = totals(clients, data, cl.key, currentPeriod);
-              const wc = clientWorst(clients, data, periods, cl.key, currentPeriod);
+              const t  = totals(CH_DEF, clients, data, cl.key, currentPeriod);
+              const wc = clientWorst(CH_DEF, clients, data, periods, cl.key, currentPeriod);
               const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
               const bgClass = STATUS_BG[wc] || STATUS_BG.nn;
 
@@ -156,7 +159,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                     <div className="flex flex-col gap-1.5">
                       <span className="text-sm font-bold text-text">{fRp(t.rev)}</span>
                       <Sparkline 
-                        data={periods.map(p => totals([], data, cl.key, p).rev)} 
+                        data={periods.map(p => totals(CH_DEF, clients, data, cl.key, p).rev)} 
                         color={wc === 'rr' || wc === 'or' ? '#DC2626' : wc === 'gg' || wc === 'gd' ? '#059669' : '#9CA3AF'} 
                       />
                     </div>

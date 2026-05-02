@@ -33,7 +33,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function AdminHubPage() {
-  const { CLIENTS, DATA, PERIODS, ACTIVITY } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, ACTIVITY, CH_DEF } = useDashboardData();
   const curPeriod = PERIODS[PERIODS.length - 1];
 
   const stats = useMemo(() => {
@@ -42,16 +42,16 @@ export default function AdminHubPage() {
     const prevPeriod = prevIdx >= 0 ? PERIODS[prevIdx] : '';
 
     CLIENTS.forEach(cl => {
-      const t = totals(CLIENTS, DATA, cl.key, curPeriod);
+      const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
       totalRev += t.rev;
       totalSpend += t.sp;
       if (prevPeriod) {
-        const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+        const tp = totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod);
         prevRev += tp.rev;
       }
     });
 
-    const attn = CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
+    const attn = CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
     const totalRoas = totalSpend > 0 ? totalRev / totalSpend : 0;
     const pGrowth = getPct(totalRev, prevRev);
     
@@ -249,9 +249,9 @@ export default function AdminHubPage() {
           </div>
           <div className="divide-y divide-border-main max-h-[480px] overflow-y-auto no-scrollbar">
             {CLIENTS.map(cl => {
-              const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
+              const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
               const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
-              const t = totals(CLIENTS, DATA, cl.key, curPeriod);
+              const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
               const statusStyle = STATUS_COLOR_MAP[wc] || STATUS_COLOR_MAP.nn;
               return (
                 <Link

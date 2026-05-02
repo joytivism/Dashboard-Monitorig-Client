@@ -71,7 +71,16 @@ CREATE TABLE IF NOT EXISTS ai_usage_logs (
   estimated_cost NUMERIC(15, 7) DEFAULT 0
 );
 
--- 7. Tabel Pengaturan Sistem (DIBUTUHKAN OLEH SERVER ACTIONS)
+-- 7. Tabel Definisi Channel (DIBUTUHKAN UNTUK DINAMIS)
+CREATE TABLE IF NOT EXISTS channels (
+  channel_key VARCHAR(50) PRIMARY KEY,
+  label VARCHAR(255) NOT NULL,
+  stage VARCHAR(10) NOT NULL CHECK (stage IN ('tofu', 'mofu', 'bofu')),
+  type VARCHAR(20) NOT NULL CHECK (type IN ('revenue', 'assist', 'awareness')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 8. Tabel Pengaturan Sistem
 CREATE TABLE IF NOT EXISTS system_settings (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   key VARCHAR(255) UNIQUE NOT NULL,
@@ -93,8 +102,20 @@ ALTER TABLE ai_usage_logs ADD COLUMN IF NOT EXISTS estimated_cost NUMERIC(15, 7)
 -- Insert Periode
 INSERT INTO periods (period_key, label) VALUES 
 ('2026-02', 'Feb 2026'),
-('2026-03', 'Mar 2026')
+('2026-03', 'Mar 2026'),
+('2026-04', 'Apr 2026')
 ON CONFLICT (period_key) DO NOTHING;
+
+-- Insert Channel Defaults
+INSERT INTO channels (channel_key, label, stage, type) VALUES
+('shopee_store',  'Shopee Store',  'mofu', 'revenue'),
+('shopee_ads',    'Shopee Ads',    'bofu', 'revenue'),
+('cpas',          'CPAS',          'mofu', 'assist'),
+('tiktok_store',  'TikTok Store',  'mofu', 'revenue'),
+('tiktok_gmvmax', 'GMV Max',       'bofu', 'revenue'),
+('tiktok_ads',    'TikTok Ads',    'tofu', 'awareness'),
+('meta_ads',      'Meta Ads',      'tofu', 'awareness')
+ON CONFLICT (channel_key) DO NOTHING;
 
 -- Insert Settings Default
 INSERT INTO system_settings (key, value, description) VALUES 

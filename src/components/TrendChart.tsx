@@ -39,7 +39,7 @@ const TM = [
 ];
 
 export default function TrendChart({ clientKey }: TrendChartProps) {
-  const { CLIENTS, PERIODS, PL, DATA } = useDashboardData();
+  const { CLIENTS, PERIODS, PL, DATA, CH_DEF } = useDashboardData();
   const [activeMetrics, setActiveMetrics] = useState<string[]>(['spend', 'revenue', 'roas']);
 
   const toggleMetric = (k: string) => {
@@ -62,16 +62,16 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
     const data = PERIODS.map(p => {
       let v = 0;
       if (mk === 'roas') {
-        const t = totals(CLIENTS, DATA, clientKey, p); v = t.roas || 0;
+        const t = totals(CH_DEF, CLIENTS, DATA, clientKey, p); v = t.roas || 0;
       } else if (mk === 'reach') {
-        client.chs.filter(isAware).forEach(ch => { const d = gd(DATA, clientKey, ch, p); if (d?.reach) v += d.reach; });
+        client.chs.filter(ch => isAware(CH_DEF, ch)).forEach(ch => { const d = gd(DATA, clientKey, ch, p); if (d?.reach) v += d.reach; });
       } else {
         client.chs.forEach(ch => {
           const d = gd(DATA, clientKey, ch, p); if (!d) return;
           // @ts-ignore
           if (mk === 'spend') { if (d.sp) v += d.sp; }
           // @ts-ignore
-          else if (!isAware(ch) && d[mk]) v += d[mk];
+          else if (!isAware(CH_DEF, ch) && d[mk]) v += d[mk];
         });
       }
       return Math.round(v * 100) / 100;

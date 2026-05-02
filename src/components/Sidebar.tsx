@@ -14,7 +14,7 @@ const STATUS_COLOR: Record<string, string> = {
 function SidebarContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { CLIENTS, DATA, PERIODS } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
   const currentPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
@@ -72,7 +72,7 @@ function SidebarContent() {
           <div className="flex flex-col gap-0.5">
             {CLIENTS.map((cl) => {
               const isActive = pathname === `/client/${cl.key}`;
-              const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, currentPeriod);
+              const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, currentPeriod);
               const dotColor = STATUS_COLOR[wc] || STATUS_COLOR.nn;
               return (
                 <Link
@@ -86,9 +86,9 @@ function SidebarContent() {
                   <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 transition-colors duration-200 ${
                     isActive ? 'bg-white/20 text-white' : 'bg-surface3 text-text2'
                   }`}>
-                    {cl.key.slice(0, 2).toUpperCase()}
+                    {cl.name.slice(0, 2).toUpperCase()}
                   </div>
-                  <span className="flex-1 truncate">{cl.key}</span>
+                  <span className="flex-1 truncate">{cl.name}</span>
                   {/* Status dot */}
                   <span
                     className="w-2 h-2 rounded-full shrink-0 transition-colors"

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
-import { CH_DEF } from '@/lib/data';
 import { isAware } from '@/lib/utils';
 import {
   CheckCircle2, AlertCircle, ChevronRight, Save,
@@ -39,7 +38,7 @@ function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } |
 }
 
 export default function DataInputPage() {
-  const { CLIENTS, PERIODS, DATA } = useDashboardData();
+  const { CLIENTS, PERIODS, DATA, CH_DEF } = useDashboardData();
   const router = useRouter();
 
   const [selectedClient, setSelectedClient] = useState('');
@@ -228,7 +227,7 @@ export default function DataInputPage() {
 
           <div className="p-8 space-y-6">
             {rows.map((row, i) => {
-              const aware = isAware(row.ch);
+              const aware = isAware(CH_DEF, row.ch);
               const chDef = CH_DEF[row.ch];
               const stage = chDef?.stage || 'bofu';
               const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;

@@ -5,8 +5,9 @@ import { supabase } from '@/lib/supabase';
 import { 
   Settings, Save, Key, MessageSquare, Info, 
   CheckCircle2, AlertCircle, Bot, Sparkles, Terminal,
-  Cpu, RotateCcw
+  Cpu, RotateCcw, LayoutGrid, ChevronRight
 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface Setting {
@@ -116,6 +117,25 @@ export default function SettingsPage() {
       {/* ── Main Configuration ── */}
       <div className="grid grid-cols-1 gap-8">
         
+        {/* Channel Management Card */}
+        <Link 
+          href="/admin/settings/channels"
+          className="group bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md hover:border-accent/30 transition-all flex items-center justify-between p-8"
+        >
+          <div className="flex items-center gap-6">
+            <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all">
+              <LayoutGrid className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-text group-hover:text-accent transition-colors">Manajemen Definisi Channel</h2>
+              <p className="text-sm font-medium text-text3 mt-0.5">Kelola tipe channel (Awareness/Conversion) dan tahap funnel TOFU/MOFU/BOFU.</p>
+            </div>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-surface2 flex items-center justify-center text-text4 group-hover:translate-x-1 transition-all">
+            <ChevronRight className="w-5 h-5" />
+          </div>
+        </Link>
+
         {/* API Configuration Card */}
         <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
           <div className="px-6 py-5 border-b border-border-main flex items-center gap-3 bg-surface2/50">

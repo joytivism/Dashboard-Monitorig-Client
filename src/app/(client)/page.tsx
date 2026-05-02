@@ -16,7 +16,7 @@ import StatusBanners from '@/components/dashboard/StatusBanners';
 function OverviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { CLIENTS, DATA, PERIODS } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
   const curPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
   
   const [search, setSearch] = useState('');
@@ -37,31 +37,31 @@ function OverviewContent() {
   const { tRev, tSp, pRev, pSp } = useMemo(() => {
     let tr = 0, ts = 0, pr = 0, ps = 0;
     CLIENTS.forEach(cl => {
-      const t = totals(CLIENTS, DATA, cl.key, curPeriod);
-      const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+      const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
+      const tp = totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod);
       tr += t.rev; ts += t.sp; pr += tp.rev; ps += tp.sp;
     });
     return { tRev: tr, tSp: ts, pRev: pr, pSp: ps };
-  }, [CLIENTS, DATA, curPeriod, prevPeriod]);
+  }, [CLIENTS, DATA, curPeriod, prevPeriod, CH_DEF]);
 
   const aRoas = tSp > 0 ? tRev / tSp : null;
   const paRoas = pSp > 0 ? pRev / pSp : null;
 
   // Analysis Data for Banners
   const risks = useMemo(() => 
-    CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)))
+    CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod)))
       .map(cl => ({
         key: cl.key,
-        rev: totals(CLIENTS, DATA, cl.key, curPeriod).rev,
-        growth: getPct(totals(CLIENTS, DATA, cl.key, curPeriod).rev, totals(CLIENTS, DATA, cl.key, prevPeriod).rev)
-      })), [CLIENTS, DATA, PERIODS, curPeriod, prevPeriod]);
+        rev: totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod).rev,
+        growth: getPct(totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod).rev, totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod).rev)
+      })), [CLIENTS, DATA, PERIODS, curPeriod, prevPeriod, CH_DEF]);
 
   const topGrowth = useMemo(() => 
     CLIENTS.map(cl => {
-      const t = totals(CLIENTS, DATA, cl.key, curPeriod);
-      const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+      const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
+      const tp = totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod);
       return { key: cl.key, rev: t.rev, growth: getPct(t.rev, tp.rev) || 0 };
-    }).filter(cl => cl.growth > 0).sort((a, b) => b.growth - a.growth).slice(0, 3), [CLIENTS, DATA, curPeriod, prevPeriod]);
+    }).filter(cl => cl.growth > 0).sort((a, b) => b.growth - a.growth).slice(0, 3), [CLIENTS, DATA, curPeriod, prevPeriod, CH_DEF]);
 
   const filteredClients = useMemo(() => {
     return [...CLIENTS].filter(cl => {
@@ -75,11 +75,11 @@ function OverviewContent() {
       let valA: any, valB: any;
       if (key === 'status') {
         const ORD = ['rr', 'or', 'yy', 'nn', 'gg', 'gd'];
-        valA = ORD.indexOf(clientWorst([a], DATA, PERIODS, a.key, curPeriod));
-        valB = ORD.indexOf(clientWorst([b], DATA, PERIODS, b.key, curPeriod));
+        valA = ORD.indexOf(clientWorst(CH_DEF, [a], DATA, PERIODS, a.key, curPeriod));
+        valB = ORD.indexOf(clientWorst(CH_DEF, [b], DATA, PERIODS, b.key, curPeriod));
       } else if (key === 'rev' || key === 'sp' || key === 'roas') {
-        const tA = totals(CLIENTS, DATA, a.key, curPeriod);
-        const tB = totals(CLIENTS, DATA, b.key, curPeriod);
+        const tA = totals(CH_DEF, CLIENTS, DATA, a.key, curPeriod);
+        const tB = totals(CH_DEF, CLIENTS, DATA, b.key, curPeriod);
         valA = tA[key as 'rev' | 'sp' | 'roas'] || 0;
         valB = tB[key as 'rev' | 'sp' | 'roas'] || 0;
       } else {

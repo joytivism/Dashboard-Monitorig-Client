@@ -55,7 +55,8 @@ export interface ActivityEntry {
 export async function getDashboardData() {
   const [
     { data: clients },
-    { data: channels },
+    { data: channels_db },
+    { data: channel_configs },
     { data: periods },
     { data: performance },
     { data: activities },
@@ -63,15 +64,28 @@ export async function getDashboardData() {
   ] = await Promise.all([
     supabase.from('clients').select('*'),
     supabase.from('client_channels').select('*'),
+    supabase.from('channels').select('*'),
     supabase.from('periods').select('*').order('period_key', { ascending: true }),
     supabase.from('channel_performance').select('*'),
     supabase.from('activity_logs').select('*').order('log_date', { ascending: false }),
     supabase.from('ai_usage_logs').select('*').order('usage_date', { ascending: false })
   ]);
 
+  // Construct Dynamic CH_DEF
+  const CH_DEF_DYNAMIC: any = { ...CH_DEF };
+  if (channel_configs && channel_configs.length > 0) {
+    channel_configs.forEach(c => {
+      CH_DEF_DYNAMIC[c.channel_key] = {
+        l: c.label,
+        stage: c.stage,
+        type: c.type
+      };
+    });
+  }
+
   // Transform Clients
   const CLIENTS: Client[] = (clients || []).map(c => {
-    const chs = (channels || []).filter(ch => ch.client_key === c.client_key);
+    const chs = (channels_db || []).filter(ch => ch.client_key === c.client_key);
     const troas: Record<string, number> = {};
     chs.forEach(ch => {
       if (ch.target_roas) troas[ch.channel_key] = Number(ch.target_roas);
@@ -129,8 +143,8 @@ export async function getDashboardData() {
     cost: l.estimated_cost
   }));
 
-  return { CLIENTS, DATA, ACTIVITY, PERIODS, PL, AI_LOGS };
+  return { CLIENTS, DATA, ACTIVITY, PERIODS, PL, AI_LOGS, CH_DEF: CH_DEF_DYNAMIC };
 }
 
 // Re-export constants
-export { CH_DEF, STAGE_COLOR, STAGE_LABEL, TC, ORD, LM };
+export { STAGE_COLOR, STAGE_LABEL, TC, ORD, LM };

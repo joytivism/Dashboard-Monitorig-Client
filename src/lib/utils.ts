@@ -1,4 +1,4 @@
-import { CH_DEF, ORD } from './data';
+import { ORD } from './data';
 import type { DataEntry, Client } from './data';
 
 export function gd(DATA: DataEntry[], c: string, ch: string, p: string) { 
@@ -10,7 +10,7 @@ export function prev(PERIODS: string[], p: string) {
   return i > 0 ? PERIODS[i - 1] : null; 
 }
 
-export function isAware(ch: string) { 
+export function isAware(CH_DEF: Record<string, any>, ch: string) { 
   return CH_DEF[ch]?.type === 'awareness'; 
 }
 
@@ -59,14 +59,14 @@ export function fV(v: number | null | undefined, f: string) {
   return v.toString();
 }
 
-export function totals(CLIENTS: Client[], DATA: DataEntry[], c: string, p: string) {
+export function totals(CH_DEF: Record<string, any>, CLIENTS: Client[], DATA: DataEntry[], c: string, p: string) {
   const cl = CLIENTS.find(x => x.key === c);
   if (!cl) return { rev: 0, sp: 0, roas: null, ord: 0, vis: null, reach: null, impr: null };
   
   let rev = 0, sp = 0, ord = 0, vis = 0, reach = 0, impr = 0;
   cl.chs.forEach(ch => {
     const d = gd(DATA, c, ch, p); if (!d) return;
-    if (isAware(ch)) { 
+    if (isAware(CH_DEF, ch)) { 
       if (d.sp) sp += d.sp; 
       if (d.reach) reach += d.reach; 
       if (d.impr) impr += d.impr; 
@@ -88,18 +88,18 @@ export function totals(CLIENTS: Client[], DATA: DataEntry[], c: string, p: strin
   };
 }
 
-export function chWorstKey(DATA: DataEntry[], PERIODS: string[], c: string, ch: string, p: string) {
+export function chWorstKey(CH_DEF: Record<string, any>, DATA: DataEntry[], PERIODS: string[], c: string, ch: string, p: string) {
   const cur = gd(DATA, c, ch, p), prv = gd(DATA, c, ch, prev(PERIODS, p) || '');
   if (!cur || !prv) return 'nn';
-  const key = isAware(ch) ? (cur.reach ? 'reach' : 'impr') : 'rev';
+  const key = isAware(CH_DEF, ch) ? (cur.reach ? 'reach' : 'impr') : 'rev';
   // @ts-ignore
   return popCls(pct(cur[key], prv[key]));
 }
 
-export function clientWorst(CLIENTS: Client[], DATA: DataEntry[], PERIODS: string[], c: string, p: string) {
+export function clientWorst(CH_DEF: Record<string, any>, CLIENTS: Client[], DATA: DataEntry[], PERIODS: string[], c: string, p: string) {
   let wi = 5;
   CLIENTS.find(x => x.key === c)?.chs.forEach(ch => {
-    const i = ORD.indexOf(chWorstKey(DATA, PERIODS, c, ch, p));
+    const i = ORD.indexOf(chWorstKey(CH_DEF, DATA, PERIODS, c, ch, p));
     if (i < wi) wi = i;
   });
   return ORD[wi];

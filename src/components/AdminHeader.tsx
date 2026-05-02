@@ -26,7 +26,7 @@ export default function AdminHeader() {
   );
 
   const [showNotifications, setShowNotifications] = React.useState(false);
-  const { CLIENTS, DATA, PERIODS } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
   const [dbStatus, setDbStatus] = React.useState<'online' | 'checking' | 'error'>('checking');
   const [aiStatus, setAiStatus] = React.useState<'ready' | 'checking' | 'error'>('checking');
   
@@ -57,7 +57,7 @@ export default function AdminHeader() {
     const alerts: any[] = [];
 
     CLIENTS.forEach(cl => {
-      const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
+      const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
       if (wc === 'rr' || wc === 'or') {
         const id = `${cl.key}-${curPeriod}-${wc}`;
         alerts.push({

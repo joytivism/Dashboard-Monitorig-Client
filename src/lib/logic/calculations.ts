@@ -1,4 +1,3 @@
-import { CH_DEF } from '../data';
 import { gd, prev, pct } from '../utils';
 
 export interface FunnelData {
@@ -7,7 +6,7 @@ export interface FunnelData {
   bofu: { sp: number; ord: number; rev: number };
 }
 
-export const calculateFunnelMetrics = (data: any[], clientId: string, chs: string[], period: string) => {
+export const calculateFunnelMetrics = (CH_DEF: Record<string, any>, data: any[], clientId: string, chs: string[], period: string) => {
   let stats = {
     tofu: { sp: 0, reach: 0, impr: 0, res: 0 },
     mofu: { vis: 0, ord: 0, rev: 0 },

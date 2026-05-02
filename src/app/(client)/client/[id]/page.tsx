@@ -3,7 +3,7 @@
 import React, { use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDashboardData } from '@/components/DataProvider';
-import { CH_DEF, LM } from '@/lib/data';
+import { LM } from '@/lib/data';
 import { gd, prev, pct, fRp, fK, clientWorst, chWorstKey, isAware } from '@/lib/utils';
 import { calculateFunnelMetrics, calculateEfficiency } from '@/lib/logic/calculations';
 
@@ -33,20 +33,20 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = use(params);
   const id = decodeURIComponent(rawId);
   const searchParams = useSearchParams();
-  const { CLIENTS, DATA, ACTIVITY, PERIODS } = useDashboardData();
-  const curPeriod = searchParams.get('period') || '2026-03';
+  const { CLIENTS, DATA, ACTIVITY, PERIODS, CH_DEF } = useDashboardData();
+  const curPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
   const router = useRouter();
 
   const cl = CLIENTS.find(x => x.key === id);
   if (!cl) return <div className="p-20 text-center font-bold text-text3">Klien tidak ditemukan.</div>;
 
   const prv = prev(PERIODS, curPeriod) || '';
-  const wc = clientWorst(CLIENTS, DATA, PERIODS, id, curPeriod);
-  const probs = cl.chs.filter(ch => ['rr', 'or'].includes(chWorstKey(DATA, PERIODS, id, ch, curPeriod)));
+  const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, id, curPeriod);
+  const probs = cl.chs.filter(ch => ['rr', 'or'].includes(chWorstKey(CH_DEF, DATA, PERIODS, id, ch, curPeriod)));
 
   // Centralized Logic
-  const stats = calculateFunnelMetrics(DATA, id, cl.chs, curPeriod);
-  const pStats = calculateFunnelMetrics(DATA, id, cl.chs, prv);
+  const stats = calculateFunnelMetrics(CH_DEF, DATA, id, cl.chs, curPeriod);
+  const pStats = calculateFunnelMetrics(CH_DEF, DATA, id, cl.chs, prv);
   const eff = calculateEfficiency(stats);
   const pEff = calculateEfficiency(pStats);
 
@@ -121,7 +121,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
             <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               {probs.map(ch => {
                 const c = gd(DATA, id, ch, curPeriod), p2 = gd(DATA, id, ch, prv);
-                const aware = isAware(ch); const mk = aware ? 'reach' : 'rev';
+                const aware = isAware(CH_DEF, ch); const mk = aware ? 'reach' : 'rev';
                 const v = pct((c as any)?.[mk], (p2 as any)?.[mk]);
                 return (
                   <div key={ch} className="text-sm text-rr-text/80 font-medium">

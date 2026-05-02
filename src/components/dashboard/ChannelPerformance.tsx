@@ -1,6 +1,6 @@
-import React from 'react';
 import { Zap, Smartphone, ShoppingCart, Activity } from 'lucide-react';
-import { CH_DEF, STAGE_LABEL, LM } from '@/lib/data';
+import { useDashboardData } from '@/components/DataProvider';
+import { STAGE_LABEL, LM } from '@/lib/data';
 import { gd, roas, fK, fRp, isAware, chWorstKey } from '@/lib/utils';
 
 interface ChannelPerformanceProps {
@@ -18,6 +18,8 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
   periods,
   currentPeriod 
 }) => {
+  const { CH_DEF } = useDashboardData();
+
   return (
     <div className="space-y-12">
       {['tofu', 'mofu', 'bofu'].map(stage => {
@@ -36,8 +38,8 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {stageChannels.map(ch => {
                 const c = gd(data, clientId, ch, currentPeriod);
-                const wch = chWorstKey(data, periods, clientId, ch, currentPeriod);
-                const aware = isAware(ch);
+                const wch = chWorstKey(CH_DEF, data, periods, clientId, ch, currentPeriod);
+                const aware = isAware(CH_DEF, ch);
                 
                 let ChIcon = Zap;
                 if (ch.includes('tt')) ChIcon = Smartphone;
@@ -53,7 +55,7 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
                             <ChIcon className="w-5 h-5" />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-text">{CH_DEF[ch]?.l}</h4>
+                            <h4 className="text-sm font-bold text-text">{CH_DEF[ch]?.l || ch}</h4>
                             <div className="flex items-center gap-2 mt-1">
                               <div className={`w-2 h-2 rounded-full bg-${wch}`} />
                               <span className="text-xs font-bold text-text4/60">{LM[wch]}</span>
