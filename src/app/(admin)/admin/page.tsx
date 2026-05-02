@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 
 import MetricCard from '@/components/ui/MetricCard';
-import IngestionVelocity from '@/components/dashboard/IngestionVelocity';
 import ActivityLog from '@/components/dashboard/ActivityLog';
 
 const STATUS_COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
@@ -197,14 +196,6 @@ export default function AdminHubPage() {
         </div>
       </div>
 
-      {/* Ingestion Monitor */}
-      <IngestionVelocity 
-        updatedCount={stats.updatedCount}
-        total={stats.total}
-        progress={stats.progress}
-        pending={stats.pending}
-        curPeriod={curPeriod}
-      />
 
       {/* Operational Modules */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
