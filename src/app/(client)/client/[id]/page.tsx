@@ -232,8 +232,15 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         }}
       />
 
+      <div className="grid grid-cols-1 gap-6">
+        {/* Performance Vectors (Trend Chart) */}
+        <div className="bg-white rounded-3xl p-8 border border-border-main shadow-sm animate-fade-in">
+          <TrendChart clientKey={id} />
+        </div>
+      </div>
+
       {/* Strategic Calculation Matrix (Aligned with design-system.md) */}
-      <div className="bg-white rounded-3xl border border-border-main p-6 shadow-sm group hover:shadow-md transition-shadow animate-fade-in">
+      <div className="bg-white rounded-3xl border border-border-main p-6 shadow-sm group hover:shadow-md transition-shadow animate-fade-in" style={{ animationDelay: '0.1s' }}>
         <div className="flex items-center gap-2 mb-8">
            <div className="w-5 h-5 rounded-md bg-gg/10 flex items-center justify-center text-gg border border-gg/20">
              <div className="w-2.5 h-0.5 bg-gg" />
@@ -256,13 +263,6 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
               <div className="text-[9px] font-bold text-text3/50 uppercase tracking-widest">{m.sub}</div>
             </div>
           ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6">
-        {/* Performance Vectors (Trend Chart) */}
-        <div className="bg-white rounded-3xl p-8 border border-border-main shadow-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <TrendChart clientKey={id} />
         </div>
       </div>
 
