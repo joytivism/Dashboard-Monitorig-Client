@@ -32,10 +32,8 @@ export default function AdminTopbar({ onLogout }: AdminTopbarProps) {
     <header 
       className="sticky top-0 w-full h-[60px] z-50 flex items-center justify-between px-6 transition-all duration-300"
       style={{ 
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(229,231,235,0.6)'
+        background: 'rgb(255,255,255)',
+        borderBottom: '1px solid rgba(229,231,235,0.8)'
       }}
     >
       {/* ── Left: Logo & Breadcrumb ── */}
