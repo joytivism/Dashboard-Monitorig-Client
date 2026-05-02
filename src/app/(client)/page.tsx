@@ -37,8 +37,8 @@ function OverviewContent() {
   const { tRev, tSp, pRev, pSp } = useMemo(() => {
     let tr = 0, ts = 0, pr = 0, ps = 0;
     CLIENTS.forEach(cl => {
-      const t = totals([], DATA, cl.key, curPeriod);
-      const tp = totals([], DATA, cl.key, prevPeriod);
+      const t = totals(CLIENTS, DATA, cl.key, curPeriod);
+      const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
       tr += t.rev; ts += t.sp; pr += tp.rev; ps += tp.sp;
     });
     return { tRev: tr, tSp: ts, pRev: pr, pSp: ps };
@@ -49,17 +49,17 @@ function OverviewContent() {
 
   // Analysis Data for Banners
   const risks = useMemo(() => 
-    CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst([cl], DATA, PERIODS, cl.key, curPeriod)))
+    CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)))
       .map(cl => ({
         key: cl.key,
-        rev: totals([], DATA, cl.key, curPeriod).rev,
-        growth: getPct(totals([], DATA, cl.key, curPeriod).rev, totals([], DATA, cl.key, prevPeriod).rev)
+        rev: totals(CLIENTS, DATA, cl.key, curPeriod).rev,
+        growth: getPct(totals(CLIENTS, DATA, cl.key, curPeriod).rev, totals(CLIENTS, DATA, cl.key, prevPeriod).rev)
       })), [CLIENTS, DATA, PERIODS, curPeriod, prevPeriod]);
 
   const topGrowth = useMemo(() => 
     CLIENTS.map(cl => {
-      const t = totals([], DATA, cl.key, curPeriod);
-      const tp = totals([], DATA, cl.key, prevPeriod);
+      const t = totals(CLIENTS, DATA, cl.key, curPeriod);
+      const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
       return { key: cl.key, rev: t.rev, growth: getPct(t.rev, tp.rev) || 0 };
     }).filter(cl => cl.growth > 0).sort((a, b) => b.growth - a.growth).slice(0, 3), [CLIENTS, DATA, curPeriod, prevPeriod]);
 
@@ -78,8 +78,8 @@ function OverviewContent() {
         valA = ORD.indexOf(clientWorst([a], DATA, PERIODS, a.key, curPeriod));
         valB = ORD.indexOf(clientWorst([b], DATA, PERIODS, b.key, curPeriod));
       } else if (key === 'rev' || key === 'sp' || key === 'roas') {
-        const tA = totals([], DATA, a.key, curPeriod);
-        const tB = totals([], DATA, b.key, curPeriod);
+        const tA = totals(CLIENTS, DATA, a.key, curPeriod);
+        const tB = totals(CLIENTS, DATA, b.key, curPeriod);
         valA = tA[key as 'rev' | 'sp' | 'roas'] || 0;
         valB = tB[key as 'rev' | 'sp' | 'roas'] || 0;
       } else {

@@ -124,8 +124,8 @@ export const ClientTable: React.FC<ClientTableProps> = ({
           </thead>
           <tbody className="divide-y divide-surface2">
             {clients.map((cl) => {
-              const t  = totals([], data, cl.key, currentPeriod); // empty clients array because totals logic handles it
-              const wc = clientWorst([cl], data, periods, cl.key, currentPeriod);
+              const t  = totals(clients, data, cl.key, currentPeriod);
+              const wc = clientWorst(clients, data, periods, cl.key, currentPeriod);
               const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
               const bgClass = STATUS_BG[wc] || STATUS_BG.nn;
 
