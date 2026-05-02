@@ -49,7 +49,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
       {/* Table Controls */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 px-6 py-5 border-b border-border-main bg-white">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
-          <h2 className="text-base font-bold text-text shrink-0">Semua Klien</h2>
+          <h2 className="text-sm font-bold text-text shrink-0">Semua Klien</h2>
           
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative group">
@@ -92,7 +92,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
           </div>
         </div>
         
-        <div className="text-[10px] font-black text-text4 uppercase tracking-widest bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
+        <div className="text-[10px] font-black text-text4 uppercase tracking-wider bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
           Total {clients.length} Klien
         </div>
       </div>
@@ -111,9 +111,9 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                 { label: 'Channel', key: 'cg' }
               ].map((h, i) => (
                 <th 
-                  key={h.key} 
-                  onClick={() => onSort(h.key)}
-                  className={`py-4 px-4 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : ''} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : 'text-text4'}`}
+                   key={h.key} 
+                   onClick={() => onSort(h.key)}
+                   className={`py-3 text-[10px] font-black uppercase tracking-wider cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : 'px-4'} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : 'text-text4'}`}
                 >
                   <div className={`flex items-center gap-1.5 ${i === 6 ? 'justify-end' : 'justify-start'}`}>
                     {h.label}
@@ -138,40 +138,40 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                   onClick={() => onClientClick(cl.key)}
                   className="cursor-pointer hover:bg-surface2/70 transition-all duration-150 group"
                 >
-                  <td className="py-4 pl-6">
+                  <td className="py-3.5 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-[10px] font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                      <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xs font-black shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
                         {cl.name.slice(0, 2).toUpperCase()}
                       </div>
-                      <span className="text-sm font-bold text-text">{cl.name}</span>
+                      <span className="text-sm font-medium text-text">{cl.name}</span>
                     </div>
                   </td>
-                  <td className="py-4">
-                    <span className="text-xs font-medium text-text3 bg-surface2 px-2 py-1 rounded-md">{cl.ind}</span>
+                  <td className="py-3.5 px-4">
+                    <span className="text-xs font-medium text-text3">{cl.ind}</span>
                   </td>
-                  <td className="py-4">
+                  <td className="py-3.5 px-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${bgClass}`}>
                       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dotColor }} />
                       {LM[wc]}
                     </span>
                   </td>
-                  <td className="py-4">
+                  <td className="py-3.5 px-4">
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-sm font-bold text-text">{fRp(t.rev)}</span>
+                      <span className="text-sm font-medium text-text">{fRp(t.rev)}</span>
                       <Sparkline 
                         data={periods.map(p => totals(CH_DEF, clients, data, cl.key, p).rev)} 
                         color={wc === 'rr' || wc === 'or' ? '#DC2626' : wc === 'gg' || wc === 'gd' ? '#059669' : '#9CA3AF'} 
                       />
                     </div>
                   </td>
-                  <td className="py-4">
+                  <td className="py-3.5 px-4">
                     <span className="text-sm font-medium text-text3">{fRp(t.sp)}</span>
                   </td>
-                  <td className="py-4">
+                  <td className="py-3.5 px-4">
                     <span className="text-sm font-bold text-text">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
                   </td>
-                  <td className="py-4 pr-6 text-right">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-text2 bg-surface3 px-2.5 py-1 rounded-lg border border-border-main/50 uppercase tracking-wider">
+                  <td className="py-3.5 pr-6 text-right">
+                    <span className="chip chip-nn uppercase tracking-wider">
                        {cl.cg}
                     </span>
                   </td>

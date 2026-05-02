@@ -102,12 +102,12 @@ function OverviewContent() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <Activity className="w-5 h-5 text-accent" />
-            <span className="text-sm font-bold text-text3 tracking-tight">Overview Dashboard</span>
+          <div className="flex items-center gap-2 mb-2.5">
+            <Activity className="w-4 h-4 text-accent" />
+            <span className="text-[10px] font-bold text-text3 uppercase tracking-wider">Overview Dashboard</span>
           </div>
           <h1 className="text-2xl font-bold text-text tracking-tight">Performa Portofolio</h1>
-          <p className="text-sm text-text3 mt-1.5 font-medium">Ringkasan performa seluruh klien aktif.</p>
+          <p className="text-sm text-text3 mt-1.5 font-medium opacity-80">Ringkasan performa seluruh klien aktif periode ini.</p>
         </div>
 
         <div className="relative">
