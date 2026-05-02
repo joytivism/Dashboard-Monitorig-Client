@@ -224,7 +224,9 @@ export default function AdminHubPage() {
                       <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Monthly Forecast</span>
                    </div>
                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-lg font-bold text-white tracking-tighter">$0.00</span>
+                      <span className="text-lg font-bold text-white tracking-tighter">
+                         ${(stats.aiStats.totalCost * 30).toFixed(2)}
+                      </span>
                       <span className="text-[9px] font-bold text-white/40 uppercase">est / mo</span>
                    </div>
                 </div>
