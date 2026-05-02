@@ -156,13 +156,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                     </span>
                   </td>
                   <td className="py-3.5 px-4">
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-sm font-medium text-text">{fRp(t.rev)}</span>
-                      <Sparkline 
-                        data={periods.map(p => totals(CH_DEF, clients, data, cl.key, p).rev)} 
-                        color={wc === 'rr' || wc === 'or' ? '#DC2626' : wc === 'gg' || wc === 'gd' ? '#059669' : '#9CA3AF'} 
-                      />
-                    </div>
+                    <span className="text-sm font-medium text-text">{fRp(t.rev)}</span>
                   </td>
                   <td className="py-3.5 px-4">
                     <span className="text-sm font-medium text-text3">{fRp(t.sp)}</span>
