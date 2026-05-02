@@ -27,7 +27,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
   return (
     <aside className="w-[248px] h-screen sticky top-0 bg-surface border-r border-border-main flex flex-col shrink-0 z-40" style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
       {/* ── Logo Section ── */}
-      <div className="h-[64px] px-5 flex items-center border-b border-border-main shrink-0 bg-surface">
+      <div className="h-[60px] px-5 flex items-center border-b border-border-main shrink-0 bg-surface">
         <Link href="/admin" className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0">
             <Hexagon className="w-5 h-5 text-white fill-white" />

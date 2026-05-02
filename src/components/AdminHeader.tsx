@@ -99,21 +99,18 @@ export default function AdminHeader() {
 
   return (
     <header 
-      className="h-[64px] w-full sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 border-b"
+      className="h-[60px] w-full sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 border-b border-border-main"
       style={{ 
-        background: 'rgba(255,255,255,0.92)',
+        background: 'rgba(255,255,255,0.95)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderBottomColor: 'rgba(229,231,235,0.7)'
       }}
     >
       {/* ── Breadcrumbs ── */}
-      <div className="flex items-center gap-2 text-xs">
-        <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-surface2 border border-border-main/50">
-          <span className="text-text3 font-medium">Admin CC</span>
-          <ChevronRight className="w-3 h-3 text-text4" />
-          <span className="font-bold text-text">{currentItem?.label || 'Dashboard'}</span>
-        </div>
+      <div className="flex items-center gap-2 text-xs font-medium">
+        <span className="text-text3">Admin CC</span>
+        <ChevronRight className="w-3 h-3 text-text4" />
+        <span className="text-text font-semibold">{currentItem?.label || 'Dashboard'}</span>
       </div>
 
       {/* ── Center: System Health ── */}
