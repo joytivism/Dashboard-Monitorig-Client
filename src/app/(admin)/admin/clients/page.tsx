@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
 import { 
-  Users, Plus, Search, Filter, LayoutGrid, List,
-  MoreVertical, Edit2, Trash2, X, CheckCircle2,
-  AlertCircle, ChevronRight, Hash, User, Briefcase, Target
+  Users, Plus, Search, Edit2, Trash2, 
+  LayoutGrid, List, CheckCircle2, AlertCircle, 
+  Hash, User, Briefcase, Target, X
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -205,47 +205,51 @@ export default function ClientsAdminPage() {
         {/* ── Clients View ── */}
         {view === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filtered.map(c => (
-              <div key={c.key} className="group bg-white rounded-2xl border border-border-main shadow-sm hover:shadow-md hover:border-border-alt transition-all p-6 flex flex-col gap-6">
-                <div className="flex items-start justify-between">
-                  <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                    {c.key.slice(0, 2).toUpperCase()}
+            {filtered.map(cl => (
+               <div key={cl.key} className="group relative bg-white rounded-[2rem] border border-border-main p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                  {/* Card Header */}
+                  <div className="flex items-start justify-between mb-6">
+                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-surface2 border border-border-main/50 flex items-center justify-center text-accent font-bold text-base shadow-inner group-hover:bg-accent group-hover:text-white transition-all">
+                           {cl.key.slice(0,2).toUpperCase()}
+                        </div>
+                        <div>
+                           <h3 className="text-lg font-bold text-text tracking-tight group-hover:text-accent transition-colors">{cl.name}</h3>
+                           <p className="text-[10px] font-bold text-text4 uppercase tracking-widest opacity-60">{cl.ind}</p>
+                        </div>
+                     </div>
+                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEdit(cl)} className="p-2.5 rounded-xl bg-surface2 text-text3 hover:text-accent hover:bg-accent/10 transition-all">
+                           <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete(cl.key)} className="p-2.5 rounded-xl bg-surface2 text-text3 hover:text-red-600 hover:bg-red-50 transition-all">
+                           <Trash2 className="w-4 h-4" />
+                        </button>
+                     </div>
                   </div>
-                  <div className="flex gap-2">
-                     <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
-                        <Edit2 className="w-4 h-4" />
-                     </button>
-                     <button onClick={() => handleDelete(c.key)} className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-text3 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                     </button>
+
+                  {/* Body Info */}
+                  <div className="grid grid-cols-2 gap-6 mb-8">
+                     <div className="space-y-1">
+                        <div className="text-[9px] font-bold text-text4 uppercase tracking-widest">Account Strategist</div>
+                        <div className="text-sm font-semibold text-text tracking-tight">{cl.as}</div>
+                     </div>
+                     <div className="space-y-1">
+                        <div className="text-[9px] font-bold text-text4 uppercase tracking-widest">PIC Client</div>
+                        <div className="text-sm font-semibold text-text tracking-tight">{cl.pic}</div>
+                     </div>
                   </div>
-                </div>
-                
-                <div className="space-y-1">
-                  <h3 className="text-base font-bold text-text truncate group-hover:text-accent transition-colors">{c.key}</h3>
-                  <p className="text-xs font-semibold text-text3 uppercase tracking-wider">{c.ind}</p>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">AS</span>
-                      <p className="text-xs font-bold text-text truncate">{c.as || '—'}</p>
-                   </div>
-                   <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">PIC</span>
-                      <p className="text-xs font-bold text-text truncate">{c.pic || '—'}</p>
-                   </div>
-                </div>
-
-                <div className="pt-2 border-t border-border-main flex flex-wrap gap-1.5">
-                  {c.chs.map((ch: string) => (
-                    <span key={ch} className="px-2 py-0.5 rounded bg-surface2 text-[10px] font-bold text-text3">
-                      {ch}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
+                  {/* Channel Tags */}
+                  <div className="pt-6 border-t border-border-main/40 flex flex-wrap gap-2">
+                     {cl.chs.map((ch: string) => (
+                       <span key={ch} className="px-3 py-1.5 rounded-lg bg-surface2 border border-border-main/50 text-[9px] font-bold text-text3 uppercase tracking-wider hover:border-accent/30 hover:text-accent transition-all cursor-default">
+                          {ch.replace('_', ' ')}
+                       </span>
+                     ))}
+                  </div>
+               </div>
+             ))}
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
