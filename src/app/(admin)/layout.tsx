@@ -100,10 +100,8 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader />
         
-        <main className="flex-1 p-8 md:p-10">
-          <div className="max-w-7xl mx-auto w-full h-full">
-            {children}
-          </div>
+        <main className="flex-1 p-6 md:p-8 lg:p-10 w-full overflow-y-auto">
+          {children}
         </main>
       </div>
     </div>

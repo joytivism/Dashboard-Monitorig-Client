@@ -152,7 +152,7 @@ export default function ClientsAdminPage() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
+      <div className="space-y-10 animate-fade-in pb-20">
         <Toast toast={toast} />
 
         {/* ── Header Area ── */}
