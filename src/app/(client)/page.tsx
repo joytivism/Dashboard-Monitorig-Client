@@ -8,7 +8,7 @@ import { useDashboardData } from '@/components/DataProvider';
 import {
   Users, DollarSign, TrendingUp, CreditCard,
   Search, ArrowUpRight, ArrowDownRight, AlertTriangle, Sparkles,
-  ChevronRight, Activity, Calendar, Filter
+  ChevronRight, Activity, Calendar, Filter, Zap
 } from 'lucide-react';
 
 const STATUS_BG: Record<string, string> = {
@@ -106,12 +106,10 @@ function OverviewContent() {
   const prevIdx = PERIODS.indexOf(curPeriod) - 1;
   const prevPeriod = prevIdx >= 0 ? PERIODS[prevIdx] : '';
 
-  // Get unique filters
   const industries = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.ind))).filter(i => i !== '—').sort(), [CLIENTS]);
   const pics = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.as))).filter(i => i !== '—').sort(), [CLIENTS]);
   const channelGroups = useMemo(() => Array.from(new Set(CLIENTS.map(c => c.cg))).filter(i => i && i !== '—').sort(), [CLIENTS]);
 
-  // Aggregate Metrics
   const { tRev, tSp, pRev, pSp } = useMemo(() => {
     let tr = 0, ts = 0, pr = 0, ps = 0;
     CLIENTS.forEach(cl => {
@@ -126,8 +124,21 @@ function OverviewContent() {
   const paRoas  = pSp > 0 ? pRev / pSp : null;
   const revGrowth = getPct(tRev, pRev);
 
+  // Analysis Data
   const probs = CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
-  const wins  = CLIENTS.filter(cl => ['gg', 'gd'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
+  
+  const topGrowth = useMemo(() => {
+    return CLIENTS
+      .map(cl => {
+        const t  = totals(CLIENTS, DATA, cl.key, curPeriod);
+        const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+        const g  = getPct(t.rev, tp.rev) || 0;
+        return { ...cl, growth: g, rev: t.rev };
+      })
+      .filter(cl => cl.growth > 0)
+      .sort((a, b) => b.growth - a.growth)
+      .slice(0, 3);
+  }, [CLIENTS, DATA, curPeriod, prevPeriod]);
 
   const sortedClients = useMemo(() => {
     return [...CLIENTS]
@@ -245,100 +256,121 @@ function OverviewContent() {
         />
       </div>
 
-      {/* ── Alert / Win banners ── */}
-      {(probs.length > 0 || wins.length > 0) && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {probs.length > 0 && (
-            <div className="bg-rr-bg border border-rr-border rounded-2xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-rr" />
-                  <h2 className="text-sm font-bold text-rr-text">Attention Needed</h2>
-                </div>
-                <span className="text-[10px] font-black px-2.5 py-1 bg-rr/10 text-rr-text rounded-full">
-                  {probs.length} klien
-                </span>
+      {/* ── Top Banners: Risk vs Opportunity ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Risk Column */}
+        <div className="bg-rr-bg border border-rr-border rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-rr/10 flex items-center justify-center">
+                 <AlertTriangle className="w-4 h-4 text-rr" />
               </div>
-              <div className="space-y-2">
-                {probs.map(cl => {
-                  const t  = totals(CLIENTS, DATA, cl.key, curPeriod);
-                  const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
-                  const v  = getPct(t.rev, tp.rev);
-                  return (
-                    <button
-                      key={cl.key}
-                      onClick={() => router.push(`/client/${cl.key}${qs}`)}
-                      className="w-full flex items-center justify-between bg-white/70 rounded-xl px-4 py-2.5 hover:bg-white transition-colors group"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-rr/10 flex items-center justify-center text-rr text-[10px] font-black">
-                          {cl.key.slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="text-left">
-                          <div className="text-sm font-bold text-rr-text">{cl.key}</div>
-                          <div className="text-[10px] text-rr-text/60">{fRp(t.rev)}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {v !== null && (
-                          <span className="text-xs font-bold text-rr">
-                            {v >= 0 ? '↑' : '↓'}{Math.abs(v).toFixed(1)}%
-                          </span>
-                        )}
-                        <ChevronRight className="w-3.5 h-3.5 text-rr-text/40 group-hover:text-rr transition-colors" />
-                      </div>
-                    </button>
-                  );
-                })}
+              <div>
+                 <h2 className="text-sm font-bold text-rr-text">Attention Needed</h2>
+                 <p className="text-[10px] text-rr-text/60 font-medium uppercase tracking-wider">High Risk Portfolio</p>
               </div>
             </div>
-          )}
+            {probs.length > 0 && (
+              <span className="text-[10px] font-black px-2.5 py-1 bg-rr/10 text-rr-text rounded-lg border border-rr-border/40">
+                {probs.length} KLIEN
+              </span>
+            )}
+          </div>
 
-          {wins.length > 0 && (
-            <div className="bg-gg-bg border border-gg-border rounded-2xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-gg" />
-                  <h2 className="text-sm font-bold text-gg-text">Growing Clients</h2>
-                </div>
-                <span className="text-[10px] font-black px-2.5 py-1 bg-gg/10 text-gg-text rounded-full">
-                  {wins.length} klien
-                </span>
+          <div className="space-y-2">
+            {probs.length > 0 ? (
+              probs.slice(0, 3).map(cl => {
+                const t  = totals(CLIENTS, DATA, cl.key, curPeriod);
+                const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+                const v  = getPct(t.rev, tp.rev);
+                return (
+                  <button
+                    key={cl.key}
+                    onClick={() => router.push(`/client/${cl.key}${qs}`)}
+                    className="w-full flex items-center justify-between bg-white/70 rounded-xl px-4 py-3 hover:bg-white hover:shadow-sm transition-all group border border-transparent hover:border-rr-border/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-rr/10 flex items-center justify-center text-rr text-[10px] font-black">
+                        {cl.key.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-bold text-rr-text leading-none mb-1">{cl.key}</div>
+                        <div className="text-[10px] text-rr-text/60 font-bold">{fRp(t.rev)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {v !== null && (
+                        <span className="text-xs font-black text-rr flex items-center gap-0.5">
+                          {v >= 0 ? '↑' : '↓'}{Math.abs(v).toFixed(1)}%
+                        </span>
+                      )}
+                      <ChevronRight className="w-4 h-4 text-rr-text/20 group-hover:text-rr transition-colors" />
+                    </div>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="py-8 text-center bg-white/40 rounded-xl border border-dashed border-rr-border/40">
+                 <p className="text-[10px] font-black text-rr-text/40 uppercase tracking-widest">No critical alerts</p>
               </div>
-              <div className="space-y-2">
-                {wins.map(cl => {
-                  const t  = totals(CLIENTS, DATA, cl.key, curPeriod);
-                  const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
-                  const v  = getPct(t.rev, tp.rev);
-                  return (
-                    <button
-                      key={cl.key}
-                      onClick={() => router.push(`/client/${cl.key}${qs}`)}
-                      className="w-full flex items-center justify-between bg-white/70 rounded-xl px-4 py-2.5 hover:bg-white transition-colors group"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-gg/10 flex items-center justify-center text-gg text-[10px] font-black">
-                          {cl.key.slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="text-left">
-                          <div className="text-sm font-bold text-gg-text">{cl.key}</div>
-                          <div className="text-[10px] text-gg-text/60">{fRp(t.rev)}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {v !== null && (
-                          <span className="text-xs font-bold text-gg">↑{Math.abs(v).toFixed(1)}%</span>
-                        )}
-                        <ChevronRight className="w-3.5 h-3.5 text-gg-text/40 group-hover:text-gg transition-colors" />
-                      </div>
-                    </button>
-                  );
-                })}
+            )}
+          </div>
+        </div>
+
+        {/* Opportunity Column */}
+        <div className="bg-gg-bg border border-gg-border rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-gg/10 flex items-center justify-center">
+                 <TrendingUp className="w-4 h-4 text-gg" />
+              </div>
+              <div>
+                 <h2 className="text-sm font-bold text-gg-text">Top Growth Clients</h2>
+                 <p className="text-[10px] text-gg-text/60 font-medium uppercase tracking-wider">Opportunity Wins</p>
               </div>
             </div>
-          )}
+            {topGrowth.length > 0 && (
+              <span className="text-[10px] font-black px-2.5 py-1 bg-gg/10 text-gg-text rounded-lg border border-gg-border/40">
+                TOP {topGrowth.length}
+              </span>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            {topGrowth.length > 0 ? (
+              topGrowth.map(cl => {
+                return (
+                  <button
+                    key={cl.key}
+                    onClick={() => router.push(`/client/${cl.key}${qs}`)}
+                    className="w-full flex items-center justify-between bg-white/70 rounded-xl px-4 py-3 hover:bg-white hover:shadow-sm transition-all group border border-transparent hover:border-gg-border/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gg/10 flex items-center justify-center text-gg text-[10px] font-black">
+                        {cl.key.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-bold text-gg-text leading-none mb-1">{cl.key}</div>
+                        <div className="text-[10px] text-gg-text/60 font-bold">{fRp(cl.rev)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-black text-gg flex items-center gap-0.5">
+                        ↑{cl.growth.toFixed(1)}%
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-gg-text/20 group-hover:text-gg transition-colors" />
+                    </div>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="py-8 text-center bg-white/40 rounded-xl border border-dashed border-gg-border/40">
+                 <p className="text-[10px] font-black text-gg-text/40 uppercase tracking-widest">Seeking opportunities</p>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
 
       {/* ── Client Table ── */}
       <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
