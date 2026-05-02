@@ -7,7 +7,7 @@ import { CH_DEF } from '@/lib/data';
 import { isAware } from '@/lib/utils';
 import {
   CheckCircle2, AlertCircle, ChevronRight, Save,
-  RotateCcw, TrendingUp, Database, ArrowRight,
+  RotateCcw, TrendingUp, Database, ArrowRight, Info,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
