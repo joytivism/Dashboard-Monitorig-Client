@@ -6,7 +6,7 @@ import { useDashboardData } from '@/components/DataProvider';
 import { clientWorst, fRp, totals, pct as getPct } from '@/lib/utils';
 import {
   Database, Activity, Users, ArrowUpRight, TrendingUp,
-  AlertCircle, Zap, LayoutDashboard,
+  AlertCircle, Zap, LayoutDashboard, ChevronRight,
   CalendarClock, Settings2, ArrowRight, Globe, TrendingDown,
   PieChart, DollarSign, Terminal
 } from 'lucide-react';
