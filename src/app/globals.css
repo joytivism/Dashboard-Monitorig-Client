@@ -171,3 +171,8 @@
 .label-premium {
   @apply text-[10px] font-black text-text4 uppercase tracking-[0.12em];
 }
+
+@keyframes move-stripe {
+  from { background-position: 0 0; }
+  to { background-position: 1rem 0; }
+}
