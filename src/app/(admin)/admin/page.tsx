@@ -95,7 +95,7 @@ export default function AdminHubPage() {
   const recentActivity = ACTIVITY.slice(0, 5);
 
   return (
-    <div className="space-y-10 animate-fade-in pb-12">
+    <div className="w-full space-y-10 animate-fade-in pb-12">
 
       {/* ── Top Header & Action ── */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">

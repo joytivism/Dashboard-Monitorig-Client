@@ -88,7 +88,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-10 animate-fade-in pb-20">
+    <div className="w-full space-y-10 animate-fade-in pb-20">
       {/* Toast Notification */}
       <Toast toast={toast} />
 
