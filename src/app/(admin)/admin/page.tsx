@@ -148,7 +148,7 @@ export default function AdminHubPage() {
               <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text3">
                  <Wallet className="w-4 h-4" />
               </div>
-              <h3 className="text-sm font-bold text-text">Ringkasan Finansial Portfolio</h3>
+              <h3 className="text-sm font-bold text-text">Economic Performance Pulse</h3>
            </div>
            <div className="text-[10px] font-bold text-text4 uppercase tracking-wider px-3 py-1 rounded-full bg-surface2 border border-border-main">{curPeriod}</div>
         </div>
