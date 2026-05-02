@@ -109,6 +109,9 @@
     font-size: 14px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   }
 
   ::-webkit-scrollbar { width: 5px; height: 5px; }

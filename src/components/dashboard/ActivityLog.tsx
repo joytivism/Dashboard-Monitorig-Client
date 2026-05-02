@@ -33,21 +33,21 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ activities, compact = 
       <table className="w-full text-left">
         <thead>
           <tr className="bg-surface2/50 border-b border-border-main">
-            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-widest">Tanggal</th>
-            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-widest">Kategori</th>
-            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-widest">Keterangan</th>
+            <th className="py-5 px-6 label-premium">Tanggal</th>
+            <th className="py-5 px-6 label-premium">Kategori</th>
+            <th className="py-5 px-6 label-premium">Keterangan</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border-main/30">
+        <tbody className="divide-y divide-border-main/20">
           {activities.map((a, i) => (
-            <tr key={i} className="hover:bg-surface2/30 transition-colors">
-              <td className="py-4 px-6 text-sm text-text2 font-medium whitespace-nowrap">{a.dLabel || a.d}</td>
-              <td className="py-4 px-6">
-                <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${typeStyles[a.t]} border border-current/10`}>
+            <tr key={i} className="hover:bg-surface2/50 transition-colors group">
+              <td className="py-5 px-6 text-sm text-text2 font-bold whitespace-nowrap tracking-tight">{a.dLabel || a.d}</td>
+              <td className="py-5 px-6">
+                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${typeStyles[a.t]} border border-current/10 shadow-sm`}>
                   {typeLabels[a.t]}
                 </span>
               </td>
-              <td className="py-4 px-6 text-sm text-text font-medium">{a.n}</td>
+              <td className="py-5 px-6 text-sm text-text font-medium leading-relaxed">{a.n}</td>
             </tr>
           ))}
           {activities.length === 0 && (
