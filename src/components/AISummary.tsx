@@ -99,8 +99,8 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
               <Sparkles className="w-6 h-6 fill-white/20" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-text uppercase tracking-tight">AI Strategy Insights</h3>
-              <p className="text-[10px] font-bold text-text4 uppercase tracking-[0.2em]">Powered by Advanced Analytics</p>
+              <h3 className="text-sm font-bold text-text tracking-tight">AI Strategy Insights</h3>
+              <p className="text-[10px] font-bold text-text4 tracking-[0.2em]">Powered by Advanced Analytics</p>
             </div>
           </div>
 

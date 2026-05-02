@@ -250,8 +250,8 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                  <Zap className="w-6 h-6 fill-white/20" />
               </div>
               <div>
-                 <h3 className="text-sm font-bold text-text uppercase tracking-tight">Command Center Intelligence</h3>
-                 <p className="text-[10px] font-bold text-text4 uppercase tracking-[0.2em]">Automated Intelligence Output</p>
+                 <h3 className="text-sm font-bold text-text tracking-tight">Command Center Intelligence</h3>
+                 <p className="text-[10px] font-bold text-text4 tracking-[0.2em]">Automated Intelligence Output</p>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-surface2 rounded-xl border border-border-main/50">
