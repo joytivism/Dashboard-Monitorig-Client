@@ -111,7 +111,7 @@ function HeaderContent() {
           className="fixed inset-0 z-[200] flex items-start justify-center pt-[14vh]"
           onClick={() => setSearchOpen(false)}
         >
-          {/* Overlay removed per request */}
+          <div className="absolute inset-0 bg-black/60 transition-opacity" />
           <div
             className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in"
             onClick={e => e.stopPropagation()}
