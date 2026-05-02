@@ -91,23 +91,26 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
   const StatusIcon = config.icon;
 
   return (
-    <div className="bg-white rounded-[24px] shadow-main overflow-hidden mb-8 border border-border-main/50">
-      <div className="p-6 sm:p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20">
-              <Sparkles className="w-6 h-6 fill-white/20" />
+    <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden mb-8 group/card transition-all duration-300 hover:shadow-md relative">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent/0 via-accent/30 to-accent/0 opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
+      
+      <div className="p-8">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+              <Sparkles className="w-6 h-6 fill-white/20 relative z-10" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-text tracking-tight">AI Strategy Insights</h3>
-              <p className="text-[10px] font-bold text-text4 tracking-[0.2em]">Powered by Advanced Analytics</p>
+              <h3 className="text-base font-bold text-text tracking-tight">AI Strategy Insights</h3>
+              <p className="text-[10px] font-black text-text4 uppercase tracking-[0.15em]">Powered by Advanced Analytics</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {data && !loading && (
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold ${config.badgeClass}`}>
-                <StatusIcon className="w-3 h-3" />
+              <span className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold ${config.badgeClass} border border-current/10 shadow-sm animate-fade-in`}>
+                <StatusIcon className="w-3.5 h-3.5" />
                 {config.label}
               </span>
             )}
@@ -115,7 +118,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
               <button 
                 onClick={() => fetchSummary(true)} 
                 disabled={loading}
-                className="p-2 hover:bg-surface2 rounded-xl transition-all duration-200 disabled:opacity-50 text-text3"
+                className="w-10 h-10 flex items-center justify-center hover:bg-surface2 rounded-xl transition-all duration-200 disabled:opacity-50 text-text3 border border-transparent hover:border-border-main"
                 title="Re-analyze Data"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -125,39 +128,42 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
         </div>
 
         {loading ? (
-          <div className="space-y-4">
-            <div className="space-y-2.5">
-              <div className="h-4 bg-surface2 rounded-lg w-full animate-pulse"></div>
-              <div className="h-4 bg-surface2 rounded-lg w-[85%] animate-pulse"></div>
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <div className="h-4 bg-surface2 rounded-full w-full animate-pulse"></div>
+              <div className="h-4 bg-surface2 rounded-full w-[80%] animate-pulse"></div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-              <div className="h-16 bg-surface2 rounded-2xl animate-pulse"></div>
-              <div className="h-16 bg-surface2 rounded-2xl animate-pulse"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="h-20 bg-surface2 rounded-2xl animate-pulse"></div>
+              <div className="h-20 bg-surface2 rounded-2xl animate-pulse"></div>
             </div>
           </div>
         ) : error ? (
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-rr-bg/50 text-rr text-sm font-medium border border-rr-border/50">
+          <div className="flex items-center gap-4 p-5 rounded-2xl bg-rr-bg/30 text-rr text-sm font-bold border border-rr-border/40">
             <AlertCircle className="w-5 h-5 shrink-0" />
             {error}
-            <button onClick={() => fetchSummary(true)} className="ml-auto underline text-xs">Coba Lagi</button>
+            <button onClick={() => fetchSummary(true)} className="ml-auto bg-rr text-white px-4 py-1.5 rounded-lg text-xs hover:bg-rr/90 transition-colors">Coba Lagi</button>
           </div>
         ) : data ? (
-          <div className="space-y-5">
-            <p className="text-[14px] leading-[1.85] text-text/85 font-medium italic">
-              "{data.summary}"
-            </p>
+          <div className="space-y-8 animate-fade-in">
+            <div className="relative">
+              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-accent/10 rounded-full"></div>
+              <p className="text-[15px] leading-relaxed text-text font-medium px-2">
+                {data.summary}
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {data.actions.map((action, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-surface2/60 border border-border-main hover:bg-surface2 transition-all duration-200 group">
-                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-accent group-hover:text-white transition-colors">
+                <div key={i} className="flex items-start gap-4 p-5 rounded-2xl bg-surface2/40 border border-border-main/60 hover:bg-white hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 group">
+                  <div className="w-10 h-10 rounded-xl bg-accent/5 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-300">
                     <Zap className="w-4 h-4 text-accent group-hover:text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1">
+                    <div className="text-[10px] font-black text-text4 uppercase tracking-widest mb-1.5 opacity-80">
                       Action Recommendation
                     </div>
-                    <p className="text-[13px] text-text font-semibold leading-snug">
+                    <p className="text-sm text-text font-bold leading-snug">
                       {action}
                     </p>
                   </div>
@@ -166,18 +172,21 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
             </div>
           </div>
         ) : (
-          <div className="py-10 flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-surface2 rounded-full flex items-center justify-center mb-6 relative">
-              <Sparkles className="w-10 h-10 text-accent/20" />
-              <div className="absolute inset-0 bg-accent/5 rounded-full animate-ping opacity-20"></div>
+          <div className="py-12 flex flex-col items-center text-center animate-fade-in">
+            <div className="w-24 h-24 bg-surface2 rounded-3xl flex items-center justify-center mb-8 relative group cursor-pointer" onClick={() => fetchSummary()}>
+              <div className="absolute inset-0 bg-accent/10 rounded-3xl group-hover:scale-110 transition-transform duration-500"></div>
+              <Sparkles className="w-10 h-10 text-accent relative z-10 group-hover:rotate-12 transition-transform duration-500" />
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-accent text-white rounded-lg flex items-center justify-center shadow-lg animate-bounce">
+                <Zap className="w-3 h-3 fill-current" />
+              </div>
             </div>
-            <h4 className="text-base font-bold text-text mb-2">Siap untuk dianalisis?</h4>
-            <p className="text-sm text-text3 max-w-[300px] mb-8 font-medium">
-              Gunakan AI untuk mendapatkan ringkasan performa dan rekomendasi tindakan strategis.
+            <h4 className="text-lg font-bold text-text mb-2">Buka Wawasan Strategis</h4>
+            <p className="text-sm text-text3 max-w-[320px] mb-10 font-medium leading-relaxed">
+              Analisis cerdas berdasarkan performa periode ini. Dapatkan ringkasan otomatis dan rekomendasi tindakan.
             </p>
             <button 
               onClick={() => fetchSummary()}
-              className="flex items-center gap-3 bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-accent/25 hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center gap-3 bg-text hover:bg-accent text-white px-10 py-4 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-text/10 hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0"
             >
               <Zap className="w-4 h-4 fill-current" />
               Mulai Analisis AI
