@@ -95,107 +95,109 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
-      <Toast toast={toast} />
+    <>
+      <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
+        <Toast toast={toast} />
 
-      {/* ── Header Area ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
-                <Activity className="w-5 h-5" />
-             </div>
-             <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
+        {/* ── Header Area ── */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
+                  <Activity className="w-5 h-5" />
+               </div>
+               <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
+            </div>
+            <p className="text-sm font-medium text-text3 max-w-md">Manajemen catatan promo, event, content, dan launching klien.</p>
           </div>
-          <p className="text-sm font-medium text-text3 max-w-md">Manajemen catatan promo, event, content, dan launching klien.</p>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center justify-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all shadow-sm"
+          >
+            <Plus className="w-4 h-4" /> TAMBAH ACTIVITY
+          </button>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center justify-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all shadow-sm"
-        >
-          <Plus className="w-4 h-4" /> TAMBAH ACTIVITY
-        </button>
-      </div>
 
-      {/* ── Filters Bar ── */}
-      <div className="flex flex-col md:flex-row items-center gap-4">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
-          <input
-            type="text"
-            placeholder="Cari aktivitas atau klien..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text focus:outline-none focus:border-accent transition-all shadow-sm"
-          />
-        </div>
-        <div className="relative w-full md:w-64">
-           <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
-           <select
-             value={selectedClient}
-             onChange={e => setSelectedClient(e.target.value)}
-             className="w-full h-11 pl-11 pr-10 rounded-xl border border-border-main bg-white text-sm font-medium text-text appearance-none focus:outline-none focus:border-accent transition-all shadow-sm"
-           >
-             <option value="all">Semua Klien</option>
-             {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
-           </select>
-           <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
-        </div>
-      </div>
-
-      {/* ── Activity Feed ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-        {filtered.length === 0 ? (
-          <div className="py-24 text-center">
-            <h3 className="text-base font-bold text-text mb-2">Tidak ada aktivitas ditemukan</h3>
-            <p className="text-sm text-text3 max-w-xs mx-auto">Coba ubah filter atau tambahkan activity baru.</p>
+        {/* ── Filters Bar ── */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
+            <input
+              type="text"
+              placeholder="Cari aktivitas atau klien..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text focus:outline-none focus:border-accent transition-all shadow-sm"
+            />
           </div>
-        ) : (
-          <div className="divide-y divide-border-main">
-            {filtered.map((a, i) => {
-              const type = TYPE_MAP[a.t] || TYPE_MAP.e;
-              const isLast = i === filtered.length - 1;
-              return (
-                <div key={a.id} className="group flex items-start gap-4 px-6 py-5 hover:bg-surface2 transition-colors">
-                  <div className="flex flex-col items-center shrink-0 mt-1">
-                    <div className={`w-2 h-2 rounded-full ${type.dot}`} />
-                    {!isLast && <div className="w-px flex-1 bg-border-main mt-1 min-h-[32px]" />}
-                  </div>
+          <div className="relative w-full md:w-64">
+             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
+             <select
+               value={selectedClient}
+               onChange={e => setSelectedClient(e.target.value)}
+               className="w-full h-11 pl-11 pr-10 rounded-xl border border-border-main bg-white text-sm font-medium text-text appearance-none focus:outline-none focus:border-accent transition-all shadow-sm"
+             >
+               <option value="all">Semua Klien</option>
+               {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
+             </select>
+             <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
+          </div>
+        </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                       <span className={type.class}>{type.l}</span>
-                       <span className="text-xs font-bold text-accent">{a.c}</span>
-                       <span className="ml-auto text-[10px] font-bold text-text4 font-mono">{a.d}</span>
+        {/* ── Activity Feed ── */}
+        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+          {filtered.length === 0 ? (
+            <div className="py-24 text-center">
+              <h3 className="text-base font-bold text-text mb-2">Tidak ada aktivitas ditemukan</h3>
+              <p className="text-sm text-text3 max-w-xs mx-auto">Coba ubah filter atau tambahkan activity baru.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border-main">
+              {filtered.map((a, i) => {
+                const type = TYPE_MAP[a.t] || TYPE_MAP.e;
+                const isLast = i === filtered.length - 1;
+                return (
+                  <div key={a.id} className="group flex items-start gap-4 px-6 py-5 hover:bg-surface2 transition-colors">
+                    <div className="flex flex-col items-center shrink-0 mt-1">
+                      <div className={`w-2 h-2 rounded-full ${type.dot}`} />
+                      {!isLast && <div className="w-px flex-1 bg-border-main mt-1 min-h-[32px]" />}
                     </div>
-                    <p className="text-sm font-medium text-text leading-relaxed">{a.n}</p>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                         <span className={type.class}>{type.l}</span>
+                         <span className="text-xs font-bold text-accent">{a.c}</span>
+                         <span className="ml-auto text-[10px] font-bold text-text4 font-mono">{a.d}</span>
+                      </div>
+                      <p className="text-sm font-medium text-text leading-relaxed">{a.n}</p>
+                    </div>
+                    
+                    <button
+                      onClick={() => handleDelete(a.id)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-text4 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100 shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  
-                  <button
-                    onClick={() => handleDelete(a.id)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-text4 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100 shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Modal Form ── */}
       {showModal && (
         <>
-          {/* Backdrop - Hitam Full dengan cakupan penuh */}
+          {/* Backdrop - Hitam transparan yang mencakup seluruh layar */}
           <div 
-            className="fixed inset-0 bg-black/80 z-[10001] animate-fade-in" 
+            className="fixed inset-0 bg-black/50 z-[10001]" 
             onClick={() => setShowModal(false)} 
           />
           
           {/* Modal Container */}
           <div className="fixed inset-0 z-[10002] flex items-center justify-center p-6 pointer-events-none">
-            <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in pointer-events-auto">
+            <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden pointer-events-auto">
               <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
                  <h3 className="text-base font-bold text-text">Tambah Activity</h3>
                  <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
@@ -287,6 +289,6 @@ export default function ActivityPage() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

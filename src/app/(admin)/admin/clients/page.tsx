@@ -151,157 +151,159 @@ export default function ClientsAdminPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
-      <Toast toast={toast} />
+    <>
+      <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
+        <Toast toast={toast} />
 
-      {/* ── Header Area ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
-                <Users className="w-5 h-5" />
-             </div>
-             <h1 className="text-2xl font-bold text-text tracking-tight">Manajemen Klien</h1>
-          </div>
-          <p className="text-sm font-medium text-text3 max-w-md">Kelola ekosistem klien dan konfigurasi channel.</p>
-        </div>
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
-            <button 
-              onClick={() => setView('grid')}
-              className={`p-1.5 rounded-lg transition-all ${view === 'grid' ? 'bg-white shadow-sm text-accent' : 'text-text3 hover:text-text'}`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => setView('list')}
-              className={`p-1.5 rounded-lg transition-all ${view === 'list' ? 'bg-white shadow-sm text-accent' : 'text-text3 hover:text-text'}`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-          <button
-            onClick={openNew}
-            className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all"
-          >
-            <Plus className="w-4 h-4" /> TAMBAH KLIEN
-          </button>
-        </div>
-      </div>
-
-      {/* ── Search Bar ── */}
-      <div className="relative max-w-md">
-         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
-         <input
-           type="text"
-           placeholder="Cari nama klien..."
-           value={search}
-           onChange={e => setSearch(e.target.value)}
-           className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text focus:outline-none focus:border-accent transition-all shadow-sm"
-         />
-      </div>
-
-      {/* ── Clients View ── */}
-      {view === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map(c => (
-            <div key={c.key} className="group bg-white rounded-2xl border border-border-main shadow-sm hover:shadow-md hover:border-border-alt transition-all p-6 flex flex-col gap-6">
-              <div className="flex items-start justify-between">
-                <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                  {c.key.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="flex gap-2">
-                   <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
-                      <Edit2 className="w-4 h-4" />
-                   </button>
-                   <button onClick={() => handleDelete(c.key)} className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-text3 transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                   </button>
-                </div>
-              </div>
-              
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-text truncate group-hover:text-accent transition-colors">{c.key}</h3>
-                <p className="text-xs font-semibold text-text3 uppercase tracking-wider">{c.ind}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                 <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">AS</span>
-                    <p className="text-xs font-bold text-text truncate">{c.as || '—'}</p>
-                 </div>
-                 <div className="space-y-1">
-                    <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">PIC</span>
-                    <p className="text-xs font-bold text-text truncate">{c.pic || '—'}</p>
-                 </div>
-              </div>
-
-              <div className="pt-2 border-t border-border-main flex flex-wrap gap-1.5">
-                {c.chs.map((ch: string) => (
-                  <span key={ch} className="px-2 py-0.5 rounded bg-surface2 text-[10px] font-bold text-text3">
-                    {ch}
-                  </span>
-                ))}
-              </div>
+        {/* ── Header Area ── */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
+                  <Users className="w-5 h-5" />
+               </div>
+               <h1 className="text-2xl font-bold text-text tracking-tight">Manajemen Klien</h1>
             </div>
-          ))}
+            <p className="text-sm font-medium text-text3 max-w-md">Kelola ekosistem klien dan konfigurasi channel.</p>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
+              <button 
+                onClick={() => setView('grid')}
+                className={`p-1.5 rounded-lg transition-all ${view === 'grid' ? 'bg-white shadow-sm text-accent' : 'text-text3 hover:text-text'}`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => setView('list')}
+                className={`p-1.5 rounded-lg transition-all ${view === 'list' ? 'bg-white shadow-sm text-accent' : 'text-text3 hover:text-text'}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+            <button
+              onClick={openNew}
+              className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all"
+            >
+              <Plus className="w-4 h-4" /> TAMBAH KLIEN
+            </button>
+          </div>
         </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-           <table className="w-full text-left">
-              <thead>
-                 <tr className="bg-surface2/50 border-b border-border-main">
-                    <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Klien</th>
-                    <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Industri</th>
-                    <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">AS / PIC</th>
-                    <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider text-right">Aksi</th>
-                 </tr>
-              </thead>
-              <tbody className="divide-y divide-border-main">
-                 {filtered.map(c => (
-                    <tr key={c.key} className="group hover:bg-surface2 transition-colors">
-                       <td className="py-4 px-6">
-                          <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-[10px] font-black group-hover:bg-accent group-hover:text-white transition-all">
-                                {c.key.slice(0, 2).toUpperCase()}
-                             </div>
-                             <span className="text-sm font-bold text-text">{c.key}</span>
-                          </div>
-                       </td>
-                       <td className="py-4 px-6 text-xs font-medium text-text2">{c.ind}</td>
-                       <td className="py-4 px-6">
-                          <div className="text-xs font-bold text-text">{c.as || '—'}</div>
-                          <div className="text-[10px] font-bold text-text4">{c.pic || '—'}</div>
-                       </td>
-                       <td className="py-4 px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                             <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-text3 transition-colors">
-                                <Edit2 className="w-3.5 h-3.5" />
-                             </button>
-                             <button onClick={() => handleDelete(c.key)} className="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-text3 transition-colors hover:text-red-600">
-                                <Trash2 className="w-3.5 h-3.5" />
-                             </button>
-                          </div>
-                       </td>
-                    </tr>
-                 ))}
-              </tbody>
-           </table>
+
+        {/* ── Search Bar ── */}
+        <div className="relative max-w-md">
+           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
+           <input
+             type="text"
+             placeholder="Cari nama klien..."
+             value={search}
+             onChange={e => setSearch(e.target.value)}
+             className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text focus:outline-none focus:border-accent transition-all shadow-sm"
+           />
         </div>
-      )}
+
+        {/* ── Clients View ── */}
+        {view === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map(c => (
+              <div key={c.key} className="group bg-white rounded-2xl border border-border-main shadow-sm hover:shadow-md hover:border-border-alt transition-all p-6 flex flex-col gap-6">
+                <div className="flex items-start justify-between">
+                  <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                    {c.key.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex gap-2">
+                     <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
+                        <Edit2 className="w-4 h-4" />
+                     </button>
+                     <button onClick={() => handleDelete(c.key)} className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-text3 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                     </button>
+                  </div>
+                </div>
+                
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-text truncate group-hover:text-accent transition-colors">{c.key}</h3>
+                  <p className="text-xs font-semibold text-text3 uppercase tracking-wider">{c.ind}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">AS</span>
+                      <p className="text-xs font-bold text-text truncate">{c.as || '—'}</p>
+                   </div>
+                   <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">PIC</span>
+                      <p className="text-xs font-bold text-text truncate">{c.pic || '—'}</p>
+                   </div>
+                </div>
+
+                <div className="pt-2 border-t border-border-main flex flex-wrap gap-1.5">
+                  {c.chs.map((ch: string) => (
+                    <span key={ch} className="px-2 py-0.5 rounded bg-surface2 text-[10px] font-bold text-text3">
+                      {ch}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
+             <table className="w-full text-left">
+                <thead>
+                   <tr className="bg-surface2/50 border-b border-border-main">
+                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Klien</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Industri</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">AS / PIC</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider text-right">Aksi</th>
+                   </tr>
+                </thead>
+                <tbody className="divide-y divide-border-main">
+                   {filtered.map(c => (
+                      <tr key={c.key} className="group hover:bg-surface2 transition-colors">
+                         <td className="py-4 px-6">
+                            <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-[10px] font-black group-hover:bg-accent group-hover:text-white transition-all">
+                                  {c.key.slice(0, 2).toUpperCase()}
+                               </div>
+                               <span className="text-sm font-bold text-text">{c.key}</span>
+                            </div>
+                         </td>
+                         <td className="py-4 px-6 text-xs font-medium text-text2">{c.ind}</td>
+                         <td className="py-4 px-6">
+                            <div className="text-xs font-bold text-text">{c.as || '—'}</div>
+                            <div className="text-[10px] font-bold text-text4">{c.pic || '—'}</div>
+                         </td>
+                         <td className="py-4 px-6 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                               <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-text3 transition-colors">
+                                  <Edit2 className="w-3.5 h-3.5" />
+                               </button>
+                               <button onClick={() => handleDelete(c.key)} className="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-text3 transition-colors hover:text-red-600">
+                                  <Trash2 className="w-3.5 h-3.5" />
+                               </button>
+                            </div>
+                         </td>
+                      </tr>
+                   ))}
+                </tbody>
+             </table>
+          </div>
+        )}
+      </div>
 
       {/* ── Modal Form ── */}
       {showModal && (
         <>
-          {/* Backdrop - Hitam Full dengan cakupan penuh */}
+          {/* Backdrop - Hitam transparan yang mencakup seluruh layar */}
           <div 
-            className="fixed inset-0 bg-black/80 z-[10001] animate-fade-in" 
+            className="fixed inset-0 bg-black/50 z-[10001]" 
             onClick={() => setShowModal(false)} 
           />
           
           {/* Modal Container */}
           <div className="fixed inset-0 z-[10002] flex items-center justify-center p-6 pointer-events-none">
-            <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-[90vh] pointer-events-auto">
+            <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden flex flex-col max-h-[90vh] pointer-events-auto">
               <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
                  <h3 className="text-base font-bold text-text">{editKey ? 'Edit Klien' : 'Tambah Klien'}</h3>
                  <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
@@ -378,6 +380,6 @@ export default function ClientsAdminPage() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
