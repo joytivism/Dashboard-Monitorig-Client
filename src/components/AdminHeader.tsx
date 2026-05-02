@@ -2,7 +2,10 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { ChevronRight, Bell, Search, User } from 'lucide-react';
+import { ChevronRight, Bell, User } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useDashboardData } from '@/components/DataProvider';
+import { clientWorst } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/admin',          label: 'Admin Hub' },
@@ -18,49 +21,146 @@ export default function AdminHeader() {
     item.href === pathname || (item.href !== '/admin' && pathname.startsWith(item.href))
   );
 
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const { CLIENTS, DATA, PERIODS } = useDashboardData();
+  const [dbStatus, setDbStatus] = React.useState<'online' | 'checking' | 'error'>('checking');
+  const [aiStatus, setAiStatus] = React.useState<'ready' | 'checking' | 'error'>('checking');
+
+  // ── System Health Check ──
+  React.useEffect(() => {
+    async function checkHealth() {
+      try {
+        // Simple Supabase ping
+        const { error } = await supabase.from('clients').select('count', { count: 'exact', head: true });
+        setDbStatus(error ? 'error' : 'online');
+      } catch { setDbStatus('error'); }
+
+      // Simple AI Key check (from env/db)
+      try {
+        const { data } = await supabase.from('system_settings').select('value').eq('key', 'openrouter_key').single();
+        setAiStatus(data?.value ? 'ready' : 'error');
+      } catch { setAiStatus('error'); }
+    }
+    checkHealth();
+  }, []);
+
+  // ── Generate Notifications from Data ──
+  const notifications = React.useMemo(() => {
+    const curPeriod = PERIODS[PERIODS.length - 1];
+    const alerts: any[] = [];
+
+    CLIENTS.forEach(cl => {
+      const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
+      if (wc === 'rr' || wc === 'or') {
+        alerts.push({
+          id: cl.key,
+          type: wc === 'rr' ? 'critical' : 'warning',
+          title: wc === 'rr' ? 'Kritis: Performa Anjlok' : 'Peringatan: Performa Menurun',
+          desc: `Klien ${cl.key} memerlukan evaluasi strategi segera.`,
+          time: 'Baru saja',
+          unread: true
+        });
+      }
+    });
+
+    return alerts.slice(0, 5); // Show top 5
+  }, [CLIENTS, DATA, PERIODS]);
+
   return (
     <header 
       className="h-[64px] w-full sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 border-b"
       style={{ 
-        background: 'rgba(255,255,255,0.95)',
+        background: 'rgba(255,255,255,0.92)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderBottomColor: 'rgba(229,231,235,0.6)'
+        borderBottomColor: 'rgba(229,231,235,0.7)'
       }}
     >
       {/* ── Breadcrumbs ── */}
       <div className="flex items-center gap-2 text-xs">
-        <span className="text-text3">Admin CC</span>
-        <ChevronRight className="w-3 h-3 text-text4" />
-        <span className="font-semibold text-text">{currentItem?.label || 'Dashboard'}</span>
+        <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-surface2 border border-border-main/50">
+          <span className="text-text3 font-medium">Admin CC</span>
+          <ChevronRight className="w-3 h-3 text-text4" />
+          <span className="font-bold text-text">{currentItem?.label || 'Dashboard'}</span>
+        </div>
       </div>
 
-      {/* ── Top Actions ── */}
-      <div className="flex items-center gap-5">
-        <div className="relative hidden md:block">
-           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text4" />
-           <input 
-             type="text" 
-             placeholder="Search commands..." 
-             className="w-56 h-9 pl-9 pr-4 rounded-xl bg-surface2 border border-border-main text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
-           />
+      {/* ── Center: System Health ── */}
+      <div className="hidden lg:flex items-center gap-6">
+        <div className="flex items-center gap-2">
+          <div className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'online' ? 'bg-green-500' : dbStatus === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'} shadow-[0_0_8px_rgba(34,197,94,0.4)]`} />
+          <span className="text-[10px] font-bold text-text3 uppercase tracking-widest">Database: {dbStatus === 'online' ? 'Online' : dbStatus === 'checking' ? 'Connecting...' : 'Offline'}</span>
+        </div>
+        <div className="w-px h-3 bg-border-main/50" />
+        <div className="flex items-center gap-2">
+          <div className={`w-1.5 h-1.5 rounded-full ${aiStatus === 'ready' ? 'bg-blue-500' : aiStatus === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'} shadow-[0_0_8px_rgba(59,130,246,0.4)]`} />
+          <span className="text-[10px] font-bold text-text3 uppercase tracking-widest">AI Engine: {aiStatus === 'ready' ? 'Ready' : aiStatus === 'checking' ? 'Checking...' : 'Disabled'}</span>
+        </div>
+      </div>
+
+      {/* ── Right Actions ── */}
+      <div className="flex items-center gap-4">
+        {/* Notifications Dropdown */}
+        <div className="relative">
+          <button 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${showNotifications ? 'bg-accent text-white shadow-lg' : 'hover:bg-surface2 text-text3 border border-transparent hover:border-border-main'}`}
+          >
+            <Bell className="w-4.5 h-4.5" />
+            {notifications.length > 0 && !showNotifications && (
+              <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+            )}
+          </button>
+
+          {showNotifications && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)} />
+              <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden z-20 animate-fade-in origin-top-right">
+                <div className="px-5 py-4 border-b border-border-main flex items-center justify-between bg-surface2/50">
+                  <h3 className="text-xs font-black text-text uppercase tracking-widest">Notifications</h3>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">{notifications.length} Alerts</span>
+                </div>
+                <div className="max-h-[360px] overflow-y-auto no-scrollbar">
+                  {notifications.length === 0 ? (
+                    <div className="px-10 py-12 text-center">
+                      <div className="w-10 h-10 rounded-full bg-surface2 flex items-center justify-center mx-auto mb-3">
+                        <Bell className="w-5 h-5 text-text4" />
+                      </div>
+                      <p className="text-[10px] font-bold text-text4 uppercase tracking-widest">No New Alerts</p>
+                    </div>
+                  ) : (
+                    notifications.map((n, i) => (
+                      <div key={i} className="px-5 py-4 border-b border-border-main/50 hover:bg-surface2 transition-colors cursor-pointer group">
+                        <div className="flex items-start gap-3">
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.type === 'critical' ? 'bg-red-500' : 'bg-orange-500'}`} />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-bold text-text group-hover:text-accent transition-colors">{n.title}</div>
+                            <div className="text-[10px] text-text3 leading-relaxed mt-1 font-medium">{n.desc}</div>
+                            <div className="text-[9px] text-text4 font-bold uppercase mt-2">{n.time}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="px-5 py-3 bg-surface2/50 border-t border-border-main text-center">
+                  <button className="text-[10px] font-black text-text3 hover:text-accent uppercase tracking-widest transition-colors">Mark all as read</button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className="flex items-center gap-2">
-           <button className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors relative">
-              <Bell className="w-4 h-4" />
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-accent rounded-full border-2 border-white" />
-           </button>
-           <div className="h-4 w-px bg-border-main mx-1" />
-           <div className="flex items-center gap-2.5 pl-1">
-              <div className="text-right hidden sm:block">
-                 <div className="text-xs font-bold text-text">Admin User</div>
-                 <div className="text-[9px] font-black text-accent uppercase tracking-wider">Superuser</div>
-              </div>
-              <div className="w-8 h-8 rounded-lg bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black border border-border-main/50">
-                 AD
-              </div>
-           </div>
+        <div className="h-5 w-px bg-border-main/50" />
+
+        <div className="flex items-center gap-3 pl-1">
+          <div className="text-right hidden sm:block">
+            <div className="text-xs font-bold text-text">Admin User</div>
+            <div className="text-[9px] font-black text-accent uppercase tracking-widest">Superuser</div>
+          </div>
+          <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black border border-border-main/50 shadow-sm overflow-hidden">
+             <User className="w-5 h-5 opacity-40" />
+          </div>
         </div>
       </div>
     </header>
