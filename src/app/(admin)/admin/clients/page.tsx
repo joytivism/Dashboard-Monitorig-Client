@@ -156,15 +156,15 @@ export default function ClientsAdminPage() {
         <Toast toast={toast} />
 
         {/* ── Header Area ── */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
-                  <Users className="w-5 h-5" />
-               </div>
-               <h1 className="text-2xl font-bold text-text tracking-tight">Manajemen Klien</h1>
-            </div>
-            <p className="text-sm font-medium text-text3 max-w-md">Kelola ekosistem klien dan konfigurasi channel.</p>
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div className="flex items-start gap-4">
+             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm shrink-0 mt-0.5">
+                <Users className="w-5 h-5" />
+             </div>
+             <div>
+                <h1 className="text-2xl font-bold text-text tracking-tight leading-tight">Manajemen Klien</h1>
+                <p className="text-sm font-medium text-text3 mt-0.5">Kelola ekosistem klien dan konfigurasi channel.</p>
+             </div>
           </div>
           <div className="flex items-center gap-4 shrink-0">
             <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
