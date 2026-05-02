@@ -320,25 +320,30 @@ export default function AdminHubPage() {
         </div>
 
         {/* Status Portfolio (Bento Wide) */}
-        <div className="lg:col-span-5 bg-white rounded-[2rem] border border-border-main shadow-sm flex flex-col overflow-hidden">
-           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/20">
-              <h2 className="text-[10px] font-bold uppercase tracking-wider text-text3">Portfolio Status</h2>
-              <Link href="/admin/clients" className="text-[10px] font-bold text-accent uppercase tracking-wider hover:underline">View All</Link>
+        <div className="lg:col-span-5 bg-white rounded-[2.5rem] border border-border-main shadow-sm flex flex-col overflow-hidden group/port transition-all duration-500">
+           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/10">
+              <div className="flex items-center gap-3">
+                 <div className="w-1.5 h-6 bg-accent rounded-full" />
+                 <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-text">Portfolio Status</h2>
+              </div>
+              <Link href="/admin/clients" className="px-4 py-1.5 rounded-xl bg-white border border-border-main text-[10px] font-black text-accent uppercase tracking-widest hover:bg-accent hover:text-white transition-all shadow-sm">
+                 View All
+              </Link>
            </div>
-           <div className="divide-y divide-border-main/40 overflow-y-auto max-h-[400px] no-scrollbar">
+           <div className="divide-y divide-border-main/40 overflow-y-auto max-h-[440px] no-scrollbar">
               {CLIENTS.map(cl => {
                 const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
                 const statusStyle = STATUS_COLOR_MAP[wc] || STATUS_COLOR_MAP.nn;
                 return (
-                  <Link key={cl.key} href={`/client/${cl.key}`} className="p-6 hover:bg-surface2 transition-colors flex items-center gap-4 group/item">
-                     <div className="w-10 h-10 rounded-xl bg-surface2 border border-border-main/50 flex items-center justify-center text-text2 text-[10px] font-bold group-hover/item:bg-accent group-hover/item:text-white transition-all">
+                  <Link key={cl.key} href={`/client/${cl.key}`} className="p-6 hover:bg-surface2/70 transition-all flex items-center gap-5 group/item border-l-4 border-l-transparent hover:border-l-accent">
+                     <div className="w-11 h-11 rounded-2xl bg-surface2 border border-border-main/50 flex items-center justify-center text-text2 text-xs font-black group-hover/item:bg-accent group-hover/item:text-white group-hover/item:rotate-3 transition-all duration-300">
                         {cl.key.slice(0,2).toUpperCase()}
                      </div>
                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-text truncate tracking-tight">{cl.name}</div>
-                        <div className="text-[10px] font-bold text-text4 uppercase tracking-wider opacity-60 mt-0.5">{cl.ind}</div>
+                        <div className="text-sm font-black text-text truncate tracking-tight mb-0.5">{cl.name}</div>
+                        <div className="text-[10px] font-bold text-text4 uppercase tracking-[0.1em] opacity-60">{cl.ind}</div>
                      </div>
-                     <div className={`px-2.5 py-1 rounded-full border text-[9px] font-bold uppercase tracking-wider ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
+                     <div className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest shadow-sm ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
                         {STATUS_LABEL[wc]}
                      </div>
                   </Link>
@@ -348,12 +353,18 @@ export default function AdminHubPage() {
         </div>
 
         {/* Activity Feed (Bento Wide) */}
-        <div className="lg:col-span-7 bg-white rounded-[2rem] border border-border-main shadow-sm flex flex-col overflow-hidden">
-           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/20">
-              <h2 className="text-[10px] font-bold uppercase tracking-wider text-text3">Live Activity Feed</h2>
-              <div className="flex h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+        <div className="lg:col-span-7 bg-white rounded-[2.5rem] border border-border-main shadow-sm flex flex-col overflow-hidden group/activity transition-all duration-500">
+           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/10">
+              <div className="flex items-center gap-3">
+                 <div className="w-1.5 h-6 bg-rr rounded-full animate-pulse" />
+                 <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-text">Live Activity Feed</h2>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gg/10 border border-gg/20">
+                 <div className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse" />
+                 <span className="text-[9px] font-black text-gg-text uppercase tracking-widest">Streaming</span>
+              </div>
            </div>
-           <div className="flex-1 overflow-hidden">
+           <div className="flex-1 overflow-hidden p-2">
               <ActivityLog activities={ACTIVITY.slice(0, 8)} />
            </div>
         </div>
