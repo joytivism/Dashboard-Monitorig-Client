@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import { ChevronRight, Bell, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChevronRight, Bell, User, CheckCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useDashboardData } from '@/components/DataProvider';
 import { clientWorst } from '@/lib/utils';
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 
 export default function AdminHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const currentItem = NAV_ITEMS.find(item => 
     item.href === pathname || (item.href !== '/admin' && pathname.startsWith(item.href))
   );
@@ -25,17 +26,24 @@ export default function AdminHeader() {
   const { CLIENTS, DATA, PERIODS } = useDashboardData();
   const [dbStatus, setDbStatus] = React.useState<'online' | 'checking' | 'error'>('checking');
   const [aiStatus, setAiStatus] = React.useState<'ready' | 'checking' | 'error'>('checking');
+  
+  // Track read notifications
+  const [readIds, setReadIds] = React.useState<string[]>([]);
+
+  // Load read status from localStorage
+  React.useEffect(() => {
+    const saved = localStorage.getItem('ra_read_notifications');
+    if (saved) setReadIds(JSON.parse(saved));
+  }, []);
 
   // ── System Health Check ──
   React.useEffect(() => {
     async function checkHealth() {
       try {
-        // Simple Supabase ping
         const { error } = await supabase.from('clients').select('count', { count: 'exact', head: true });
         setDbStatus(error ? 'error' : 'online');
       } catch { setDbStatus('error'); }
 
-      // Simple AI Key check (from env/db)
       try {
         const { data } = await supabase.from('system_settings').select('value').eq('key', 'openrouter_key').single();
         setAiStatus(data?.value ? 'ready' : 'error');
@@ -52,19 +60,42 @@ export default function AdminHeader() {
     CLIENTS.forEach(cl => {
       const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
       if (wc === 'rr' || wc === 'or') {
+        const id = `${cl.key}-${curPeriod}-${wc}`;
         alerts.push({
-          id: cl.key,
+          id,
+          clientKey: cl.key,
           type: wc === 'rr' ? 'critical' : 'warning',
           title: wc === 'rr' ? 'Kritis: Performa Anjlok' : 'Peringatan: Performa Menurun',
           desc: `Klien ${cl.key} memerlukan evaluasi strategi segera.`,
           time: 'Baru saja',
-          unread: true
+          unread: !readIds.includes(id)
         });
       }
     });
 
-    return alerts.slice(0, 5); // Show top 5
-  }, [CLIENTS, DATA, PERIODS]);
+    return alerts;
+  }, [CLIENTS, DATA, PERIODS, readIds]);
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const handleMarkAllRead = () => {
+    const allIds = notifications.map(n => n.id);
+    const newReadIds = Array.from(new Set([...readIds, ...allIds]));
+    setReadIds(newReadIds);
+    localStorage.setItem('ra_read_notifications', JSON.stringify(newReadIds));
+  };
+
+  const handleNotificationClick = (n: any) => {
+    // Mark as read
+    if (n.unread) {
+      const newReadIds = [...readIds, n.id];
+      setReadIds(newReadIds);
+      localStorage.setItem('ra_read_notifications', JSON.stringify(newReadIds));
+    }
+    // Navigate
+    setShowNotifications(false);
+    router.push(`/client/${encodeURIComponent(n.clientKey)}`);
+  };
 
   return (
     <header 
@@ -107,7 +138,7 @@ export default function AdminHeader() {
             className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${showNotifications ? 'bg-accent text-white shadow-lg' : 'hover:bg-surface2 text-text3 border border-transparent hover:border-border-main'}`}
           >
             <Bell className="w-4.5 h-4.5" />
-            {notifications.length > 0 && !showNotifications && (
+            {unreadCount > 0 && !showNotifications && (
               <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
             )}
           </button>
@@ -118,7 +149,9 @@ export default function AdminHeader() {
               <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden z-20 animate-fade-in origin-top-right">
                 <div className="px-5 py-4 border-b border-border-main flex items-center justify-between bg-surface2/50">
                   <h3 className="text-xs font-black text-text uppercase tracking-widest">Notifications</h3>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">{notifications.length} Alerts</span>
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent">{unreadCount} New</span>
+                  )}
                 </div>
                 <div className="max-h-[360px] overflow-y-auto no-scrollbar">
                   {notifications.length === 0 ? (
@@ -130,22 +163,34 @@ export default function AdminHeader() {
                     </div>
                   ) : (
                     notifications.map((n, i) => (
-                      <div key={i} className="px-5 py-4 border-b border-border-main/50 hover:bg-surface2 transition-colors cursor-pointer group">
-                        <div className="flex items-start gap-3">
-                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.type === 'critical' ? 'bg-red-500' : 'bg-orange-500'}`} />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-bold text-text group-hover:text-accent transition-colors">{n.title}</div>
-                            <div className="text-[10px] text-text3 leading-relaxed mt-1 font-medium">{n.desc}</div>
-                            <div className="text-[9px] text-text4 font-bold uppercase mt-2">{n.time}</div>
-                          </div>
+                      <div 
+                        key={i} 
+                        onClick={() => handleNotificationClick(n)}
+                        className={`px-5 py-4 border-b border-border-main/50 hover:bg-surface2 transition-all cursor-pointer group flex items-start gap-3 ${!n.unread ? 'opacity-50 grayscale-[0.5]' : ''}`}
+                      >
+                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.type === 'critical' ? 'bg-red-500' : 'bg-orange-500'}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className={`text-xs font-bold text-text group-hover:text-accent transition-colors ${n.unread ? '' : 'font-semibold'}`}>{n.title}</div>
+                          <div className="text-[10px] text-text3 leading-relaxed mt-1 font-medium">{n.desc}</div>
+                          <div className="text-[9px] text-text4 font-bold uppercase mt-2">{n.time}</div>
                         </div>
+                        {n.unread && (
+                           <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0 mt-1.5" />
+                        )}
                       </div>
                     ))
                   )}
                 </div>
-                <div className="px-5 py-3 bg-surface2/50 border-t border-border-main text-center">
-                  <button className="text-[10px] font-black text-text3 hover:text-accent uppercase tracking-widest transition-colors">Mark all as read</button>
-                </div>
+                {notifications.length > 0 && (
+                  <div className="px-5 py-3 bg-surface2/50 border-t border-border-main text-center">
+                    <button 
+                      onClick={handleMarkAllRead}
+                      className="flex items-center justify-center gap-2 w-full text-[10px] font-black text-text3 hover:text-accent uppercase tracking-widest transition-colors"
+                    >
+                      <CheckCheck className="w-3.5 h-3.5" /> Mark all as read
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           )}
