@@ -1,30 +1,30 @@
 import { ORD } from './data';
-import type { DataEntry, Client } from './data';
+import type { DataEntry, Client, ChannelDef } from './data';
 
-export function gd(DATA: DataEntry[], c: string, ch: string, p: string) { 
+export function gd(DATA: DataEntry[], c: string, ch: string, p: string): DataEntry | null { 
   return DATA.find(x => x.c === c && x.ch === ch && x.p === p) || null; 
 }
 
-export function prev(PERIODS: string[], p: string) { 
+export function prev(PERIODS: string[], p: string): string | null { 
   const i = PERIODS.indexOf(p); 
   return i > 0 ? PERIODS[i - 1] : null; 
 }
 
-export function isAware(CH_DEF: Record<string, any>, ch: string) { 
+export function isAware(CH_DEF: Record<string, ChannelDef>, ch: string): boolean { 
   return CH_DEF[ch]?.type === 'awareness'; 
 }
 
-export function roas(d: any) { 
+export function roas(d: DataEntry | null): number | null { 
   if (!d || !d.rev || !d.sp || d.sp === 0) return null; 
   return d.rev / d.sp; 
 }
 
-export function pct(c: number, p: number) { 
-  if (!p || p === 0) return null; 
+export function pct(c: number | undefined, p: number | undefined): number | null { 
+  if (c === undefined || p === undefined || !p || p === 0) return null; 
   return (c - p) / p * 100; 
 }
 
-export function popCls(v: number | null) {
+export function popCls(v: number | null): string {
   if (v === null) return 'nn';
   if (v <= -20) return 'rr'; 
   if (v <= -10) return 'or'; 
@@ -34,22 +34,22 @@ export function popCls(v: number | null) {
   return 'gd';
 }
 
-export function fRp(n: number | null | undefined) {
-  if (!n && n !== 0) return '—';
+export function fRp(n: number | null | undefined): string {
+  if (n === null || n === undefined) return '—';
   if (n >= 1e12) return 'Rp ' + (n / 1e12).toFixed(1) + 'T';
   if (n >= 1e9)  return 'Rp ' + (n / 1e9).toFixed(1) + 'M';
   if (n >= 1e6)  return 'Rp ' + (n / 1e6).toFixed(0) + 'jt';
   return 'Rp ' + (n / 1000).toFixed(0) + 'rb';
 }
 
-export function fK(n: number | null | undefined) {
-  if (!n && n !== 0) return '—';
+export function fK(n: number | null | undefined): string {
+  if (n === null || n === undefined) return '—';
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
   return Math.round(n).toLocaleString('id-ID');
 }
 
-export function fV(v: number | null | undefined, f: string) {
+export function fV(v: number | null | undefined, f: string): string {
   if (v === null || v === undefined) return '—';
   if (f === 'rp') return fRp(v);
   if (f === 'x') return v.toFixed(2) + 'x';
@@ -59,7 +59,17 @@ export function fV(v: number | null | undefined, f: string) {
   return v.toString();
 }
 
-export function totals(CH_DEF: Record<string, any>, CLIENTS: Client[], DATA: DataEntry[], c: string, p: string) {
+export interface TotalsResult {
+  rev: number;
+  sp: number;
+  roas: number | null;
+  ord: number;
+  vis: number | null;
+  reach: number | null;
+  impr: number | null;
+}
+
+export function totals(CH_DEF: Record<string, ChannelDef>, CLIENTS: Client[], DATA: DataEntry[], c: string, p: string): TotalsResult {
   const cl = CLIENTS.find(x => x.key === c);
   if (!cl) return { rev: 0, sp: 0, roas: null, ord: 0, vis: null, reach: null, impr: null };
   
@@ -88,15 +98,18 @@ export function totals(CH_DEF: Record<string, any>, CLIENTS: Client[], DATA: Dat
   };
 }
 
-export function chWorstKey(CH_DEF: Record<string, any>, DATA: DataEntry[], PERIODS: string[], c: string, ch: string, p: string) {
+export function chWorstKey(CH_DEF: Record<string, ChannelDef>, DATA: DataEntry[], PERIODS: string[], c: string, ch: string, p: string): string {
   const cur = gd(DATA, c, ch, p), prv = gd(DATA, c, ch, prev(PERIODS, p) || '');
   if (!cur || !prv) return 'nn';
-  const key = isAware(CH_DEF, ch) ? (cur.reach ? 'reach' : 'impr') : 'rev';
-  // @ts-ignore
-  return popCls(pct(cur[key], prv[key]));
+  
+  const isAwareChannel = isAware(CH_DEF, ch);
+  const curVal = isAwareChannel ? (cur.reach ?? cur.impr) : cur.rev;
+  const prvVal = isAwareChannel ? (prv.reach ?? prv.impr) : prv.rev;
+  
+  return popCls(pct(curVal, prvVal));
 }
 
-export function clientWorst(CH_DEF: Record<string, any>, CLIENTS: Client[], DATA: DataEntry[], PERIODS: string[], c: string, p: string) {
+export function clientWorst(CH_DEF: Record<string, ChannelDef>, CLIENTS: Client[], DATA: DataEntry[], PERIODS: string[], c: string, p: string): string {
   let wi = 5;
   CLIENTS.find(x => x.key === c)?.chs.forEach(ch => {
     const i = ORD.indexOf(chWorstKey(CH_DEF, DATA, PERIODS, c, ch, p));

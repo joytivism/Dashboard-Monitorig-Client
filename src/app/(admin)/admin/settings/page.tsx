@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
-  Settings, Save, Key, MessageSquare, Info, 
-  CheckCircle2, AlertCircle, Bot, Sparkles, Terminal,
-  Cpu, RotateCcw, LayoutGrid, ChevronRight
+  Settings, Save, Key, 
+  Cpu, RotateCcw, LayoutGrid, ChevronRight,
+  Bot, Sparkles, MessageSquare, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,18 +27,7 @@ export default function SettingsPage() {
   const [prompt, setPrompt] = useState('');
   const [currentModel, setCurrentModel] = useState('');
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  useEffect(() => {
-    if (toast) {
-      const t = setTimeout(() => setToast(null), 4000);
-      return () => clearTimeout(t);
-    }
-  }, [toast]);
-
-  async function fetchSettings() {
+  const fetchSettings = React.useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase.from('system_settings').select('*');
@@ -55,7 +44,18 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  useEffect(() => {
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [toast]);
 
   async function handleSave() {
     setSaving(true);

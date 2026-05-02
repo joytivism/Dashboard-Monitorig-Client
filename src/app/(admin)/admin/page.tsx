@@ -3,15 +3,12 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useDashboardData } from '@/components/DataProvider';
-import { clientWorst, fRp, totals, pct as getPct } from '@/lib/utils';
+import { clientWorst, totals, pct as getPct } from '@/lib/utils';
 import {
   Database, Activity, Users, ArrowUpRight, TrendingUp,
-  AlertCircle, Zap, LayoutDashboard, ChevronRight,
-  CalendarClock, Settings2, ArrowRight, Globe, TrendingDown,
-  PieChart, DollarSign, Terminal
+  Zap, LayoutDashboard, Settings2, AlertCircle, ChevronRight
 } from 'lucide-react';
 
-import MetricCard from '@/components/ui/MetricCard';
 import ActivityLog from '@/components/dashboard/ActivityLog';
 
 const STATUS_COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
@@ -21,10 +18,6 @@ const STATUS_COLOR_MAP: Record<string, { bg: string; text: string; border: strin
   nn: { bg: 'bg-nn-bg', text: 'text-nn-text', border: 'border-nn-border' },
   gg: { bg: 'bg-gg-bg', text: 'text-gg-text', border: 'border-gg-border' },
   gd: { bg: 'bg-gd-bg', text: 'text-gd-text', border: 'border-gd-border' },
-};
-
-const STATUS_DOT: Record<string, string> = {
-  rr: '#DC2626', or: '#EA580C', yy: '#D97706', nn: '#9CA3AF', gg: '#059669', gd: '#0284C7',
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -73,7 +66,7 @@ export default function AdminHubPage() {
       progress: ingestionProgress,
       aiStats
     };
-  }, [CLIENTS, DATA, PERIODS, curPeriod, AI_LOGS]);
+  }, [CLIENTS, DATA, PERIODS, curPeriod, AI_LOGS, CH_DEF]);
 
   const QUICK_ACTIONS = [
     { href: '/admin/data', icon: Database, title: 'Data Input', badge: 'Active', color: 'text-accent', bg: 'bg-accent/10' },

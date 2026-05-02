@@ -1,19 +1,9 @@
 'use client';
 
 import React, { createContext, useContext } from 'react';
-import type { Client, DataEntry, ActivityEntry } from '@/lib/data';
+import type { DashboardData } from '@/lib/data';
 
-interface DataContextType {
-  CLIENTS: Client[];
-  DATA: DataEntry[];
-  ACTIVITY: ActivityEntry[];
-  PERIODS: string[];
-  PL: Record<string, string>;
-  AI_LOGS: any[];
-  CH_DEF: Record<string, any>;
-}
-
-const DataContext = createContext<DataContextType>({
+const DataContext = createContext<DashboardData>({
   CLIENTS: [],
   DATA: [],
   ACTIVITY: [],
@@ -25,6 +15,6 @@ const DataContext = createContext<DataContextType>({
 
 export const useDashboardData = () => useContext(DataContext);
 
-export function DataProvider({ children, value }: { children: React.ReactNode, value: DataContextType }) {
+export function DataProvider({ children, value }: { children: React.ReactNode, value: DashboardData }) {
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }

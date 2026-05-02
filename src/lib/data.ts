@@ -52,7 +52,32 @@ export interface ActivityEntry {
   n: string;
 }
 
-export async function getDashboardData() {
+export interface AIUsageEntry {
+  id: string;
+  c: string;
+  m: string;
+  d: string;
+  tk: number;
+  cost: number;
+}
+
+export interface ChannelDef {
+  l: string;
+  stage: 'tofu' | 'mofu' | 'bofu';
+  type: 'revenue' | 'assist' | 'awareness';
+}
+
+export interface DashboardData {
+  CLIENTS: Client[];
+  DATA: DataEntry[];
+  ACTIVITY: ActivityEntry[];
+  PERIODS: string[];
+  PL: Record<string, string>;
+  AI_LOGS: AIUsageEntry[];
+  CH_DEF: Record<string, ChannelDef>;
+}
+
+export async function getDashboardData(): Promise<DashboardData> {
   const [
     { data: clients },
     { data: channels_db },
@@ -72,7 +97,7 @@ export async function getDashboardData() {
   ]);
 
   // Construct Dynamic CH_DEF
-  const CH_DEF_DYNAMIC: any = { ...CH_DEF };
+  const CH_DEF_DYNAMIC: Record<string, ChannelDef> = { ...CH_DEF as unknown as Record<string, ChannelDef> };
   if (channel_configs && channel_configs.length > 0) {
     channel_configs.forEach(c => {
       CH_DEF_DYNAMIC[c.channel_key] = {
@@ -134,7 +159,7 @@ export async function getDashboardData() {
     return acc;
   }, {} as Record<string, string>);
 
-  const AI_LOGS = (aiUsage || []).map(l => ({
+  const AI_LOGS: AIUsageEntry[] = (aiUsage || []).map(l => ({
     id: l.id,
     c: l.client_key,
     m: l.model_name,
