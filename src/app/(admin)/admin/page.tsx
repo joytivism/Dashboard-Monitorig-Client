@@ -153,51 +153,51 @@ export default function AdminHubPage() {
           
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-main/50 flex-1 relative z-10">
              {/* Column 1: Live Requests */}
-             <div className="p-10 flex flex-col justify-between group/col hover:bg-surface2/10 transition-colors cursor-default">
-                <div>
+             <div className="p-8 flex flex-col group/col hover:bg-surface2/10 transition-colors cursor-default">
+                <div className="flex-1">
                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6 flex items-center justify-between">
                       Requests Engine
                       <div className="flex gap-1">
                          {[1,2,3].map(i => <div key={i} className={`w-1 h-1 rounded-full bg-accent/40 animate-bounce delay-${i*200}`} />)}
                       </div>
                    </div>
-                   <div className="text-3xl font-bold text-text tracking-tight mb-2 group-hover/col:translate-x-1 transition-transform">
+                   <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/col:translate-x-1 transition-transform">
                       {stats.aiStats.totalRequests.toLocaleString()}
                    </div>
-                   <p className="text-xs font-medium text-text3 leading-relaxed">Analisis diproses dalam sesi aktif periode ini.</p>
+                   <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Analisis diproses dalam sesi aktif periode ini.</p>
                 </div>
                 
-                <div className="mt-10 flex items-center justify-between bg-surface2/30 p-5 rounded-2xl border border-border-main/40 shadow-inner">
+                <div className="mt-10 flex items-center justify-between bg-surface2/30 p-4 rounded-2xl border border-border-main/40 shadow-inner h-[80px]">
                    <div className="flex -space-x-3">
                       {[1,2,3,4].map(i => (
-                        <div key={i} className="w-11 h-11 rounded-2xl border-2 border-white bg-white flex items-center justify-center shadow-md group-hover/col:rotate-3 transition-transform">
+                        <div key={i} className="w-10 h-10 rounded-2xl border-2 border-white bg-white flex items-center justify-center shadow-sm">
                            <div className="w-2 h-2 rounded-full bg-accent/30" />
                         </div>
                       ))}
                    </div>
                    <div className="text-right">
                       <div className="text-sm font-bold text-accent uppercase tracking-wider">+{stats.aiStats.todayRequests} Today</div>
-                      <div className="text-[10px] font-bold text-text4 uppercase tracking-widest opacity-60">Real-time Pulse</div>
+                      <div className="text-[9px] font-bold text-text4 uppercase tracking-widest opacity-60">Live Pulse</div>
                    </div>
                 </div>
              </div>
 
              {/* Column 2: Data & Efficiency */}
-             <div className="p-10 flex flex-col justify-between bg-surface2/5 hover:bg-surface2/20 transition-colors cursor-default group/eff">
-                <div>
+             <div className="p-8 flex flex-col bg-surface2/5 hover:bg-surface2/20 transition-colors cursor-default group/eff border-x border-border-main/50">
+                <div className="flex-1">
                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6">Data Throughput</div>
                    <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/eff:scale-105 transition-transform origin-left">
                       {(stats.aiStats.totalTokens/1000).toFixed(1)}K
                    </div>
-                   <p className="text-xs font-medium text-text3 leading-relaxed">Total token yang dikonsumsi oleh model strategi.</p>
+                   <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Total token yang dikonsumsi oleh model strategi.</p>
                 </div>
                 
-                <div className="mt-10 space-y-5">
+                <div className="mt-10 flex flex-col justify-center h-[80px] space-y-3">
                    <div className="flex justify-between items-end">
-                      <span className="text-xs font-bold text-text4 uppercase tracking-widest">Efficiency Status</span>
-                      <span className="text-sm font-bold text-text tracking-tighter">82.4%</span>
+                      <span className="text-[10px] font-bold text-text4 uppercase tracking-widest">Efficiency Status</span>
+                      <span className="text-xs font-bold text-text tracking-tighter">82.4%</span>
                    </div>
-                   <div className="w-full h-3 bg-white rounded-full border border-border-main/50 overflow-hidden p-0.5 shadow-inner">
+                   <div className="w-full h-2.5 bg-white rounded-full border border-border-main/50 overflow-hidden p-0.5 shadow-inner">
                       <div className="h-full bg-gradient-to-r from-accent/80 to-accent rounded-full w-3/4 shadow-[0_0_15px_rgba(var(--accent-rgb),0.4)] relative overflow-hidden">
                          <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:1.2rem_1.2rem] animate-[move-stripe_1s_linear_infinite]" />
                       </div>
@@ -205,28 +205,27 @@ export default function AdminHubPage() {
                 </div>
              </div>
 
-             {/* Column 3: Costs & Forecast */}
-             <div className="p-10 flex flex-col justify-between hover:bg-surface2/10 transition-colors cursor-default group/cost">
-                <div>
+             {/* Column 3: Burn Estimation */}
+             <div className="p-8 flex flex-col group/burn hover:bg-surface2/10 transition-colors cursor-default">
+                <div className="flex-1">
                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6 flex items-center justify-between">
                       Burn Estimation
                       <div className="w-2 h-2 rounded-full bg-rr animate-pulse" />
                    </div>
-                   <div className="text-3xl font-bold text-text tracking-tight mb-2 group-hover/cost:text-rr transition-colors">
+                   <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/burn:-translate-y-1 transition-transform">
                       ${stats.aiStats.totalCost.toFixed(4)}
                    </div>
-                   <p className="text-xs font-medium text-text3 leading-relaxed">Estimasi biaya API akumulasi berjalan.</p>
+                   <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Estimasi biaya API akumulasi berjalan.</p>
                 </div>
-                
-                <div className="mt-8 p-5 rounded-[1.5rem] bg-text text-white shadow-xl shadow-text/20 relative overflow-hidden group/forecast">
-                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover/forecast:opacity-100 transition-opacity" />
-                   <div className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <TrendingUp className="w-3 h-3 text-gg" />
-                      Monthly Forecast
+
+                <div className="mt-10 bg-text text-white p-4 rounded-2xl shadow-xl flex flex-col justify-center h-[80px] group-hover/burn:scale-[1.02] transition-transform">
+                   <div className="flex items-center gap-2 mb-1">
+                      <Activity className="w-3 h-3 text-gg" />
+                      <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Monthly Forecast</span>
                    </div>
-                   <div className="text-xl font-bold tracking-tight">
-                      ${(stats.aiStats.totalCost * 30).toFixed(2)}
-                      <span className="text-xs font-medium text-white/40 ml-1.5 uppercase tracking-tighter">Est / mo</span>
+                   <div className="flex items-baseline gap-1.5">
+                      <span className="text-lg font-bold text-white tracking-tighter">$0.00</span>
+                      <span className="text-[9px] font-bold text-white/40 uppercase">est / mo</span>
                    </div>
                 </div>
              </div>
