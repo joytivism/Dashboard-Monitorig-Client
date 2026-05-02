@@ -21,16 +21,16 @@ type ChannelRow = {
 const EMPTY_ROW = (): ChannelRow => ({ ch: '', rev: '', sp: '', ord: '', vis: '', reach: '', impr: '', results: '' });
 
 const STAGE_STYLE: Record<string, { header: string; badge: string; label: string }> = {
-  tofu: { header: 'bg-gd-bg/30 border-gd-border/30', badge: 'bg-gd-bg text-gd-text border border-gd-border', label: 'text-gd-text' },
-  mofu: { header: 'bg-or-bg/30 border-mofu-border/30',   badge: 'bg-or-bg text-or-text border border-mofu-border',  label: 'text-or-text' },
-  bofu: { header: 'bg-gg-bg/30 border-gg-border/30',     badge: 'bg-gg-bg text-gg-text border border-gg-border',    label: 'text-gg-text'  },
+  tofu: { header: 'bg-gd-bg/10 border-gd-border/20', badge: 'badge badge-gd', label: 'text-gd-text' },
+  mofu: { header: 'bg-or-bg/10 border-or-border/20',   badge: 'badge badge-or',  label: 'text-or-text' },
+  bofu: { header: 'bg-gg-bg/10 border-gg-border/20',     badge: 'badge badge-gg',    label: 'text-gg-text'  },
 };
 
 function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
   if (!toast) return null;
   return (
-    <div className={`fixed top-[76px] right-6 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-bold animate-fade-in ${
-      toast.type === 'success' ? 'bg-white border-gg-border text-gg-text' : 'bg-white border-rr-border text-rr-text'
+    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
+      toast.type === 'success' ? 'bg-white border-green-200 text-green-700' : 'bg-white border-red-200 text-red-600'
     }`}>
       {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
       {toast.text}
@@ -112,72 +112,53 @@ export default function DataInputPage() {
     } finally { setLoading(false); }
   };
 
-  const INPUT_CLS = 'w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all';
-
   return (
     <div className="max-w-5xl mx-auto space-y-10 animate-fade-in pb-20">
       <Toast toast={toast} />
 
       {/* ── Header ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
-        <div className="space-y-1.5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
-                <Database className="w-6 h-6" />
+             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
+                <Database className="w-5 h-5" />
              </div>
              <h1 className="text-2xl font-bold text-text tracking-tight">Input Data Performa</h1>
           </div>
-          <p className="text-sm text-text3 max-w-md font-medium">Masukkan data metrik iklan harian atau bulanan ke database utama.</p>
+          <p className="text-sm font-medium text-text3 max-w-md">Masukkan data metrik iklan harian atau bulanan ke database utama.</p>
         </div>
       </div>
 
       {/* ── Step 1: Configuration ── */}
-      <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/10 transition-all">
-        <div className="px-8 py-6 border-b border-border-main flex items-center justify-between bg-surface1/30">
-          <div className="flex items-center gap-4">
-             <div className="w-10 h-10 rounded-2xl bg-accent text-white flex items-center justify-center text-xs font-black shadow-lg shadow-accent/20 ring-4 ring-accent/5">1</div>
-             <div>
-                <h2 className="text-sm font-bold text-text tracking-tight">Pilih Klien & Periode</h2>
-                <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Langkah awal konfigurasi data</p>
-             </div>
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+        <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface2/50">
+          <div className="flex items-center gap-3">
+             <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center text-xs font-bold">1</div>
+             <h2 className="text-sm font-bold text-text">Pilih Klien & Periode</h2>
           </div>
         </div>
 
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Client Selection */}
-            <div className="space-y-3">
-              <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] flex items-center gap-2 px-1">
-                 <Building2 className="w-3 h-3 text-accent" /> Pilih Klien
-              </label>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text3 uppercase tracking-wider px-1">Pilih Klien</label>
               <div className="relative">
                  <select
                     value={selectedClient}
                     onChange={e => setSelectedClient(e.target.value)}
-                    className={INPUT_CLS + ' appearance-none pr-10'}
+                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
                  >
                     <option value="">— Klik untuk memilih klien —</option>
                     {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
                  </select>
-                 <ChevronRight className="w-4 h-4 text-text4 absolute right-5 top-1/2 -translate-y-1/2 rotate-90" />
+                 <ChevronRight className="w-4 h-4 text-text4 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none" />
               </div>
-              {client && (
-                <div className="px-4 py-3 rounded-xl bg-surface2 border border-border-main/50 flex items-center gap-3 animate-fade-in">
-                   <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-text2 text-[10px] font-black border border-border-main shadow-sm">
-                      {client.key.slice(0, 2).toUpperCase()}
-                   </div>
-                   <div className="text-[11px] font-medium text-text3">
-                      <span className="font-bold text-text">{client.chs.length} Channel</span> aktif · <span className="font-bold text-accent">{client.ind}</span>
-                   </div>
-                </div>
-              )}
             </div>
 
             {/* Period Selection */}
-            <div className="space-y-3">
-              <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] flex items-center gap-2 px-1">
-                 <CalendarClock className="w-3 h-3 text-accent" /> Periode Laporan
-              </label>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-text3 uppercase tracking-wider px-1">Periode Laporan</label>
               <div className="space-y-3">
                 <div className="relative">
                    <select
@@ -186,49 +167,43 @@ export default function DataInputPage() {
                         if (e.target.value === '__new__') { setUseNewPeriod(true); }
                         else { setUseNewPeriod(false); setSelectedPeriod(e.target.value); }
                       }}
-                      className={INPUT_CLS + ' appearance-none pr-10'}
+                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
                    >
                       <option value="">— Pilih Bulan —</option>
                       {PERIODS.map(p => <option key={p} value={p}>{p}</option>)}
                       <option value="__new__">+ Tambah Periode Baru...</option>
                    </select>
-                   <ChevronRight className="w-4 h-4 text-text4 absolute right-5 top-1/2 -translate-y-1/2 rotate-90" />
+                   <ChevronRight className="w-4 h-4 text-text4 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none" />
                 </div>
                 {useNewPeriod && (
                   <input
                     type="month"
                     value={newPeriod}
                     onChange={e => setNewPeriod(e.target.value)}
-                    className="w-full h-11 px-5 rounded-xl border border-accent bg-accent-light text-sm font-bold text-accent focus:outline-none focus:ring-4 focus:ring-accent/10 transition-all animate-fade-in"
+                    className="w-full h-11 px-4 rounded-xl border border-accent bg-accent-light text-sm font-bold text-accent focus:outline-none transition-all animate-fade-in"
                   />
                 )}
               </div>
             </div>
           </div>
 
-          {/* Status Bar */}
           {canProceed && (
-            <div className="mt-8 pt-8 border-t border-border-main flex flex-col sm:flex-row items-center justify-between gap-6 animate-fade-in">
+            <div className="mt-8 pt-6 border-t border-border-main flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
               <div className="flex items-center gap-3">
                 {isUpdateMode ? (
-                  <div className="flex items-center gap-2 text-[10px] font-bold px-4 py-2 rounded-full bg-gd-bg text-gd-text border border-gd-border shadow-sm">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> DATA DITEMUKAN: MODE UPDATE
-                  </div>
+                  <span className="badge badge-gg">Data Ditemukan</span>
                 ) : (
-                  <div className="flex items-center gap-2 text-[10px] font-bold px-4 py-2 rounded-full bg-accent/10 text-accent border border-accent/20 shadow-sm">
-                    <Layers className="w-3.5 h-3.5" /> DATA BARU: MODE INSERT
-                  </div>
+                  <span className="badge badge-or">Data Baru</span>
                 )}
-                <div className="hidden sm:block h-4 w-px bg-border-main" />
-                <p className="text-xs font-semibold text-text3">
-                   {selectedClient} <span className="mx-1 text-text4">/</span> {periodToUse}
+                <p className="text-sm font-medium text-text2">
+                   {selectedClient} · {periodToUse}
                 </p>
               </div>
               <button
                 onClick={() => document.getElementById('step2')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center justify-center gap-2.5 px-8 h-11 bg-text text-white rounded-xl text-sm font-bold hover:bg-accent transition-all shadow-lg shadow-text/10 min-w-[200px]"
+                className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all"
               >
-                Lanjutkan Isi Data <ArrowRight className="w-4 h-4" />
+                Lanjutkan <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -237,24 +212,21 @@ export default function DataInputPage() {
 
       {/* ── Step 2: Channel Inputs ── */}
       {canProceed && client && rows.length > 0 && (
-        <div id="step2" className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden animate-fade-in">
-          <div className="px-8 py-6 border-b border-border-main flex items-center justify-between bg-surface1/30">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-accent text-white flex items-center justify-center text-xs font-black shadow-lg shadow-accent/20 ring-4 ring-accent/5">2</div>
-              <div>
-                <h2 className="text-sm font-bold text-text tracking-tight">Input Data per Channel</h2>
-                <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Masukkan metrik performa tiap channel</p>
-              </div>
+        <div id="step2" className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden animate-fade-in">
+          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface2/50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center text-xs font-bold">2</div>
+              <h2 className="text-sm font-bold text-text">Input Data per Channel</h2>
             </div>
             <button
               onClick={() => setRows(client.chs.map(() => EMPTY_ROW()))}
-              className="flex items-center gap-2 text-[10px] font-bold text-text3 hover:text-rr-text px-4 py-2 rounded-xl border border-border-main hover:bg-rr-bg hover:border-rr-border transition-all uppercase tracking-wider"
+              className="text-xs font-bold text-text3 hover:text-text transition-colors flex items-center gap-1.5"
             >
-              <RotateCcw className="w-3.5 h-3.5" /> Reset Form
+              <RotateCcw className="w-3.5 h-3.5" /> Reset
             </button>
           </div>
 
-          <div className="p-8 space-y-8">
+          <div className="p-8 space-y-6">
             {rows.map((row, i) => {
               const aware = isAware(row.ch);
               const chDef = CH_DEF[row.ch];
@@ -265,75 +237,55 @@ export default function DataInputPage() {
               const roasOk = roasVal && targetRoas ? roasVal >= Number(targetRoas) : null;
 
               return (
-                <div key={row.ch} className="border border-border-main rounded-2xl overflow-hidden bg-white group/card hover:border-accent/30 transition-all shadow-sm">
+                <div key={row.ch} className="border border-border-main rounded-2xl overflow-hidden bg-white shadow-sm hover:border-border-alt transition-colors">
                   {/* Channel Header */}
                   <div className={`flex items-center gap-4 px-6 py-4 border-b ${s.header}`}>
-                    <span className={`text-[9px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg ${s.badge} shadow-sm`}>
-                      {stage}
-                    </span>
-                    <h3 className="text-sm font-bold text-text tracking-tight">{chDef?.l || row.ch}</h3>
-                    <div className="ml-auto hidden sm:flex items-center gap-3">
-                       <span className="text-[9px] font-bold text-text4 uppercase tracking-[0.2em] bg-white/50 px-3 py-1 rounded-full border border-white/50">
+                    <span className={s.badge}>{stage}</span>
+                    <h3 className="text-sm font-bold text-text">{chDef?.l || row.ch}</h3>
+                    <div className="ml-auto hidden sm:block">
+                       <span className="text-[10px] font-bold text-text3 uppercase tracking-wider">
                         {aware ? 'Awareness' : 'Performance'}
                       </span>
                     </div>
                   </div>
 
                   {/* Input Fields Grid */}
-                  <div className="p-7 grid grid-cols-2 md:grid-cols-4 gap-6 bg-surface1/20">
-                    {/* Common Field: Spend */}
-                    <div className="space-y-2">
+                  <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6 bg-surface2/30">
+                    <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Ad Spend (Rp)</label>
-                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                     </div>
 
                     {!aware ? (
                       <>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Revenue (Rp)</label>
-                          <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                          <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Orders</label>
-                          <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                          <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                            <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Results/Visits</label>
-                           <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                           <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                       </>
                     ) : (
                       <>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Reach</label>
-                          <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                          <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Impressions</label>
-                          <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                          <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Results</label>
-                          <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
+                          <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                       </>
-                    )}
-
-                    {/* ROAS Indicator */}
-                    {!aware && roasVal !== null && (
-                      <div className="col-span-full md:col-span-1 flex items-end">
-                        <div className={`h-10 px-5 rounded-xl border text-sm font-bold flex items-center gap-3 w-full justify-center transition-all shadow-sm ${
-                          roasOk === true  ? 'bg-gg-bg text-gg-text border-gg-border' :
-                          roasOk === false ? 'bg-rr-bg text-rr-text border-rr-border' :
-                          'bg-accent-light border-accent-mid text-accent'
-                        }`}>
-                          <TrendingUp className="w-4 h-4" />
-                          <span>{roasVal.toFixed(2)}x</span>
-                          {targetRoas && (
-                            <span className="text-[9px] opacity-60 font-bold ml-1">/ TARGET {targetRoas}x</span>
-                          )}
-                        </div>
-                      </div>
                     )}
                   </div>
                 </div>
@@ -342,21 +294,21 @@ export default function DataInputPage() {
           </div>
 
           {/* Submit Action Bar */}
-          <div className="px-10 py-7 border-t border-border-main bg-surface1/50 flex flex-col sm:flex-row items-center justify-between gap-8">
-            <div className="flex items-start gap-4 max-w-lg">
-              <div className="w-10 h-10 rounded-full bg-white border border-border-main flex items-center justify-center shrink-0 shadow-sm">
-                 <Info className="w-5 h-5 text-text4" />
+          <div className="px-8 py-6 border-t border-border-main bg-surface2/50 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-start gap-3 max-w-lg">
+              <div className="w-6 h-6 rounded-full bg-white border border-border-main flex items-center justify-center shrink-0">
+                 <Info className="w-3.5 h-3.5 text-text3" />
               </div>
-              <p className="text-[11px] text-text3 font-semibold leading-relaxed">
-                DATA PERSISTENCE: <span className="text-text font-bold uppercase tracking-wider">Upsert mode aktif.</span> Sistem akan memperbarui data jika kombinasi klien, channel, dan periode sudah ada.
+              <p className="text-xs text-text3 font-medium leading-relaxed">
+                Sistem akan memperbarui data jika kombinasi klien, channel, dan periode sudah ada.
               </p>
             </div>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center justify-center gap-3 px-12 h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 shrink-0 shadow-xl shadow-text/10 min-w-[280px]"
+              className="flex items-center justify-center gap-2 px-10 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 min-w-[240px]"
             >
-              {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-5 h-5" />}
+              {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
               SIMPAN SEMUA DATA
             </button>
           </div>
@@ -365,12 +317,12 @@ export default function DataInputPage() {
 
       {/* ── Empty Initial State ── */}
       {!canProceed && (
-        <div className="bg-white rounded-[2rem] border border-dashed border-border-alt p-24 text-center animate-fade-in shadow-sm">
-          <div className="w-20 h-20 rounded-3xl bg-surface2 flex items-center justify-center mx-auto mb-8 border border-border-main shadow-inner">
-            <LayoutGrid className="w-10 h-10 text-text4" />
+        <div className="bg-white rounded-2xl border border-dashed border-border-alt p-20 text-center animate-fade-in shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-6">
+            <LayoutGrid className="w-8 h-8 text-text4" />
           </div>
-          <h3 className="text-lg font-bold text-text mb-3 tracking-tight">Klien & Periode Belum Ditentukan</h3>
-          <p className="text-sm text-text3 max-w-sm mx-auto font-medium leading-relaxed">Pilih klien dan tentukan periode bulan di bagian atas untuk membuka form input data performa channel secara otomatis.</p>
+          <h3 className="text-base font-bold text-text mb-2">Klien & Periode Belum Ditentukan</h3>
+          <p className="text-sm text-text3 max-w-sm mx-auto font-medium">Pilih klien dan tentukan periode bulan di bagian atas untuk membuka form input data.</p>
         </div>
       )}
     </div>

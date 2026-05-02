@@ -25,11 +25,11 @@ const STATUS_DOT: Record<string, string> = {
 const STATUS_LABEL: Record<string, string> = {
   rr: 'Kritis', or: 'Perlu Perhatian', yy: 'Waspada', nn: 'Tidak ada data', gg: 'Performa Baik', gd: 'Sangat Baik',
 };
-const TYPE_MAP: Record<string, { l: string; color: string }> = {
-  p: { l: 'Promo',     color: 'bg-gg-bg text-gg-text border-gg-border'       },
-  e: { l: 'Event',     color: 'bg-gd-bg text-gd-text border-gd-border'       },
-  c: { l: 'Content',   color: 'bg-or-bg text-or-text border-or-border'       },
-  l: { l: 'Launching', color: 'bg-rr-bg text-rr-text border-rr-border'       },
+const TYPE_MAP: Record<string, { l: string; color: string; dot: string }> = {
+  p: { l: 'Promo',     color: 'bg-gg-bg text-gg-text border-gg-border', dot: 'bg-gg' },
+  e: { l: 'Event',     color: 'bg-gd-bg text-gd-text border-gd-border', dot: 'bg-gd' },
+  c: { l: 'Content',   color: 'bg-or-bg text-or-text border-or-border', dot: 'bg-or' },
+  l: { l: 'Launching', color: 'bg-rr-bg text-rr-text border-rr-border', dot: 'bg-rr' },
 };
 
 export default function AdminHubPage() {
@@ -101,20 +101,20 @@ export default function AdminHubPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-lg shadow-accent/20 ring-4 ring-accent/5">
-                 <LayoutDashboard className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm">
+                 <LayoutDashboard className="w-5 h-5" />
               </div>
-              <h1 className="text-2xl font-bold text-text tracking-tight uppercase tracking-widest">Admin Hub</h1>
+              <h1 className="text-2xl font-bold text-text tracking-tight">Admin Hub</h1>
            </div>
-           <p className="text-sm text-text3 mt-1.5 font-medium">Pusat kendali operasional dan manajemen ekosistem dashboard.</p>
+           <p className="text-sm font-medium text-text3 mt-1.5">Pusat kendali operasional dan manajemen ekosistem dashboard.</p>
         </div>
         
-        <div className="flex items-center gap-2 bg-white border border-border-main rounded-2xl px-5 py-3 shadow-sm hover:border-accent/30 transition-all group shrink-0">
+        <div className="flex items-center gap-2 bg-white border border-border-main rounded-2xl px-5 py-2.5 shadow-sm hover:border-accent/30 transition-all group shrink-0">
           <CalendarClock className="w-4 h-4 text-text4 group-hover:text-accent transition-colors" />
-          <span className="text-[11px] font-black text-text4 uppercase tracking-widest">Periode Aktif</span>
+          <span className="text-xs font-semibold text-text3 uppercase tracking-wider">Periode Aktif</span>
           <div className="h-4 w-px bg-border-main mx-1" />
           <span className="text-sm font-bold text-text">{curPeriod}</span>
-          <span className="ml-2 text-[9px] font-black bg-gg-bg text-gg-text px-2 py-0.5 rounded-full border border-gg-border">LIVE</span>
+          <span className="ml-2 text-[10px] font-bold uppercase tracking-wider bg-gg-bg text-gg-text px-2 py-0.5 rounded-full border border-gg-border">LIVE</span>
         </div>
       </div>
 
@@ -123,56 +123,56 @@ export default function AdminHubPage() {
         {[
           { label: 'Total Portfolio', value: stats.total, sub: 'Klien Aktif', icon: Globe, color: 'text-text3', bg: 'bg-surface2' },
           { label: 'Blended ROAS', value: `${stats.totalRoas.toFixed(2)}x`, sub: 'Rata-rata Global', icon: TrendingUp, color: 'text-accent', bg: 'bg-accent/5' },
-          { label: 'Tindakan Segera', value: stats.attn, sub: 'Klien Kritis', icon: AlertCircle, color: stats.attn > 0 ? 'text-rr-text' : 'text-text4', bg: stats.attn > 0 ? 'bg-rr-bg' : 'bg-surface2' },
-          { label: 'Status Prima', value: stats.good, sub: 'Klien Berhasil', icon: CheckCircle2, color: stats.good > 0 ? 'text-gd-text' : 'text-text4', bg: stats.good > 0 ? 'bg-gd-bg' : 'bg-surface2' },
+          { label: 'Tindakan Segera', value: stats.attn, sub: 'Klien Kritis', icon: AlertCircle, color: stats.attn > 0 ? 'text-rr-text' : 'text-text3', bg: stats.attn > 0 ? 'bg-rr-bg' : 'bg-surface2' },
+          { label: 'Status Prima', value: stats.good, sub: 'Klien Berhasil', icon: CheckCircle2, color: stats.good > 0 ? 'text-gd-text' : 'text-text3', bg: stats.good > 0 ? 'bg-gd-bg' : 'bg-surface2' },
         ].map((card, i) => (
-          <div key={i} className={`rounded-3xl p-6 border border-border-main shadow-sm flex flex-col gap-4 transition-all hover:shadow-md bg-white hover:border-accent/10`}>
+          <div key={i} className={`bg-white rounded-2xl border border-border-main shadow-sm p-6 flex flex-col gap-5 transition-all hover:shadow-md hover:border-border-alt`}>
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-text4 uppercase tracking-widest">{card.label}</span>
-              <div className={`w-9 h-9 rounded-xl ${card.bg} ${card.color} flex items-center justify-center shrink-0 shadow-inner border border-white/50`}>
-                <card.icon className="w-4.5 h-4.5" />
+              <span className="text-xs font-semibold text-text3 uppercase tracking-wider">{card.label}</span>
+              <div className={`w-8 h-8 rounded-full ${card.bg} ${card.color} flex items-center justify-center shrink-0`}>
+                <card.icon className="w-4 h-4" />
               </div>
             </div>
             <div>
-              <div className={`text-3xl font-bold tracking-tight ${card.color.startsWith('text-text') ? 'text-text' : card.color}`}>{card.value}</div>
-              <div className="text-[10px] font-bold text-text4 mt-1 uppercase tracking-wider">{card.sub}</div>
+              <div className={`text-3xl font-bold text-text tracking-tight`}>{card.value}</div>
+              <div className="text-xs text-text3 mt-1 font-medium">{card.sub}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* ── Financial Summary Strip ── */}
-      <div className="bg-white rounded-3xl border border-border-main shadow-sm p-8 group hover:border-accent/10 transition-all">
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-8 group hover:shadow-md transition-all">
         <div className="flex items-center justify-between mb-8">
            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gg-bg text-gg-text flex items-center justify-center">
-                 <Wallet className="w-4.5 h-4.5" />
+              <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text3">
+                 <Wallet className="w-4 h-4" />
               </div>
               <h3 className="text-sm font-bold text-text">Ringkasan Finansial Portfolio</h3>
            </div>
-           <div className="text-[10px] font-bold text-text4 uppercase tracking-widest px-3 py-1 rounded-full bg-surface2 border border-border-main">{curPeriod}</div>
+           <div className="text-[10px] font-bold text-text4 uppercase tracking-wider px-3 py-1 rounded-full bg-surface2 border border-border-main">{curPeriod}</div>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-8">
           {[
-            { label: 'Total Revenue',  value: fRp(stats.totalRev), color: 'text-gg-text' },
+            { label: 'Total Revenue',  value: fRp(stats.totalRev), color: 'text-text' },
             { label: 'Total Ad Spend', value: fRp(stats.totalSpend), color: 'text-text' },
             { label: 'Net Difference', value: fRp(stats.totalRev - stats.totalSpend), color: 'text-text' },
             { label: 'Est. CIR Avg',      value: stats.totalRev > 0 ? (stats.totalSpend / stats.totalRev * 100).toFixed(1) + '%' : '—', color: 'text-text' },
           ].map((item, i) => (
-            <div key={i} className="space-y-1.5">
-              <div className="text-[10px] font-black text-text4 uppercase tracking-[0.15em]">{item.label}</div>
-              <div className={`text-xl font-bold tracking-tight ${item.color}`}>{item.value}</div>
+            <div key={i} className="space-y-1">
+              <div className="text-xs font-semibold text-text3 uppercase tracking-wider">{item.label}</div>
+              <div className={`text-xl font-bold text-text tracking-tight`}>{item.value}</div>
             </div>
           ))}
         </div>
         
         <div className="relative pt-2">
-           <div className="flex justify-between text-[9px] font-black text-text4 mb-3 uppercase tracking-widest">
-              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-accent" /> Ad Spend</div>
-              <div className="flex items-center gap-2">Revenue <div className="w-2 h-2 rounded-full bg-gd" /></div>
+           <div className="flex justify-between text-[10px] font-bold text-text4 mb-3 uppercase tracking-wider">
+              <div className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-accent" /> Ad Spend</div>
+              <div className="flex items-center gap-2">Revenue <div className="w-1.5 h-1.5 rounded-full bg-gd" /></div>
            </div>
-           <div className="h-2 bg-surface2 rounded-full overflow-hidden shadow-inner">
+           <div className="h-1.5 bg-surface2 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-1000 ease-out"
                 style={{
@@ -190,24 +190,24 @@ export default function AdminHubPage() {
           <Link
             key={item.href}
             href={item.href}
-            className="group bg-white rounded-3xl p-7 border border-border-main shadow-sm hover:shadow-xl hover:border-accent/20 transition-all duration-300 flex flex-col gap-6"
+            className="group bg-white rounded-2xl p-6 border border-border-main shadow-sm hover:shadow-lg hover:border-transparent transition-all duration-300 flex flex-col gap-6"
           >
             <div className="flex items-start justify-between">
               <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110"
+                className="w-11 h-11 rounded-xl flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110"
                 style={{ background: item.accentGradient }}
               >
-                <item.icon className="w-6 h-6" style={{ color: item.iconColor }} />
+                <item.icon className="w-5 h-5" style={{ color: item.iconColor }} />
               </div>
-              <span className="text-[10px] font-black px-3 py-1.5 rounded-xl bg-surface2 text-text3 border border-border-main uppercase tracking-widest">{item.badge}</span>
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-surface2 text-text3 border border-border-main uppercase tracking-wider">{item.badge}</span>
             </div>
             <div className="space-y-2">
-              <h2 className="text-base font-bold text-text group-hover:text-accent transition-colors">{item.title}</h2>
+              <h2 className="text-sm font-bold text-text group-hover:text-accent transition-colors">{item.title}</h2>
               <p className="text-xs text-text3 leading-relaxed font-medium line-clamp-2">{item.desc}</p>
             </div>
-            <div className="mt-auto flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-widest">
+            <div className="mt-auto flex items-center gap-1.5 text-xs font-bold text-accent">
               {item.cta}
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </Link>
         ))}
@@ -216,17 +216,17 @@ export default function AdminHubPage() {
       {/* ── Footer Sections ── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Status Klien List */}
-        <div className="lg:col-span-2 bg-white rounded-[2rem] border border-border-main shadow-sm overflow-hidden flex flex-col group hover:border-accent/10 transition-all">
-          <div className="px-8 py-6 border-b border-border-main flex items-center justify-between bg-surface1/30">
-             <div className="flex items-center gap-3">
-                <PieChart className="w-4 h-4 text-text4" />
-                <h2 className="text-sm font-bold text-text tracking-tight uppercase tracking-wider">Status Klien</h2>
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between">
+             <div className="flex items-center gap-2.5">
+                <PieChart className="w-4 h-4 text-text3" />
+                <h2 className="text-sm font-bold text-text">Status Klien</h2>
              </div>
-             <Link href="/admin/clients" className="w-8 h-8 rounded-lg bg-surface2 flex items-center justify-center text-text4 hover:bg-accent/10 hover:text-accent transition-all">
+             <Link href="/admin/clients" className="w-7 h-7 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
                 <ArrowRight className="w-4 h-4" />
              </Link>
           </div>
-          <div className="divide-y divide-border-main/30 max-h-[420px] overflow-y-auto">
+          <div className="divide-y divide-border-main max-h-[420px] overflow-y-auto no-scrollbar">
             {CLIENTS.map(cl => {
               const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
               const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
@@ -236,20 +236,20 @@ export default function AdminHubPage() {
                 <Link
                   key={cl.key}
                   href={`/client/${encodeURIComponent(cl.key)}`}
-                  className="flex items-center gap-4 px-8 py-5 hover:bg-surface1 transition-colors group/row"
+                  className="flex items-center gap-4 px-6 py-4 hover:bg-surface2 transition-colors group/row"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center text-text3 text-xs font-black shrink-0 group-hover/row:bg-accent group-hover/row:text-white transition-all">
+                  <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black shrink-0 group-hover/row:bg-accent group-hover/row:text-white transition-all">
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-bold text-text truncate group-hover/row:text-accent transition-colors">{cl.key}</div>
-                    <div className="text-[10px] text-text4 font-bold uppercase tracking-wider mt-0.5">{cl.ind}</div>
+                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">{cl.ind}</div>
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-xs font-bold text-text">{t.rev > 0 ? fRp(t.rev) : '—'}</div>
-                    <div className={`flex items-center justify-end gap-1.5 mt-1 px-2 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ background: dotColor }} />
-                      <span className="text-[9px] font-bold uppercase tracking-tighter">{STATUS_LABEL[wc] || 'N/A'}</span>
+                    <div className={`inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
+                      <span className="w-1 h-1 rounded-full shrink-0" style={{ background: dotColor }} />
+                      <span className="text-[10px] font-bold uppercase tracking-tight">{STATUS_LABEL[wc] || 'N/A'}</span>
                     </div>
                   </div>
                 </Link>
@@ -259,38 +259,38 @@ export default function AdminHubPage() {
         </div>
 
         {/* Recent Activity List */}
-        <div className="lg:col-span-3 bg-white rounded-[2rem] border border-border-main shadow-sm overflow-hidden flex flex-col group hover:border-accent/10 transition-all">
-          <div className="px-8 py-6 border-b border-border-main flex items-center justify-between bg-surface1/30">
-            <div className="flex items-center gap-3">
+        <div className="lg:col-span-3 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
               <Zap className="w-4 h-4 text-accent" />
-              <h2 className="text-sm font-bold text-text tracking-tight uppercase tracking-wider">Log Aktivitas Terbaru</h2>
+              <h2 className="text-sm font-bold text-text">Log Aktivitas Terbaru</h2>
             </div>
-            <Link href="/admin/activity" className="text-[10px] font-bold text-accent px-4 py-1.5 bg-accent/5 rounded-full border border-accent/20 hover:bg-accent hover:text-white transition-all uppercase tracking-widest">
+            <Link href="/admin/activity" className="text-xs font-bold text-accent hover:underline">
               LIHAT SEMUA
             </Link>
           </div>
-          <div className="divide-y divide-border-main/30 p-2">
+          <div className="divide-y divide-border-main">
             {recentActivity.length === 0 ? (
               <div className="py-24 text-center">
-                 <p className="text-xs font-bold text-text4 uppercase tracking-[0.2em]">Belum ada aktivitas tercatat</p>
+                 <p className="text-xs font-bold text-text4 uppercase tracking-wider">Belum ada aktivitas tercatat</p>
               </div>
             ) : recentActivity.map((a, i) => {
               const type = TYPE_MAP[a.t] || TYPE_MAP.e;
               return (
-                <div key={i} className="flex items-start gap-6 px-6 py-5 hover:bg-surface1 transition-colors rounded-2xl m-1">
-                  <div className="flex flex-col items-center shrink-0 mt-1.5">
-                    <div className={`w-3 h-3 rounded-full border-2 border-white shadow-sm ${type.color.split(' ')[0]}`} />
+                <div key={i} className="flex items-start gap-4 px-6 py-4 hover:bg-surface2 transition-colors">
+                  <div className="flex flex-col items-center shrink-0 mt-1">
+                    <div className={`w-2 h-2 rounded-full ${type.dot || type.color.split(' ')[0]}`} />
                     {i < recentActivity.length - 1 && (
-                      <div className="w-0.5 flex-1 bg-border-main/50 mt-2 min-h-[30px]" />
+                      <div className="w-px flex-1 bg-border-main mt-1 min-h-[24px]" />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="flex items-center gap-3">
-                       <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest border ${type.color}`}>{type.l}</span>
-                       <span className="text-xs font-black text-accent tracking-tight">{a.c}</span>
-                       <span className="ml-auto text-[9px] font-mono text-text4 font-bold">{a.d}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                       <span className={`chip chip-${a.t}`}>{type.l}</span>
+                       <span className="text-xs font-bold text-accent">{a.c}</span>
+                       <span className="ml-auto text-[10px] text-text4 font-mono font-bold">{a.d}</span>
                     </div>
-                    <p className="text-sm text-text font-medium leading-relaxed line-clamp-2">{a.n}</p>
+                    <p className="text-sm text-text font-medium leading-relaxed line-clamp-1">{a.n}</p>
                   </div>
                 </div>
               );
