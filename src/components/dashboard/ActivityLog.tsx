@@ -1,7 +1,8 @@
 import React from 'react';
 
 interface ActivityItem {
-  d: string; // date
+  d: string; // raw date
+  dLabel?: string; // formatted date
   t: 'p' | 'e' | 'c' | 'l'; // type
   n: string; // note
   c: string; // client
@@ -40,7 +41,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ activities, compact = 
         <tbody className="divide-y divide-border-main/30">
           {activities.map((a, i) => (
             <tr key={i} className="hover:bg-surface2/30 transition-colors">
-              <td className="py-4 px-6 text-sm text-text2 font-medium whitespace-nowrap">{a.d}</td>
+              <td className="py-4 px-6 text-sm text-text2 font-medium whitespace-nowrap">{a.dLabel || a.d}</td>
               <td className="py-4 px-6">
                 <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${typeStyles[a.t]} border border-current/10`}>
                   {typeLabels[a.t]}

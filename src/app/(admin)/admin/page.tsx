@@ -8,7 +8,7 @@ import {
   Database, Activity, Users, ArrowUpRight, TrendingUp,
   AlertCircle, Zap, LayoutDashboard,
   CalendarClock, Settings2, ArrowRight, Globe, TrendingDown,
-  PieChart
+  PieChart, DollarSign, Terminal
 } from 'lucide-react';
 
 import MetricCard from '@/components/ui/MetricCard';
@@ -59,15 +59,23 @@ export default function AdminHubPage() {
     const pendingClients = CLIENTS.filter(cl => !updatedClients.find(u => u.key === cl.key));
     const ingestionProgress = (updatedClients.length / CLIENTS.length) * 100;
 
+    const { AI_LOGS } = useDashboardData();
+    const aiStats = {
+      totalRequests: AI_LOGS.length,
+      totalTokens: AI_LOGS.reduce((acc, l) => acc + (l.tk || 0), 0),
+      totalCost: AI_LOGS.reduce((acc, l) => acc + (l.cost || 0), 0)
+    };
+
     return { 
       totalRev, totalSpend, totalRoas, pGrowth,
       attnCount: attn.length, 
       total: CLIENTS.length,
       updatedCount: updatedClients.length,
       pending: pendingClients,
-      progress: ingestionProgress
+      progress: ingestionProgress,
+      aiStats
     };
-  }, [CLIENTS, DATA, PERIODS, curPeriod]);
+  }, [CLIENTS, DATA, PERIODS, curPeriod, useDashboardData()]);
 
   const MENU = [
     {
@@ -156,6 +164,37 @@ export default function AdminHubPage() {
           growth={null} 
           subtext="Kenaikan Revenue Total" 
         />
+      </div>
+
+      {/* AI Health & Cost Monitoring */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-surface2/40 p-6 rounded-3xl border border-border-main/50">
+        <div className="flex items-center gap-4 px-2">
+           <div className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-accent shadow-sm">
+              <Zap className="w-5 h-5 fill-current" />
+           </div>
+           <div>
+              <div className="text-[10px] font-bold text-text4 uppercase tracking-widest">AI Requests</div>
+              <div className="text-xl font-bold text-text">{stats.aiStats.totalRequests.toLocaleString()} <span className="text-xs text-text3 font-medium">Calls</span></div>
+           </div>
+        </div>
+        <div className="flex items-center gap-4 px-2 border-l border-border-main/50">
+           <div className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-text3 shadow-sm">
+              <Terminal className="w-5 h-5" />
+           </div>
+           <div>
+              <div className="text-[10px] font-bold text-text4 uppercase tracking-widest">Tokens Consumed</div>
+              <div className="text-xl font-bold text-text">{(stats.aiStats.totalTokens / 1000).toFixed(1)}K <span className="text-xs text-text3 font-medium">Tokens</span></div>
+           </div>
+        </div>
+        <div className="flex items-center gap-4 px-2 border-l border-border-main/50">
+           <div className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-gg shadow-sm">
+              <DollarSign className="w-5 h-5" />
+           </div>
+           <div>
+              <div className="text-[10px] font-bold text-text4 uppercase tracking-widest">Est. Cost (USD)</div>
+              <div className="text-xl font-bold text-text">${stats.aiStats.totalCost.toFixed(4)}</div>
+           </div>
+        </div>
       </div>
 
       {/* Ingestion Monitor */}
