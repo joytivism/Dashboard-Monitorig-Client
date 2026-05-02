@@ -92,12 +92,12 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
 
   /* ── Authorized Admin Shell: Sidebar + Header + Content ── */
   return (
-    <div className="flex min-h-screen bg-bg">
+    <div className="flex w-full min-h-screen bg-bg">
       {/* Sidebar - Fixed width */}
       <AdminSidebar onLogout={handleLogout} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col w-full min-w-0">
         <AdminHeader />
         
         <main className="flex-1 px-6 py-8 md:py-10 w-full overflow-y-auto">
