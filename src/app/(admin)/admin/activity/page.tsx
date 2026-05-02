@@ -1,28 +1,26 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDashboardData } from '@/components/DataProvider';
 import { supabase } from '@/lib/supabase';
 import { 
-  Plus, Edit3, Trash2, X, CheckCircle2, AlertCircle, Save, 
-  CalendarDays, Activity, ListFilter, Search, Tag, 
-  TrendingUp, Megaphone, Calendar, Rocket, Filter
+  Activity, Plus, Search, Calendar, ChevronRight, 
+  Trash2, X, Filter, CheckCircle2, AlertCircle, Trash,
+  Edit2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const TYPE_MAP = {
-  p: { l: 'Promo',     icon: Megaphone, cls: 'badge-gg', dot: 'bg-gg' },
-  e: { l: 'Event',     icon: Calendar,  cls: 'badge-gd', dot: 'bg-gd' },
-  c: { l: 'Content',   icon: TrendingUp, cls: 'badge-or', dot: 'bg-or' },
-  l: { l: 'Launching', icon: Rocket,     cls: 'badge-rr', dot: 'bg-rr' },
-} as const;
-
-type ActivityType = keyof typeof TYPE_MAP;
+const TYPE_MAP: Record<string, { l: string; color: string; dot: string }> = {
+  p: { l: 'Promo',     color: 'bg-gg-bg text-gg-text border-gg-border', dot: 'bg-gg' },
+  e: { l: 'Event',     color: 'bg-gd-bg text-gd-text border-gd-border', dot: 'bg-gd' },
+  c: { l: 'Content',   color: 'bg-or-bg text-or-text border-or-border', dot: 'bg-or' },
+  l: { l: 'Launching', color: 'bg-rr-bg text-rr-text border-rr-border', dot: 'bg-rr' },
+};
 
 function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
   if (!toast) return null;
   return (
-    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
+    <div className={`fixed top-[76px] right-6 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-bold animate-fade-in ${
       toast.type === 'success' ? 'bg-white border-gg-border text-gg-text' : 'bg-white border-rr-border text-rr-text'
     }`}>
       {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
@@ -34,114 +32,74 @@ function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } |
 export default function ActivityPage() {
   const { CLIENTS, ACTIVITY } = useDashboardData();
   const router = useRouter();
-
-  const [search, setSearch] = useState('');
-  const [filterClient, setFilterClient] = useState('');
-  const [filterType, setFilterType] = useState<ActivityType | ''>('');
-  
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [editId, setEditId] = useState<string | null>(null);
+  
+  // Filters
+  const [search, setSearch] = useState('');
+  const [selectedClient, setSelectedClient] = useState('all');
 
+  // Form State
   const [form, setForm] = useState({
     client_key: '',
-    log_date: new Date().toISOString().split('T')[0],
-    log_type: 'p' as ActivityType,
-    note: '',
+    type: 'e',
+    name: '',
+    date: new Date().toISOString().split('T')[0]
   });
 
   useEffect(() => {
-    if (toast) { const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t); }
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(t);
+    }
   }, [toast]);
 
-  const filtered = useMemo(() => {
-    return ACTIVITY.filter(a => {
-      const matchesSearch = search === '' || 
-        a.c.toLowerCase().includes(search.toLowerCase()) || 
-        a.n.toLowerCase().includes(search.toLowerCase());
-      const matchesClient = filterClient === '' || a.c === filterClient;
-      const matchesType = filterType === '' || a.t === filterType;
-      return matchesSearch && matchesClient && matchesType;
-    });
-  }, [ACTIVITY, search, filterClient, filterType]);
+  const filtered = ACTIVITY.filter(a => {
+    const mSearch = !search || a.n.toLowerCase().includes(search.toLowerCase()) || a.c.toLowerCase().includes(search.toLowerCase());
+    const mClient = selectedClient === 'all' || a.c === selectedClient;
+    return mSearch && mClient;
+  });
 
-  const stats = useMemo(() => {
-    const counts = { p: 0, e: 0, c: 0, l: 0 };
-    filtered.forEach(a => {
-      if (a.t in counts) counts[a.t as ActivityType]++;
-    });
-    return counts;
-  }, [filtered]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.client_key || !form.name || !form.date) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('client_activity').insert({
+        client_key: form.client_key,
+        type: form.type,
+        name: form.name,
+        date: form.date
+      });
+      if (error) throw error;
+      setToast({ type: 'success', text: 'Activity berhasil ditambahkan!' });
+      setShowModal(false);
+      setForm({ client_key: '', type: 'e', name: '', date: new Date().toISOString().split('T')[0] });
+      router.refresh();
+    } catch (err: any) {
+      setToast({ type: 'error', text: err.message || 'Gagal menambahkan activity.' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const groupedData = useMemo(() => {
-    const groups: { [key: string]: any[] } = {};
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-    filtered.forEach(a => {
-      let label = a.dLabel || a.d;
-      if (a.d === today) label = 'Hari Ini';
-      else if (a.d === yesterday) label = 'Kemarin';
-      else {
-        const date = new Date(a.d);
-        label = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-      }
-
-      if (!groups[label]) groups[label] = [];
-      groups[label].push(a);
-    });
-    return groups;
-  }, [filtered]);
+  const handleDelete = async (id: string | number | undefined) => {
+    if (!id) return;
+    if (!confirm('Hapus activity ini?')) return;
+    try {
+      const { error } = await supabase.from('client_activity').delete().eq('id', id);
+      if (error) throw error;
+      setToast({ type: 'success', text: 'Activity berhasil dihapus.' });
+      router.refresh();
+    } catch (err: any) {
+      setToast({ type: 'error', text: err.message || 'Gagal menghapus.' });
+    }
+  };
 
   const openNew = () => {
-    setEditId(null);
-    setForm({ client_key: '', log_date: new Date().toISOString().split('T')[0], log_type: 'p', note: '' });
+    setForm({ client_key: '', type: 'e', name: '', date: new Date().toISOString().split('T')[0] });
     setShowModal(true);
-  };
-
-  const openEdit = (a: any) => {
-    setEditId(a.id || null);
-    setForm({ client_key: a.c, log_date: a.d, log_type: a.t, note: a.n });
-    setShowModal(true);
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.client_key || !form.note) return;
-    setLoading(true);
-    try {
-      if (editId) {
-        const { error } = await supabase.from('activity_logs').update({
-          client_key: form.client_key, log_date: form.log_date, log_type: form.log_type, note: form.note,
-        }).eq('id', editId);
-        if (error) throw error;
-        setToast({ type: 'success', text: 'Activity berhasil diupdate.' });
-      } else {
-        const { error } = await supabase.from('activity_logs').insert({
-          client_key: form.client_key, log_date: form.log_date, log_type: form.log_type, note: form.note,
-        });
-        if (error) throw error;
-        setToast({ type: 'success', text: 'Activity berhasil ditambahkan.' });
-      }
-      setShowModal(false);
-      router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message });
-    } finally { setLoading(false); }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Hapus activity ini?')) return;
-    setLoading(true);
-    try {
-      const { error } = await supabase.from('activity_logs').delete().eq('id', id);
-      if (error) throw error;
-      setToast({ type: 'success', text: 'Activity dihapus.' });
-      router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message });
-    } finally { setLoading(false); }
   };
 
   return (
@@ -158,259 +116,197 @@ export default function ActivityPage() {
                </div>
                <h1 className="text-2xl font-bold text-text tracking-tight uppercase tracking-widest">Activity Log</h1>
             </div>
-            <p className="text-sm text-text3 max-w-md">Manajemen catatan promo, event, content, dan launching klien harian.</p>
+            <p className="text-sm text-text3 max-w-md font-medium">Manajemen catatan promo, event, content, dan launching klien harian.</p>
           </div>
           <button
             onClick={openNew}
-            className="flex items-center justify-center gap-2.5 px-8 h-12 bg-accent text-white rounded-2xl text-sm font-black hover:bg-accent-hover transition-all shadow-xl shadow-accent/20 min-w-[200px]"
+            className="flex items-center justify-center gap-2.5 px-8 h-12 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent/90 transition-all shadow-xl shadow-accent/20 min-w-[200px]"
           >
             <Plus className="w-5 h-5" /> TAMBAH ACTIVITY
           </button>
         </div>
 
-        {/* ── Stats Overview ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.entries(TYPE_MAP).map(([key, config]) => {
-            const Icon = config.icon;
-            const count = stats[key as ActivityType];
-            return (
-              <div key={key} className="bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all group">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-text3 uppercase tracking-wider">{config.l}</span>
-                  <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text4 group-hover:bg-accent/10 group-hover:text-accent transition-all">
-                    <Icon className="w-4 h-4" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-text tracking-tight">{count}</div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* ── Interactive Filters ── */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text"
-                placeholder="Cari klien atau catatan..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-surface2 border border-border-main rounded-xl text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
-              />
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-text3 shrink-0">
-              <Activity className="w-4 h-4 text-accent" />
-              <span>Menampilkan {filtered.length} entri</span>
-            </div>
+        {/* ── Filters Bar ── */}
+        <div className="bg-white rounded-2xl border border-border-main p-4 shadow-sm flex flex-col md:flex-row items-center gap-4">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
+            <input
+              type="text"
+              placeholder="Cari aktivitas atau klien..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
+            />
           </div>
-
-          <div className="px-5 py-4 bg-surface2/50 border-t border-border-main flex flex-wrap gap-2">
-            <button
-              onClick={() => setFilterClient('')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-                !filterClient ? 'bg-text text-white border-text shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
-              }`}
-            >
-              Semua Klien
-            </button>
-            {CLIENTS.map(cl => (
-              <button
-                key={cl.key}
-                onClick={() => setFilterClient(cl.key)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-                  filterClient === cl.key ? 'bg-accent text-white border-accent shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
-                }`}
-              >
-                {cl.key}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-56">
+               <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
+               <select
+                 value={selectedClient}
+                 onChange={e => setSelectedClient(e.target.value)}
+                 className="w-full h-11 pl-11 pr-10 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
+               >
+                 <option value="all">Semua Klien</option>
+                 {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
+               </select>
+               <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
+            </div>
           </div>
         </div>
 
-        {/* ── Activity Stream ── */}
-        <div className="space-y-10 relative">
-          {/* Continuous timeline line */}
-          <div className="absolute left-[19px] top-4 bottom-4 w-px bg-border-main hidden md:block" />
-
-          {Object.keys(groupedData).length === 0 ? (
-            <div className="bg-white rounded-2xl border border-border-main p-20 text-center flex flex-col items-center shadow-sm">
-              <div className="w-16 h-16 rounded-full bg-surface2 flex items-center justify-center mb-4">
-                <Activity className="w-8 h-8 text-text4" />
+        {/* ── Activity Feed ── */}
+        <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden">
+          {filtered.length === 0 ? (
+            <div className="py-24 text-center">
+              <div className="w-16 h-16 rounded-3xl bg-surface2 flex items-center justify-center mx-auto mb-6 border border-border-main shadow-inner">
+                 <Calendar className="w-8 h-8 text-text4" />
               </div>
-              <h3 className="text-sm font-bold text-text">Data tidak ditemukan</h3>
-              <p className="text-xs text-text3 mt-1">Coba sesuaikan filter atau kata kunci pencarian Anda.</p>
+              <h3 className="text-base font-bold text-text mb-2">Tidak ada aktivitas ditemukan</h3>
+              <p className="text-sm text-text3 max-w-xs mx-auto">Coba ubah filter atau tambahkan activity baru untuk melihat data di sini.</p>
             </div>
-          ) : Object.entries(groupedData).map(([label, items]) => (
-            <div key={label} className="space-y-5">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-white border border-border-main shadow-sm flex items-center justify-center shrink-0 z-10 hidden md:flex">
-                  <CalendarDays className="w-5 h-5 text-text3" />
-                </div>
-                <h2 className="text-[9px] font-black text-text4 uppercase tracking-[0.15em]">{label}</h2>
-                <div className="flex-1 h-px bg-border-main" />
-              </div>
+          ) : (
+            <div className="divide-y divide-border-main/30">
+              {filtered.map((a, i) => {
+                const type = TYPE_MAP[a.t] || TYPE_MAP.e;
+                const isLast = i === filtered.length - 1;
+                return (
+                  <div key={a.id} className="group flex items-start gap-6 px-8 py-6 hover:bg-surface1 transition-colors relative overflow-hidden">
+                    {/* Status Strip on Hover */}
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 opacity-0 group-hover:opacity-100 transition-opacity ${type.dot}`} />
+                    
+                    {/* Timeline visualization */}
+                    <div className="flex flex-col items-center shrink-0 mt-1.5">
+                      <div className={`w-3 h-3 rounded-full border-2 border-white shadow-sm ring-4 ring-white ${type.dot}`} />
+                      {!isLast && <div className="w-0.5 flex-1 bg-border-main/50 mt-2 min-h-[40px]" />}
+                    </div>
 
-              <div className="grid grid-cols-1 gap-4 pl-0 md:pl-14">
-                {items.map((a, i) => {
-                  const config = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
-                  const Icon = config.icon;
-                  return (
-                    <div key={i} className="group relative bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all duration-200">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                          <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                            <span className="text-xs font-bold">{a.c.slice(0, 2).toUpperCase()}</span>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm font-bold text-text tracking-tight">{a.c}</span>
-                              <span className={`badge ${config.cls}`}>{config.l}</span>
-                            </div>
-                            <p className="text-sm font-medium text-text2 leading-relaxed max-w-2xl">{a.n}</p>
-                            <div className="flex items-center gap-4 mt-3">
-                               <div className="flex items-center gap-1.5 text-xs text-text3">
-                                  <CalendarDays className="w-3.5 h-3.5" />
-                                  {a.dLabel || a.d}
-                               </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-all">
-                          <button
-                            onClick={() => openEdit(a)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 hover:text-text transition-all"
-                            title="Edit"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
-                          {a.id && (
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex items-center gap-3">
+                         <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${type.color}`}>{type.l}</span>
+                         <span className="text-sm font-black text-accent tracking-tight">{a.c}</span>
+                         <div className="ml-auto flex items-center gap-4">
+                            <span className="text-[11px] font-mono font-bold text-text4 flex items-center gap-1.5">
+                               <Calendar className="w-3.5 h-3.5" /> {a.d}
+                            </span>
                             <button
-                              onClick={() => handleDelete(a.id!)}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
-                              title="Hapus"
+                              onClick={() => handleDelete(a.id)}
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-text4 hover:bg-rr-bg hover:text-rr-text transition-all opacity-0 group-hover:opacity-100"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
-                          )}
-                        </div>
+                         </div>
                       </div>
+                      <p className="text-sm font-medium text-text leading-relaxed">{a.n}</p>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      {/* ── Modal ── */}
+      {/* ── Modal Form ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[14vh] px-5">
-          <div className="absolute inset-0 bg-black/60 transition-opacity" onClick={() => setShowModal(false)} />
-          <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-border-main">
-              <div>
-                <h3 className="text-base font-bold text-text">{editId ? 'Edit Activity' : 'Tambah Activity Baru'}</h3>
-                <p className="text-xs text-text3 mt-0.5">Catat promo, event, content, atau launching klien.</p>
-              </div>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-all">
-                <X className="w-4 h-4" />
-              </button>
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-6">
+          {/* Overlay - Solid dark no blur per user latest rule */}
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowModal(false)} />
+          
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-border-main overflow-hidden animate-fade-in">
+            <div className="flex items-center justify-between p-6 border-b border-border-main bg-surface1/30">
+               <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-accent/10 text-accent flex items-center justify-center">
+                     <Plus className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-base font-bold text-text tracking-tight uppercase tracking-wider">Tambah Activity</h3>
+               </div>
+               <button onClick={() => setShowModal(false)} className="w-9 h-9 rounded-xl hover:bg-surface2 flex items-center justify-center text-text3 transition-all">
+                  <X className="w-5 h-5" />
+               </button>
             </div>
 
-            <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                
-                {/* Client Selection */}
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <div className="space-y-4">
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Pilih Klien</label>
-                  <select
-                    value={form.client_key}
-                    onChange={e => setForm(f => ({ ...f, client_key: e.target.value }))}
-                    required
-                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all cursor-pointer"
-                  >
-                    <option value="" disabled>— Klik untuk memilih klien —</option>
-                    {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Date */}
-                  <div>
-                    <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tanggal Pelaksanaan</label>
-                    <div className="relative">
-                      <CalendarDays className="w-4 h-4 text-text4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      <input
-                        type="date"
-                        value={form.log_date}
-                        onChange={e => setForm(f => ({ ...f, log_date: e.target.value }))}
-                        required
-                        className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all cursor-pointer"
-                      />
-                    </div>
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block mb-2 px-1">Klien</label>
+                  <div className="relative">
+                     <select
+                       value={form.client_key}
+                       onChange={e => setForm({ ...form, client_key: e.target.value })}
+                       className="w-full h-11 px-4 pr-10 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
+                       required
+                     >
+                       <option value="">— Pilih Klien —</option>
+                       {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
+                     </select>
+                     <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
                   </div>
                 </div>
 
-                {/* Type (Segmented Control) */}
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Tipe Activity</label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block mb-2 px-1">Tipe Aktivitas</label>
+                  <div className="grid grid-cols-2 gap-2">
                     {Object.entries(TYPE_MAP).map(([k, v]) => (
                       <button
                         key={k}
                         type="button"
-                        onClick={() => setForm(f => ({ ...f, log_type: k as ActivityType }))}
-                        className={`h-11 rounded-xl border text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
-                          form.log_type === k 
-                            ? `bg-accent text-white ring-2 ring-accent/20 border-accent/20 shadow-sm` 
-                            : 'bg-surface2 text-text3 border-border-main hover:bg-surface3 hover:text-text'
+                        onClick={() => setForm({ ...form, type: k })}
+                        className={`flex items-center justify-center gap-2 h-11 rounded-xl border text-xs font-bold transition-all ${
+                          form.type === k 
+                          ? `${v.color} shadow-sm ring-2 ring-offset-2 ring-accent/10` 
+                          : 'bg-surface2 border-border-main text-text3 hover:bg-gray-100'
                         }`}
                       >
-                        <span className={`w-1.5 h-1.5 rounded-full ${form.log_type === k ? 'bg-white' : 'bg-text4'}`} />
+                        <div className={`w-1.5 h-1.5 rounded-full ${v.dot}`} />
                         {v.l}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Note */}
                 <div>
-                  <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">Deskripsi / Catatan</label>
-                  <textarea
-                    value={form.note}
-                    onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
-                    required rows={4}
-                    placeholder="Contoh: Flash sale 50% koleksi hijab instan, target 10.000 orders dalam 24 jam..."
-                    className="w-full px-4 py-3 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all resize-none placeholder:text-text4"
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block mb-2 px-1">Nama Aktivitas / Catatan</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    placeholder="Contoh: Launching Promo Buy 1 Get 1"
+                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
+                    required
                   />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block mb-2 px-1">Tanggal</label>
+                  <div className="relative">
+                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
+                     <input
+                       type="date"
+                       value={form.date}
+                       onChange={e => setForm({ ...form, date: e.target.value })}
+                       className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
+                       required
+                     />
+                  </div>
                 </div>
               </div>
 
-              {/* Footer */}
-              <div className="shrink-0 px-5 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="text-text2 hover:bg-surface2 hover:text-text rounded-xl px-4 py-2.5 text-xs font-semibold transition-all"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-text text-white rounded-xl font-bold text-sm px-6 h-12 hover:bg-accent transition-all flex items-center gap-2 shadow-sm"
-                >
-                  {loading
-                    ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : <Save className="w-4 h-4" />
-                  }
-                  {editId ? 'Update Activity' : 'Simpan Activity'}
-                </button>
+              <div className="flex gap-3 pt-2">
+                 <button
+                   type="button"
+                   onClick={() => setShowModal(false)}
+                   className="flex-1 h-12 rounded-xl bg-surface2 text-text2 font-bold text-sm hover:bg-gray-200 transition-all border border-border-main"
+                 >
+                   Batal
+                 </button>
+                 <button
+                   type="submit"
+                   disabled={loading}
+                   className="flex-[2] h-12 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent transition-all shadow-lg shadow-text/10 disabled:opacity-50 flex items-center justify-center gap-2"
+                 >
+                   {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                   SIMPAN AKTIVITAS
+                 </button>
               </div>
             </form>
           </div>

@@ -112,7 +112,7 @@ export default function DataInputPage() {
     } finally { setLoading(false); }
   };
 
-  const INPUT_CLS = 'w-full h-12 px-5 rounded-2xl border border-border-main bg-surface2 text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all';
+  const INPUT_CLS = 'w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all';
 
   return (
     <div className="max-w-5xl mx-auto space-y-10 animate-fade-in pb-20">
@@ -127,7 +127,7 @@ export default function DataInputPage() {
              </div>
              <h1 className="text-2xl font-bold text-text tracking-tight">Input Data Performa</h1>
           </div>
-          <p className="text-sm text-text3 max-w-md">Masukkan data metrik iklan harian atau bulanan ke database utama.</p>
+          <p className="text-sm text-text3 max-w-md font-medium">Masukkan data metrik iklan harian atau bulanan ke database utama.</p>
         </div>
       </div>
 
@@ -138,7 +138,7 @@ export default function DataInputPage() {
              <div className="w-10 h-10 rounded-2xl bg-accent text-white flex items-center justify-center text-xs font-black shadow-lg shadow-accent/20 ring-4 ring-accent/5">1</div>
              <div>
                 <h2 className="text-sm font-bold text-text tracking-tight">Pilih Klien & Periode</h2>
-                <p className="text-[10px] text-text4 font-bold uppercase tracking-wider">Langkah awal konfigurasi data</p>
+                <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Langkah awal konfigurasi data</p>
              </div>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function DataInputPage() {
                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-text2 text-[10px] font-black border border-border-main shadow-sm">
                       {client.key.slice(0, 2).toUpperCase()}
                    </div>
-                   <div className="text-[11px] text-text3">
+                   <div className="text-[11px] font-medium text-text3">
                       <span className="font-bold text-text">{client.chs.length} Channel</span> aktif · <span className="font-bold text-accent">{client.ind}</span>
                    </div>
                 </div>
@@ -199,7 +199,7 @@ export default function DataInputPage() {
                     type="month"
                     value={newPeriod}
                     onChange={e => setNewPeriod(e.target.value)}
-                    className="w-full h-12 px-5 rounded-2xl border border-accent bg-accent-light text-sm font-black text-accent focus:outline-none focus:ring-4 focus:ring-accent/10 transition-all animate-fade-in"
+                    className="w-full h-11 px-5 rounded-xl border border-accent bg-accent-light text-sm font-bold text-accent focus:outline-none focus:ring-4 focus:ring-accent/10 transition-all animate-fade-in"
                   />
                 )}
               </div>
@@ -220,13 +220,13 @@ export default function DataInputPage() {
                   </div>
                 )}
                 <div className="hidden sm:block h-4 w-px bg-border-main" />
-                <p className="text-xs font-bold text-text3">
+                <p className="text-xs font-semibold text-text3">
                    {selectedClient} <span className="mx-1 text-text4">/</span> {periodToUse}
                 </p>
               </div>
               <button
                 onClick={() => document.getElementById('step2')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center justify-center gap-2.5 px-8 h-12 bg-text text-white rounded-2xl text-sm font-bold hover:bg-accent transition-all shadow-lg shadow-text/10 min-w-[200px]"
+                className="flex items-center justify-center gap-2.5 px-8 h-11 bg-text text-white rounded-xl text-sm font-bold hover:bg-accent transition-all shadow-lg shadow-text/10 min-w-[200px]"
               >
                 Lanjutkan Isi Data <ArrowRight className="w-4 h-4" />
               </button>
@@ -243,7 +243,7 @@ export default function DataInputPage() {
               <div className="w-10 h-10 rounded-2xl bg-accent text-white flex items-center justify-center text-xs font-black shadow-lg shadow-accent/20 ring-4 ring-accent/5">2</div>
               <div>
                 <h2 className="text-sm font-bold text-text tracking-tight">Input Data per Channel</h2>
-                <p className="text-[10px] text-text4 font-bold uppercase tracking-wider">Masukkan metrik performa tiap channel</p>
+                <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Masukkan metrik performa tiap channel</p>
               </div>
             </div>
             <button
@@ -271,7 +271,7 @@ export default function DataInputPage() {
                     <span className={`text-[9px] font-black uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg ${s.badge} shadow-sm`}>
                       {stage}
                     </span>
-                    <h3 className="text-sm font-black text-text tracking-tight">{chDef?.l || row.ch}</h3>
+                    <h3 className="text-sm font-bold text-text tracking-tight">{chDef?.l || row.ch}</h3>
                     <div className="ml-auto hidden sm:flex items-center gap-3">
                        <span className="text-[9px] font-bold text-text4 uppercase tracking-[0.2em] bg-white/50 px-3 py-1 rounded-full border border-white/50">
                         {aware ? 'Awareness' : 'Performance'}
@@ -284,37 +284,37 @@ export default function DataInputPage() {
                     {/* Common Field: Spend */}
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Ad Spend (Rp)</label>
-                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                     </div>
 
                     {!aware ? (
                       <>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Revenue (Rp)</label>
-                          <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                          <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Orders</label>
-                          <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                          <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                         </div>
                         <div className="space-y-2">
                            <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Results/Visits</label>
-                           <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                           <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                         </div>
                       </>
                     ) : (
                       <>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Reach</label>
-                          <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                          <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Impressions</label>
-                          <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                          <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Results</label>
-                          <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-12', 'h-11 rounded-xl text-xs')} />
+                          <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10 rounded-xl text-xs')} />
                         </div>
                       </>
                     )}
@@ -322,9 +322,9 @@ export default function DataInputPage() {
                     {/* ROAS Indicator */}
                     {!aware && roasVal !== null && (
                       <div className="col-span-full md:col-span-1 flex items-end">
-                        <div className={`h-11 px-5 rounded-xl border text-sm font-black flex items-center gap-3 w-full justify-center transition-all shadow-sm ${
-                          roasOk === true  ? 'bg-gg-bg border-gg-border text-gg-text' :
-                          roasOk === false ? 'bg-rr-bg border-rr-border text-rr-text' :
+                        <div className={`h-10 px-5 rounded-xl border text-sm font-bold flex items-center gap-3 w-full justify-center transition-all shadow-sm ${
+                          roasOk === true  ? 'bg-gg-bg text-gg-text border-gg-border' :
+                          roasOk === false ? 'bg-rr-bg text-rr-text border-rr-border' :
                           'bg-accent-light border-accent-mid text-accent'
                         }`}>
                           <TrendingUp className="w-4 h-4" />
@@ -347,14 +347,14 @@ export default function DataInputPage() {
               <div className="w-10 h-10 rounded-full bg-white border border-border-main flex items-center justify-center shrink-0 shadow-sm">
                  <Info className="w-5 h-5 text-text4" />
               </div>
-              <p className="text-[11px] text-text3 font-bold leading-relaxed">
-                DATA PERSISTENCE: <span className="text-text font-black">UPSERT MODE AKTIF.</span> Sistem akan memperbarui data jika kombinasi klien, channel, dan periode sudah ada, atau membuat entri baru jika belum tersedia.
+              <p className="text-[11px] text-text3 font-semibold leading-relaxed">
+                DATA PERSISTENCE: <span className="text-text font-bold uppercase tracking-wider">Upsert mode aktif.</span> Sistem akan memperbarui data jika kombinasi klien, channel, dan periode sudah ada.
               </p>
             </div>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center justify-center gap-3 px-12 h-14 bg-text text-white rounded-2xl font-black text-sm hover:bg-accent transition-all disabled:opacity-50 shrink-0 shadow-2xl shadow-text/20 min-w-[280px]"
+              className="flex items-center justify-center gap-3 px-12 h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 shrink-0 shadow-xl shadow-text/10 min-w-[280px]"
             >
               {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-5 h-5" />}
               SIMPAN SEMUA DATA
@@ -369,7 +369,7 @@ export default function DataInputPage() {
           <div className="w-20 h-20 rounded-3xl bg-surface2 flex items-center justify-center mx-auto mb-8 border border-border-main shadow-inner">
             <LayoutGrid className="w-10 h-10 text-text4" />
           </div>
-          <h3 className="text-lg font-black text-text mb-3 tracking-tight">Klien & Periode Belum Ditentukan</h3>
+          <h3 className="text-lg font-bold text-text mb-3 tracking-tight">Klien & Periode Belum Ditentukan</h3>
           <p className="text-sm text-text3 max-w-sm mx-auto font-medium leading-relaxed">Pilih klien dan tentukan periode bulan di bagian atas untuk membuka form input data performa channel secara otomatis.</p>
         </div>
       )}

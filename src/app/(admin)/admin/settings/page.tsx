@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { 
   Settings, Save, Key, MessageSquare, Info, 
   CheckCircle2, AlertCircle, Bot, Sparkles, Terminal,
-  Cpu, Zap, ShieldCheck, ChevronRight
+  Cpu, Zap, ShieldCheck, ChevronRight, RotateCcw
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -92,7 +92,7 @@ export default function SettingsPage() {
         <div className="w-12 h-12 rounded-2xl bg-surface3 mb-4 flex items-center justify-center">
           <Settings className="w-6 h-6 text-text4" />
         </div>
-        <p className="text-sm font-bold text-text3">Memuat pengaturan sistem...</p>
+        <p className="text-sm font-bold text-text3 uppercase tracking-widest">Memuat pengaturan sistem...</p>
       </div>
     );
   }
@@ -116,9 +116,9 @@ export default function SettingsPage() {
              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
                 <Cpu className="w-6 h-6" />
              </div>
-             <h1 className="text-2xl font-bold text-text tracking-tight">Pengaturan Sistem</h1>
+             <h1 className="text-2xl font-bold text-text tracking-tight uppercase tracking-widest">Pengaturan Sistem</h1>
           </div>
-          <p className="text-sm text-text3 max-w-md">Kelola konfigurasi API dan kecerdasan buatan dashboard untuk performa optimal.</p>
+          <p className="text-sm text-text3 max-w-md font-medium">Kelola konfigurasi API dan kecerdasan buatan dashboard untuk performa optimal.</p>
         </div>
         <button
           onClick={handleSave}
@@ -126,7 +126,7 @@ export default function SettingsPage() {
           className="flex items-center justify-center gap-2.5 px-8 h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all shadow-lg shadow-text/10 disabled:opacity-50 min-w-[200px]"
         >
           {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-          Simpan Perubahan
+          SIMPAN PERUBAHAN
         </button>
       </div>
 
@@ -134,7 +134,7 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 gap-8">
         
         {/* API Configuration Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
+        <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
           <div className="px-8 py-5 border-b border-border-main flex items-center gap-4 bg-surface1/30">
             <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shadow-sm">
               <Key className="w-4.5 h-4.5" />
@@ -146,14 +146,14 @@ export default function SettingsPage() {
           </div>
           <div className="p-8 space-y-6">
             <div className="space-y-3">
-              <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block">OpenRouter API Key</label>
+              <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block px-1">OpenRouter API Key</label>
               <div className="relative group/input">
                 <input
                   type="password"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="sk-or-v1-..."
-                  className="w-full h-13 px-5 pr-14 rounded-2xl border border-border-main bg-surface2 text-sm font-mono text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
+                  className="w-full h-12 px-5 pr-14 rounded-xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent transition-all"
                 />
                 <div className="absolute right-5 top-1/2 -translate-y-1/2 text-text4 group-focus-within/input:text-accent transition-colors">
                   <ShieldCheck className="w-5 h-5" />
@@ -161,7 +161,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-surface2 border border-border-main/50">
                  <Zap className="w-3.5 h-3.5 text-or-text shrink-0 mt-0.5" />
-                 <p className="text-[10px] text-text3 font-bold leading-normal">
+                 <p className="text-[10px] text-text3 font-semibold leading-normal">
                     Kunci ini bersifat rahasia dan digunakan untuk menghubungkan Dashboard dengan layanan LLM via OpenRouter.
                  </p>
               </div>
@@ -170,7 +170,7 @@ export default function SettingsPage() {
         </div>
 
         {/* AI Model Management Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
+        <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
           <div className="px-8 py-5 border-b border-border-main flex items-center justify-between bg-surface1/30">
             <div className="flex items-center gap-4">
               <div className="w-9 h-9 rounded-xl bg-gd-bg text-gd-text border border-gd-border flex items-center justify-center shadow-sm">
@@ -186,7 +186,7 @@ export default function SettingsPage() {
                 onClick={() => setCurrentModel('')}
                 className="text-[10px] font-bold text-rr-text hover:bg-rr-bg px-4 py-2 rounded-xl border border-rr-border transition-all flex items-center gap-2"
               >
-                <RotateCcw className="w-3 h-3" /> Hapus & Reset
+                <RotateCcw className="w-3 h-3" /> HAPUS & RESET
               </button>
             )}
           </div>
@@ -196,17 +196,17 @@ export default function SettingsPage() {
                 <Terminal className="w-7 h-7 text-text3" />
               </div>
               <div className="flex-1 w-full space-y-3">
-                <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block">Model ID (OpenRouter)</label>
+                <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block px-1">Model ID (OpenRouter)</label>
                 <div className="relative">
                   <input
                     type="text"
                     value={currentModel}
                     onChange={(e) => setCurrentModel(e.target.value)}
                     placeholder="Contoh: google/gemini-pro-1.5..."
-                    className="w-full h-13 px-5 rounded-2xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
+                    className="w-full h-12 px-5 rounded-xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent transition-all"
                   />
                   <div className="absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                     <span className="text-[9px] font-black bg-accent/10 text-accent px-2 py-1 rounded uppercase">Active</span>
+                     <span className="text-[9px] font-black bg-accent/10 text-accent px-2 py-1 rounded uppercase tracking-tighter">Active</span>
                   </div>
                 </div>
                 <p className="text-[10px] text-text4 font-bold flex items-center gap-1.5 ml-1">
@@ -218,7 +218,7 @@ export default function SettingsPage() {
         </div>
 
         {/* AI Prompt Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
+        <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
           <div className="px-8 py-5 border-b border-border-main flex items-center gap-4 bg-surface1/30">
             <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shadow-sm">
               <MessageSquare className="w-4.5 h-4.5" />
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                  <p className="text-[11px] font-bold text-text3 uppercase tracking-wider flex items-center gap-2">
                     <Zap className="w-3.5 h-3.5 text-accent" /> Data Placeholders
                  </p>
-                 <span className="text-[9px] font-bold text-text4 px-2 py-0.5 border border-border-main rounded-full">Dapat Digunakan Dalam Prompt</span>
+                 <span className="text-[9px] font-black text-text4 px-2 py-0.5 border border-border-main rounded-full uppercase tracking-tighter">Variabel Dinamis</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {['{clientName}', '{spend}', '{revenue}', '{roas}', '{growth}', '{status}'].map(tag => (
@@ -248,13 +248,13 @@ export default function SettingsPage() {
 
             <div className="relative group/prompt">
               <div className="absolute top-4 right-4 z-10 flex items-center gap-2 pointer-events-none opacity-40 group-focus-within/prompt:opacity-100 transition-opacity">
-                 <span className="text-[9px] font-bold bg-text text-white px-2 py-1 rounded">Editor Mode</span>
+                 <span className="text-[9px] font-black bg-text text-white px-2 py-1 rounded uppercase tracking-tighter">Editor Mode</span>
               </div>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={12}
-                className="w-full p-6 pt-10 rounded-2xl border border-border-main bg-surface2 text-sm font-bold leading-relaxed text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all min-h-[300px]"
+                className="w-full p-6 pt-10 rounded-2xl border border-border-main bg-surface2 text-sm font-bold leading-relaxed text-text focus:outline-none focus:border-accent transition-all min-h-[300px]"
                 placeholder="Tulis prompt analisis di sini..."
               />
             </div>
@@ -262,7 +262,7 @@ export default function SettingsPage() {
             <div className="flex items-start gap-4 p-5 rounded-2xl bg-rr-bg/30 border border-rr-border/50">
               <AlertCircle className="w-5 h-5 text-rr-text shrink-0 mt-0.5" />
               <div className="space-y-1">
-                 <p className="text-xs text-rr-text font-bold uppercase tracking-tight">Instruksi Kritis</p>
+                 <p className="text-xs text-rr-text font-black uppercase tracking-tight">Instruksi Kritis</p>
                  <p className="text-xs text-rr-text/80 font-bold leading-relaxed">
                     Pastikan instruksi format JSON tetap ada di dalam prompt. Tanpa instruksi JSON, sistem tidak akan bisa mem-parsing jawaban AI ke dalam komponen UI Dashboard.
                  </p>
@@ -273,25 +273,5 @@ export default function SettingsPage() {
 
       </div>
     </div>
-  );
-}
-
-function RotateCcw(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-    </svg>
   );
 }

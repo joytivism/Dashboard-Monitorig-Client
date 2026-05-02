@@ -12,12 +12,12 @@ import {
 } from 'lucide-react';
 
 const STATUS_COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
-  rr: { bg: 'var(--color-rr-bg)',   text: 'var(--color-rr-text)',   border: 'var(--color-rr-border)'  },
-  or: { bg: 'var(--color-or-bg)',   text: 'var(--color-or-text)',   border: 'var(--color-or-border)'  },
-  yy: { bg: 'var(--color-yy-bg)',   text: 'var(--color-yy-text)',   border: 'var(--color-yy-border)'  },
-  nn: { bg: 'var(--color-nn-bg)',   text: 'var(--color-nn-text)',   border: 'var(--color-nn-border)'  },
-  gg: { bg: 'var(--color-gg-bg)',   text: 'var(--color-gg-text)',   border: 'var(--color-gg-border)'  },
-  gd: { bg: 'var(--color-gd-bg)',   text: 'var(--color-gd-text)',   border: 'var(--color-gd-border)'  },
+  rr: { bg: 'bg-rr-bg',   text: 'text-rr-text',   border: 'border-rr-border'  },
+  or: { bg: 'bg-or-bg',   text: 'text-or-text',   border: 'border-or-border'  },
+  yy: { bg: 'bg-yy-bg',   text: 'text-yy-text',   border: 'border-yy-border'  },
+  nn: { bg: 'bg-nn-bg',   text: 'text-nn-text',   border: 'border-nn-border'  },
+  gg: { bg: 'bg-gg-bg',   text: 'text-gg-text',   border: 'border-gg-border'  },
+  gd: { bg: 'bg-gd-bg',   text: 'text-gd-text',   border: 'border-gd-border'  },
 };
 const STATUS_DOT: Record<string, string> = {
   rr: '#DC2626', or: '#EA580C', yy: '#D97706', nn: '#9CA3AF', gg: '#059669', gd: '#0284C7',
@@ -231,6 +231,7 @@ export default function AdminHubPage() {
               const wc = clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod);
               const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
               const t = totals(CLIENTS, DATA, cl.key, curPeriod);
+              const statusStyle = STATUS_COLOR_MAP[wc] || STATUS_COLOR_MAP.nn;
               return (
                 <Link
                   key={cl.key}
@@ -246,9 +247,9 @@ export default function AdminHubPage() {
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-xs font-bold text-text">{t.rev > 0 ? fRp(t.rev) : '—'}</div>
-                    <div className="flex items-center justify-end gap-1.5 mt-1">
+                    <div className={`flex items-center justify-end gap-1.5 mt-1 px-2 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
                       <span className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse" style={{ background: dotColor }} />
-                      <span className="text-[9px] font-bold text-text4 uppercase tracking-tighter">{STATUS_LABEL[wc] || 'N/A'}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-tighter">{STATUS_LABEL[wc] || 'N/A'}</span>
                     </div>
                   </div>
                 </Link>
