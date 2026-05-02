@@ -146,20 +146,25 @@ export default function ActivityPage() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
+      <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
         <Toast toast={toast} />
 
         {/* ── Header Area ── */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
-            <p className="text-xs text-text3 mt-1">Manajemen catatan promo, event, dan launching klien.</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                  <Activity className="w-6 h-6" />
+               </div>
+               <h1 className="text-2xl font-bold text-text tracking-tight uppercase tracking-widest">Activity Log</h1>
+            </div>
+            <p className="text-sm text-text3 max-w-md">Manajemen catatan promo, event, content, dan launching klien harian.</p>
           </div>
           <button
             onClick={openNew}
-            className="bg-accent text-white rounded-xl font-bold text-sm px-5 h-11 hover:bg-accent/90 transition-all flex items-center gap-2 shadow-sm shrink-0"
+            className="flex items-center justify-center gap-2.5 px-8 h-12 bg-accent text-white rounded-2xl text-sm font-black hover:bg-accent-hover transition-all shadow-xl shadow-accent/20 min-w-[200px]"
           >
-            <Plus className="w-4 h-4" /> Tambah Activity
+            <Plus className="w-5 h-5" /> TAMBAH ACTIVITY
           </button>
         </div>
 

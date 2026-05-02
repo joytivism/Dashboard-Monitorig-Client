@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { 
   Settings, Save, Key, MessageSquare, Info, 
-  CheckCircle2, AlertCircle, Bot, Sparkles, Terminal 
+  CheckCircle2, AlertCircle, Bot, Sparkles, Terminal,
+  Cpu, Zap, ShieldCheck, ChevronRight
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -91,16 +92,16 @@ export default function SettingsPage() {
         <div className="w-12 h-12 rounded-2xl bg-surface3 mb-4 flex items-center justify-center">
           <Settings className="w-6 h-6 text-text4" />
         </div>
-        <p className="text-sm font-semibold text-text3">Memuat pengaturan sistem...</p>
+        <p className="text-sm font-bold text-text3">Memuat pengaturan sistem...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-7 animate-fade-in pb-12">
+    <div className="max-w-5xl mx-auto space-y-10 animate-fade-in pb-20">
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-[76px] right-6 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
+        <div className={`fixed top-[76px] right-6 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-bold animate-fade-in ${
           toast.type === 'success' ? 'bg-white border-gg-border text-gg-text' : 'bg-white border-rr-border text-rr-text'
         }`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
@@ -108,140 +109,189 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* Header Section */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
-            <Settings className="w-7 h-7 text-accent" />
-            Pengaturan Sistem
-          </h1>
-          <p className="text-sm text-text3 mt-1">Kelola konfigurasi API dan kecerdasan buatan dashboard.</p>
+      {/* ── Header Section ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                <Cpu className="w-6 h-6" />
+             </div>
+             <h1 className="text-2xl font-bold text-text tracking-tight">Pengaturan Sistem</h1>
+          </div>
+          <p className="text-sm text-text3 max-w-md">Kelola konfigurasi API dan kecerdasan buatan dashboard untuk performa optimal.</p>
         </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-6 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all shadow-sm disabled:opacity-50"
+          className="flex items-center justify-center gap-2.5 px-8 h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all shadow-lg shadow-text/10 disabled:opacity-50 min-w-[200px]"
         >
           {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
           Simpan Perubahan
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      {/* ── Main Configuration ── */}
+      <div className="grid grid-cols-1 gap-8">
         
         {/* API Configuration Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-border-main flex items-center gap-3 bg-surface1/50">
-            <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
-              <Key className="w-4 h-4" />
+        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
+          <div className="px-8 py-5 border-b border-border-main flex items-center gap-4 bg-surface1/30">
+            <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shadow-sm">
+              <Key className="w-4.5 h-4.5" />
             </div>
-            <h2 className="text-sm font-bold text-text">Konfigurasi API</h2>
-          </div>
-          <div className="p-6 space-y-5">
             <div>
-              <label className="text-[11px] font-bold text-text3 uppercase tracking-wider block mb-2">OpenRouter API Key</label>
-              <div className="relative">
+               <h2 className="text-sm font-bold text-text tracking-tight">Konfigurasi API</h2>
+               <p className="text-[10px] text-text4 font-bold uppercase tracking-wider">Kunci akses layanan eksternal</p>
+            </div>
+          </div>
+          <div className="p-8 space-y-6">
+            <div className="space-y-3">
+              <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block">OpenRouter API Key</label>
+              <div className="relative group/input">
                 <input
                   type="password"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="sk-or-v1-..."
-                  className="w-full h-12 px-4 pr-12 rounded-xl border border-border-main bg-surface2 text-sm font-mono text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
+                  className="w-full h-13 px-5 pr-14 rounded-2xl border border-border-main bg-surface2 text-sm font-mono text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-text4">
-                  <Key className="w-4 h-4" />
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 text-text4 group-focus-within/input:text-accent transition-colors">
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
               </div>
-              <p className="mt-2 text-[11px] text-text4 flex items-center gap-1.5">
-                <Info className="w-3 h-3" /> API Key ini digunakan untuk mengakses model AI via OpenRouter.
-              </p>
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-surface2 border border-border-main/50">
+                 <Zap className="w-3.5 h-3.5 text-or-text shrink-0 mt-0.5" />
+                 <p className="text-[10px] text-text3 font-bold leading-normal">
+                    Kunci ini bersifat rahasia dan digunakan untuk menghubungkan Dashboard dengan layanan LLM via OpenRouter.
+                 </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* AI Model Management Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-border-main flex items-center justify-between bg-surface1/50">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gd-bg text-gd-text border border-gd-border flex items-center justify-center">
-                <Bot className="w-4 h-4" />
+        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
+          <div className="px-8 py-5 border-b border-border-main flex items-center justify-between bg-surface1/30">
+            <div className="flex items-center gap-4">
+              <div className="w-9 h-9 rounded-xl bg-gd-bg text-gd-text border border-gd-border flex items-center justify-center shadow-sm">
+                <Bot className="w-4.5 h-4.5" />
               </div>
-              <h2 className="text-sm font-bold text-text">Model AI (LLM)</h2>
+              <div>
+                 <h2 className="text-sm font-bold text-text tracking-tight">Model AI (LLM)</h2>
+                 <p className="text-[10px] text-text4 font-bold uppercase tracking-wider">Otak kecerdasan buatan</p>
+              </div>
             </div>
             {currentModel && (
               <button
                 onClick={() => setCurrentModel('')}
-                className="text-[10px] font-bold text-rr-text hover:bg-rr-bg px-3 py-1.5 rounded-lg transition-all"
+                className="text-[10px] font-bold text-rr-text hover:bg-rr-bg px-4 py-2 rounded-xl border border-rr-border transition-all flex items-center gap-2"
               >
-                Hapus & Ganti Baru
+                <RotateCcw className="w-3 h-3" /> Hapus & Reset
               </button>
             )}
           </div>
-          <div className="p-6">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center border border-border-main shrink-0">
-                <Terminal className="w-6 h-6 text-text3" />
+          <div className="p-8">
+            <div className="flex flex-col md:flex-row items-start gap-6">
+              <div className="w-14 h-14 rounded-2xl bg-surface2 flex items-center justify-center border border-border-main shrink-0 shadow-sm">
+                <Terminal className="w-7 h-7 text-text3" />
               </div>
-              <div className="flex-1">
-                <label className="text-[11px] font-bold text-text3 uppercase tracking-wider block mb-2">Model ID (OpenRouter)</label>
-                <input
-                  type="text"
-                  value={currentModel}
-                  onChange={(e) => setCurrentModel(e.target.value)}
-                  placeholder="Contoh: google/gemini-pro-1.5 atau nvidia/nemotron-3..."
-                  className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
-                />
+              <div className="flex-1 w-full space-y-3">
+                <label className="text-[11px] font-bold text-text3 uppercase tracking-[0.1em] block">Model ID (OpenRouter)</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={currentModel}
+                    onChange={(e) => setCurrentModel(e.target.value)}
+                    placeholder="Contoh: google/gemini-pro-1.5..."
+                    className="w-full h-13 px-5 rounded-2xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
+                  />
+                  <div className="absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                     <span className="text-[9px] font-black bg-accent/10 text-accent px-2 py-1 rounded uppercase">Active</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-text4 font-bold flex items-center gap-1.5 ml-1">
+                  <Info className="w-3.5 h-3.5" /> Masukkan ID model resmi dari direktori OpenRouter.
+                </p>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-surface2 border border-border-main text-[10px] text-text3 font-medium">
-              <Info className="w-3.5 h-3.5" />
-              Masukkan Model ID lengkap dari OpenRouter untuk menggunakan model AI yang berbeda.
             </div>
           </div>
         </div>
 
         {/* AI Prompt Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-border-main flex items-center gap-3 bg-surface1/50">
-            <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
-              <MessageSquare className="w-4 h-4" />
+        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden group hover:border-accent/20 transition-all">
+          <div className="px-8 py-5 border-b border-border-main flex items-center gap-4 bg-surface1/30">
+            <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shadow-sm">
+              <MessageSquare className="w-4.5 h-4.5" />
             </div>
-            <h2 className="text-sm font-bold text-text">AI Strategy Prompt</h2>
-            <Sparkles className="w-3.5 h-3.5 text-gd-text animate-pulse ml-auto" />
+            <div>
+               <h2 className="text-sm font-bold text-text tracking-tight">AI Strategy Prompt</h2>
+               <p className="text-[10px] text-text4 font-bold uppercase tracking-wider">Instruksi analisis strategi</p>
+            </div>
+            <Sparkles className="w-4 h-4 text-gd-text animate-pulse ml-auto" />
           </div>
-          <div className="p-6">
-            <div className="mb-4 p-4 rounded-xl bg-surface2 border border-border-main">
-              <p className="text-[11px] font-bold text-text3 uppercase mb-2 flex items-center gap-2">
-                <Info className="w-3 h-3" /> Panduan Placeholder
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="p-8 space-y-6">
+            <div className="p-5 rounded-2xl bg-surface2 border border-border-main space-y-4">
+              <div className="flex items-center justify-between">
+                 <p className="text-[11px] font-bold text-text3 uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="w-3.5 h-3.5 text-accent" /> Data Placeholders
+                 </p>
+                 <span className="text-[9px] font-bold text-text4 px-2 py-0.5 border border-border-main rounded-full">Dapat Digunakan Dalam Prompt</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
                 {['{clientName}', '{spend}', '{revenue}', '{roas}', '{growth}', '{status}'].map(tag => (
-                  <code key={tag} className="text-[10px] bg-white px-2 py-1 rounded border border-border-main text-accent font-bold">
+                  <code key={tag} className="text-[10px] bg-white px-3 py-1.5 rounded-lg border border-border-main text-accent font-bold shadow-sm hover:border-accent/50 transition-all cursor-default">
                     {tag}
                   </code>
                 ))}
               </div>
             </div>
 
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              rows={12}
-              className="w-full p-5 rounded-2xl border border-border-main bg-surface2 text-sm font-medium leading-relaxed text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
-              placeholder="Tulis prompt analisis di sini..."
-            />
+            <div className="relative group/prompt">
+              <div className="absolute top-4 right-4 z-10 flex items-center gap-2 pointer-events-none opacity-40 group-focus-within/prompt:opacity-100 transition-opacity">
+                 <span className="text-[9px] font-bold bg-text text-white px-2 py-1 rounded">Editor Mode</span>
+              </div>
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                rows={12}
+                className="w-full p-6 pt-10 rounded-2xl border border-border-main bg-surface2 text-sm font-bold leading-relaxed text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all min-h-[300px]"
+                placeholder="Tulis prompt analisis di sini..."
+              />
+            </div>
             
-            <div className="mt-3 flex items-start gap-3 p-4 rounded-xl bg-accent/5 border border-accent/10">
-              <AlertCircle className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-              <p className="text-[11px] text-accent font-semibold leading-normal">
-                PENTING: Pastikan instruksi format JSON tetap ada di dalam prompt agar sistem dapat mengolah data dengan benar. Kesalahan format dapat menyebabkan summary tidak muncul.
-              </p>
+            <div className="flex items-start gap-4 p-5 rounded-2xl bg-rr-bg/30 border border-rr-border/50">
+              <AlertCircle className="w-5 h-5 text-rr-text shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                 <p className="text-xs text-rr-text font-bold uppercase tracking-tight">Instruksi Kritis</p>
+                 <p className="text-xs text-rr-text/80 font-bold leading-relaxed">
+                    Pastikan instruksi format JSON tetap ada di dalam prompt. Tanpa instruksi JSON, sistem tidak akan bisa mem-parsing jawaban AI ke dalam komponen UI Dashboard.
+                 </p>
+              </div>
             </div>
           </div>
         </div>
 
       </div>
     </div>
+  );
+}
+
+function RotateCcw(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+    </svg>
   );
 }

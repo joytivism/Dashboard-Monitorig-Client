@@ -157,38 +157,40 @@ export default function ClientsAdminPage() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
+      <div className="max-w-7xl mx-auto space-y-10 animate-fade-in pb-20">
         <Toast toast={toast} />
 
         {/* ── Top Header ── */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-          <div>
-            <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
-              <Users className="w-7 h-7 text-accent" />
-              Manajemen Klien
-            </h1>
-            <p className="text-sm text-text3 mt-1">Kelola ekosistem klien dan konfigurasi performa mereka.</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                  <Users className="w-6 h-6" />
+               </div>
+               <h1 className="text-2xl font-bold text-text tracking-tight uppercase tracking-widest">Manajemen Klien</h1>
+            </div>
+            <p className="text-sm text-text3 max-w-md">Kelola ekosistem klien, konfigurasi channel, dan parameter target performa.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="flex bg-surface2 p-1.5 rounded-2xl border border-border-main shadow-inner">
               <button 
                 onClick={() => setView('grid')}
-                className={`p-2 rounded-lg transition-all ${view === 'grid' ? 'bg-white shadow-sm text-accent' : 'text-text4 hover:text-text2'}`}
+                className={`p-2 rounded-xl transition-all ${view === 'grid' ? 'bg-white shadow-md text-accent' : 'text-text4 hover:text-text2'}`}
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
               <button 
                 onClick={() => setView('list')}
-                className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white shadow-sm text-accent' : 'text-text4 hover:text-text2'}`}
+                className={`p-2 rounded-xl transition-all ${view === 'list' ? 'bg-white shadow-md text-accent' : 'text-text4 hover:text-text2'}`}
               >
                 <List className="w-4 h-4" />
               </button>
             </div>
             <button
               onClick={openNew}
-              className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/20 shrink-0"
+              className="flex items-center gap-2.5 px-8 h-12 bg-accent text-white rounded-2xl text-sm font-black hover:bg-accent-hover transition-all shadow-xl shadow-accent/20"
             >
-              <Plus className="w-4 h-4" /> Tambah Klien
+              <Plus className="w-5 h-5" /> TAMBAH KLIEN
             </button>
           </div>
         </div>
