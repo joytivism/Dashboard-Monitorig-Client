@@ -145,163 +145,165 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
-      <Toast toast={toast} />
+    <>
+      <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
+        <Toast toast={toast} />
 
-      {/* ── Header Area ── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
-          <p className="text-xs text-text3 mt-1">Manajemen catatan promo, event, dan launching klien.</p>
-        </div>
-        <button
-          onClick={openNew}
-          className="bg-accent text-white rounded-xl font-bold text-sm px-5 h-11 hover:bg-accent/90 transition-all flex items-center gap-2 shadow-sm shrink-0"
-        >
-          <Plus className="w-4 h-4" /> Tambah Activity
-        </button>
-      </div>
-
-      {/* ── Stats Overview ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {Object.entries(TYPE_MAP).map(([key, config]) => {
-          const Icon = config.icon;
-          const count = stats[key as ActivityType];
-          return (
-            <div key={key} className="bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all group">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-text3 uppercase tracking-wider">{config.l}</span>
-                <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text4 group-hover:bg-accent/10 group-hover:text-accent transition-all">
-                  <Icon className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-3xl font-bold text-text tracking-tight">{count}</div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Interactive Filters ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-        <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input 
-              type="text"
-              placeholder="Cari klien atau catatan..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 bg-surface2 border border-border-main rounded-xl text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
-            />
+        {/* ── Header Area ── */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-text tracking-tight">Activity Log</h1>
+            <p className="text-xs text-text3 mt-1">Manajemen catatan promo, event, dan launching klien.</p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-text3 shrink-0">
-            <Activity className="w-4 h-4 text-accent" />
-            <span>Menampilkan {filtered.length} entri</span>
-          </div>
-        </div>
-
-        <div className="px-5 py-4 bg-surface2/50 border-t border-border-main flex flex-wrap gap-2">
           <button
-            onClick={() => setFilterClient('')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-              !filterClient ? 'bg-text text-white border-text shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
-            }`}
+            onClick={openNew}
+            className="bg-accent text-white rounded-xl font-bold text-sm px-5 h-11 hover:bg-accent/90 transition-all flex items-center gap-2 shadow-sm shrink-0"
           >
-            Semua Klien
+            <Plus className="w-4 h-4" /> Tambah Activity
           </button>
-          {CLIENTS.map(cl => (
+        </div>
+
+        {/* ── Stats Overview ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Object.entries(TYPE_MAP).map(([key, config]) => {
+            const Icon = config.icon;
+            const count = stats[key as ActivityType];
+            return (
+              <div key={key} className="bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all group">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-text3 uppercase tracking-wider">{config.l}</span>
+                  <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text4 group-hover:bg-accent/10 group-hover:text-accent transition-all">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-text tracking-tight">{count}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Interactive Filters ── */}
+        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
+          <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text"
+                placeholder="Cari klien atau catatan..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 bg-surface2 border border-border-main rounded-xl text-xs font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-text3 shrink-0">
+              <Activity className="w-4 h-4 text-accent" />
+              <span>Menampilkan {filtered.length} entri</span>
+            </div>
+          </div>
+
+          <div className="px-5 py-4 bg-surface2/50 border-t border-border-main flex flex-wrap gap-2">
             <button
-              key={cl.key}
-              onClick={() => setFilterClient(cl.key)}
+              onClick={() => setFilterClient('')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-                filterClient === cl.key ? 'bg-accent text-white border-accent shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
+                !filterClient ? 'bg-text text-white border-text shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
               }`}
             >
-              {cl.key}
+              Semua Klien
             </button>
+            {CLIENTS.map(cl => (
+              <button
+                key={cl.key}
+                onClick={() => setFilterClient(cl.key)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                  filterClient === cl.key ? 'bg-accent text-white border-accent shadow-sm' : 'bg-white text-text2 border-border-main hover:bg-surface2'
+                }`}
+              >
+                {cl.key}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Activity Stream ── */}
+        <div className="space-y-10 relative">
+          {/* Continuous timeline line */}
+          <div className="absolute left-[19px] top-4 bottom-4 w-px bg-border-main hidden md:block" />
+
+          {Object.keys(groupedData).length === 0 ? (
+            <div className="bg-white rounded-2xl border border-border-main p-20 text-center flex flex-col items-center shadow-sm">
+              <div className="w-16 h-16 rounded-full bg-surface2 flex items-center justify-center mb-4">
+                <Activity className="w-8 h-8 text-text4" />
+              </div>
+              <h3 className="text-sm font-bold text-text">Data tidak ditemukan</h3>
+              <p className="text-xs text-text3 mt-1">Coba sesuaikan filter atau kata kunci pencarian Anda.</p>
+            </div>
+          ) : Object.entries(groupedData).map(([label, items]) => (
+            <div key={label} className="space-y-5">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-white border border-border-main shadow-sm flex items-center justify-center shrink-0 z-10 hidden md:flex">
+                  <CalendarDays className="w-5 h-5 text-text3" />
+                </div>
+                <h2 className="text-[9px] font-black text-text4 uppercase tracking-[0.15em]">{label}</h2>
+                <div className="flex-1 h-px bg-border-main" />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 pl-0 md:pl-14">
+                {items.map((a, i) => {
+                  const config = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
+                  const Icon = config.icon;
+                  return (
+                    <div key={i} className="group relative bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4">
+                          <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                            <span className="text-xs font-bold">{a.c.slice(0, 2).toUpperCase()}</span>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm font-bold text-text tracking-tight">{a.c}</span>
+                              <span className={`badge ${config.cls}`}>{config.l}</span>
+                            </div>
+                            <p className="text-sm font-medium text-text2 leading-relaxed max-w-2xl">{a.n}</p>
+                            <div className="flex items-center gap-4 mt-3">
+                               <div className="flex items-center gap-1.5 text-xs text-text3">
+                                  <CalendarDays className="w-3.5 h-3.5" />
+                                  {a.dLabel || a.d}
+                               </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-all">
+                          <button
+                            onClick={() => openEdit(a)}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 hover:text-text transition-all"
+                            title="Edit"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          {a.id && (
+                            <button
+                              onClick={() => handleDelete(a.id!)}
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
+                              title="Hapus"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* ── Activity Stream ── */}
-      <div className="space-y-10 relative">
-        {/* Continuous timeline line */}
-        <div className="absolute left-[19px] top-4 bottom-4 w-px bg-border-main hidden md:block" />
-
-        {Object.keys(groupedData).length === 0 ? (
-          <div className="bg-white rounded-2xl border border-border-main p-20 text-center flex flex-col items-center shadow-sm">
-            <div className="w-16 h-16 rounded-full bg-surface2 flex items-center justify-center mb-4">
-              <Activity className="w-8 h-8 text-text4" />
-            </div>
-            <h3 className="text-sm font-bold text-text">Data tidak ditemukan</h3>
-            <p className="text-xs text-text3 mt-1">Coba sesuaikan filter atau kata kunci pencarian Anda.</p>
-          </div>
-        ) : Object.entries(groupedData).map(([label, items]) => (
-          <div key={label} className="space-y-5">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-white border border-border-main shadow-sm flex items-center justify-center shrink-0 z-10 hidden md:flex">
-                <CalendarDays className="w-5 h-5 text-text3" />
-              </div>
-              <h2 className="text-[9px] font-black text-text4 uppercase tracking-[0.15em]">{label}</h2>
-              <div className="flex-1 h-px bg-border-main" />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 pl-0 md:pl-14">
-              {items.map((a, i) => {
-                const config = TYPE_MAP[a.t as ActivityType] || TYPE_MAP.e;
-                const Icon = config.icon;
-                return (
-                  <div key={i} className="group relative bg-white rounded-2xl border border-border-main p-5 shadow-sm hover:shadow-md transition-all duration-200">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent shrink-0 group-hover:bg-accent group-hover:text-white transition-all duration-200">
-                          <span className="text-xs font-bold">{a.c.slice(0, 2).toUpperCase()}</span>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-sm font-bold text-text tracking-tight">{a.c}</span>
-                            <span className={`badge ${config.cls}`}>{config.l}</span>
-                          </div>
-                          <p className="text-sm font-medium text-text2 leading-relaxed max-w-2xl">{a.n}</p>
-                          <div className="flex items-center gap-4 mt-3">
-                             <div className="flex items-center gap-1.5 text-xs text-text3">
-                                <CalendarDays className="w-3.5 h-3.5" />
-                                {a.dLabel || a.d}
-                             </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-all">
-                        <button
-                          onClick={() => openEdit(a)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-surface2 hover:text-text transition-all"
-                          title="Edit"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        {a.id && (
-                          <button
-                            onClick={() => handleDelete(a.id!)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-red-50 hover:text-red-600 transition-all"
-                            title="Hapus"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* ── Modal ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[14vh] px-5">
+        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[14vh] px-5">
           <div className="absolute inset-0 bg-black/60 transition-opacity" onClick={() => setShowModal(false)} />
           <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
             {/* Header */}
@@ -409,6 +411,6 @@ export default function ActivityPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

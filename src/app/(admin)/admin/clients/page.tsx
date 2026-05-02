@@ -156,220 +156,222 @@ export default function ClientsAdminPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
-      <Toast toast={toast} />
+    <>
+      <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
+        <Toast toast={toast} />
 
-      {/* ── Top Header ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-        <div>
-          <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
-            <Users className="w-7 h-7 text-accent" />
-            Manajemen Klien
-          </h1>
-          <p className="text-sm text-text3 mt-1">Kelola ekosistem klien dan konfigurasi performa mereka.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
-            <button 
-              onClick={() => setView('grid')}
-              className={`p-2 rounded-lg transition-all ${view === 'grid' ? 'bg-white shadow-sm text-accent' : 'text-text4 hover:text-text2'}`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => setView('list')}
-              className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white shadow-sm text-accent' : 'text-text4 hover:text-text2'}`}
-            >
-              <List className="w-4 h-4" />
-            </button>
+        {/* ── Top Header ── */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+          <div>
+            <h1 className="text-2xl font-bold text-text tracking-tight flex items-center gap-3">
+              <Users className="w-7 h-7 text-accent" />
+              Manajemen Klien
+            </h1>
+            <p className="text-sm text-text3 mt-1">Kelola ekosistem klien dan konfigurasi performa mereka.</p>
           </div>
-          <button
-            onClick={openNew}
-            className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/20 shrink-0"
-          >
-            <Plus className="w-4 h-4" /> Tambah Klien
-          </button>
-        </div>
-      </div>
-
-      {/* ── Quick Stats ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {[
-          { label: 'Total Klien', value: stats.total, icon: Users, color: 'text-accent', bg: 'bg-accent-light' },
-          { label: 'Industri Unik', value: stats.industries, icon: Globe, color: 'text-gd-text', bg: 'bg-gd-bg' },
-          { label: 'Total Channel', value: stats.channels, icon: TrendingUp, color: 'text-gg-text', bg: 'bg-gg-bg' },
-          { label: 'Avg Channel/Klien', value: stats.avgChannels, icon: ShieldCheck, color: 'text-or-text', bg: 'bg-or-bg' },
-        ].map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl p-5 border border-border-main shadow-sm flex items-center gap-4 group hover:border-accent/30 transition-all">
-            <div className={`w-12 h-12 rounded-xl ${s.bg} ${s.color} flex items-center justify-center shrink-0 shadow-sm`}>
-              <s.icon className="w-6 h-6" />
+          <div className="flex items-center gap-3">
+            <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
+              <button 
+                onClick={() => setView('grid')}
+                className={`p-2 rounded-lg transition-all ${view === 'grid' ? 'bg-white shadow-sm text-accent' : 'text-text4 hover:text-text2'}`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => setView('list')}
+                className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white shadow-sm text-accent' : 'text-text4 hover:text-text2'}`}
+              >
+                <List className="w-4 h-4" />
+              </button>
             </div>
-            <div>
-              <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">{s.label}</div>
-              <div className="text-2xl font-bold text-text tracking-tight">{s.value}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Filter & Search Bar ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-5 flex flex-col lg:flex-row lg:items-center gap-5">
-        <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Cari nama klien, industri, atau PIC..."
-            className="w-full pl-10 pr-4 h-11 bg-surface2 border border-border-main rounded-xl text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Filter className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <select
-              value={filterInd}
-              onChange={e => setFilterInd(e.target.value)}
-              className="pl-10 pr-8 h-11 bg-surface2 border border-border-main rounded-xl text-xs font-bold text-text2 focus:outline-none focus:border-accent transition-all appearance-none min-w-[180px]"
+            <button
+              onClick={openNew}
+              className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-lg shadow-accent/20 shrink-0"
             >
-              <option value="">Semua Industri</option>
-              {industries.map(ind => <option key={ind} value={ind}>{ind}</option>)}
-            </select>
-          </div>
-          <div className="text-xs font-bold text-text3 px-4 py-2 bg-surface2 rounded-xl border border-border-main whitespace-nowrap">
-            {filteredClients.length} Klien Terfilter
-          </div>
-        </div>
-      </div>
-
-      {/* ── Content Grid / List ── */}
-      {filteredClients.length === 0 ? (
-        <div className="py-24 text-center bg-white rounded-2xl border border-dashed border-border-alt shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-4">
-             <Search className="w-8 h-8 text-text4" />
-          </div>
-          <p className="text-sm font-bold text-text3">
-            {search || filterInd ? 'Tidak ada klien yang cocok dengan filter.' : 'Belum ada klien yang terdaftar.'}
-          </p>
-          {(search || filterInd) && (
-            <button onClick={() => { setSearch(''); setFilterInd(''); }} className="mt-4 text-xs font-bold text-accent hover:underline">
-              Reset Filter
+              <Plus className="w-4 h-4" /> Tambah Klien
             </button>
-          )}
+          </div>
         </div>
-      ) : view === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredClients.map(cl => {
-            const hasData = DATA.some(d => d.c === cl.key && d.p === curPeriod);
-            return (
-              <div key={cl.key} className="group bg-white rounded-2xl p-6 border border-border-main shadow-sm hover:shadow-lg hover:border-accent/20 transition-all flex flex-col relative overflow-hidden animate-fade-in">
-                
-                {/* Header Card */}
-                <div className="flex items-start justify-between gap-4 mb-5">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold group-hover:bg-accent group-hover:text-white transition-all duration-300 shrink-0">
-                      {cl.key.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-text truncate tracking-tight pr-2" title={cl.key}>{cl.key}</h3>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span className={`w-1.5 h-1.5 rounded-full ${hasData ? 'bg-gg' : 'bg-or'}`} />
-                        <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">{hasData ? 'Data OK' : 'No Data'}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                    <button onClick={() => openEdit(cl)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-gd-bg hover:text-gd-text transition-all"><Edit3 className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => handleDelete(cl.key)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
-                  </div>
-                </div>
 
-                {/* Metadata */}
-                <div className="space-y-3 mb-6 flex-1">
-                  <div className="flex items-center gap-3 text-xs text-text2">
-                    <div className="w-7 h-7 rounded-lg bg-surface2 flex items-center justify-center shrink-0"><Building2 className="w-3.5 h-3.5 text-text4" /></div>
-                    <span className="truncate font-bold">{cl.ind || '—'}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-text2">
-                    <div className="w-7 h-7 rounded-lg bg-surface2 flex items-center justify-center shrink-0"><User className="w-3.5 h-3.5 text-text4" /></div>
-                    <span className="truncate">PIC: <span className="font-bold text-text">{cl.pic || '—'}</span></span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-text2">
-                    <div className="w-7 h-7 rounded-lg bg-surface2 flex items-center justify-center shrink-0"><Tag className="w-3.5 h-3.5 text-text4" /></div>
-                    <span className="truncate">CG: <span className="font-bold text-text">{cl.cg || '—'}</span></span>
-                  </div>
-                </div>
-
-                {/* Channels Footer */}
-                <div className="pt-5 border-t border-border-main">
-                  <div className="text-[9px] font-bold text-text4 uppercase tracking-[0.15em] mb-3 flex items-center justify-between">
-                    <span>{cl.chs.length} Channels Tracked</span>
-                    <ArrowUpRight className="w-3 h-3 group-hover:text-accent transition-colors" />
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cl.chs.slice(0, 3).map(ch => (
-                      <span key={ch} className="text-[9px] font-bold px-2 py-1 rounded bg-surface2 text-text2 border border-border-main">{CH_DEF[ch]?.l || ch}</span>
-                    ))}
-                    {cl.chs.length > 3 && <span className="text-[9px] font-bold px-2 py-1 rounded bg-surface3 text-text3">+{cl.chs.length - 3}</span>}
-                  </div>
-                </div>
+        {/* ── Quick Stats ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { label: 'Total Klien', value: stats.total, icon: Users, color: 'text-accent', bg: 'bg-accent-light' },
+            { label: 'Industri Unik', value: stats.industries, icon: Globe, color: 'text-gd-text', bg: 'bg-gd-bg' },
+            { label: 'Total Channel', value: stats.channels, icon: TrendingUp, color: 'text-gg-text', bg: 'bg-gg-bg' },
+            { label: 'Avg Channel/Klien', value: stats.avgChannels, icon: ShieldCheck, color: 'text-or-text', bg: 'bg-or-bg' },
+          ].map((s, i) => (
+            <div key={i} className="bg-white rounded-2xl p-5 border border-border-main shadow-sm flex items-center gap-4 group hover:border-accent/30 transition-all">
+              <div className={`w-12 h-12 rounded-xl ${s.bg} ${s.color} flex items-center justify-center shrink-0 shadow-sm`}>
+                <s.icon className="w-6 h-6" />
               </div>
-            );
-          })}
+              <div>
+                <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">{s.label}</div>
+                <div className="text-2xl font-bold text-text tracking-tight">{s.value}</div>
+              </div>
+            </div>
+          ))}
         </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden animate-fade-in">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-surface2/50 border-b border-border-main">
-                <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">Klien</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">Industri</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">PIC & AS</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">Channels</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-main/50">
-              {filteredClients.map(cl => (
-                <tr key={cl.key} className="hover:bg-surface1 transition-colors group">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-xs font-bold shrink-0">{cl.key.slice(0, 2).toUpperCase()}</div>
-                      <div>
-                        <div className="text-sm font-bold text-text">{cl.key}</div>
-                        <div className="text-[10px] font-bold text-text4 uppercase tracking-wide">CG: {cl.cg || '—'}</div>
+
+        {/* ── Filter & Search Bar ── */}
+        <div className="bg-white rounded-2xl border border-border-main shadow-sm p-5 flex flex-col lg:flex-row lg:items-center gap-5">
+          <div className="flex-1 relative">
+            <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Cari nama klien, industri, atau PIC..."
+              className="w-full pl-10 pr-4 h-11 bg-surface2 border border-border-main rounded-xl text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Filter className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <select
+                value={filterInd}
+                onChange={e => setFilterInd(e.target.value)}
+                className="pl-10 pr-8 h-11 bg-surface2 border border-border-main rounded-xl text-xs font-bold text-text2 focus:outline-none focus:border-accent transition-all appearance-none min-w-[180px]"
+              >
+                <option value="">Semua Industri</option>
+                {industries.map(ind => <option key={ind} value={ind}>{ind}</option>)}
+              </select>
+            </div>
+            <div className="text-xs font-bold text-text3 px-4 py-2 bg-surface2 rounded-xl border border-border-main whitespace-nowrap">
+              {filteredClients.length} Klien Terfilter
+            </div>
+          </div>
+        </div>
+
+        {/* ── Content Grid / List ── */}
+        {filteredClients.length === 0 ? (
+          <div className="py-24 text-center bg-white rounded-2xl border border-dashed border-border-alt shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-4">
+               <Search className="w-8 h-8 text-text4" />
+            </div>
+            <p className="text-sm font-bold text-text3">
+              {search || filterInd ? 'Tidak ada klien yang cocok dengan filter.' : 'Belum ada klien yang terdaftar.'}
+            </p>
+            {(search || filterInd) && (
+              <button onClick={() => { setSearch(''); setFilterInd(''); }} className="mt-4 text-xs font-bold text-accent hover:underline">
+                Reset Filter
+              </button>
+            )}
+          </div>
+        ) : view === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredClients.map(cl => {
+              const hasData = DATA.some(d => d.c === cl.key && d.p === curPeriod);
+              return (
+                <div key={cl.key} className="group bg-white rounded-2xl p-6 border border-border-main shadow-sm hover:shadow-lg hover:border-accent/20 transition-all flex flex-col relative overflow-hidden animate-fade-in">
+                  
+                  {/* Header Card */}
+                  <div className="flex items-start justify-between gap-4 mb-5">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-bold group-hover:bg-accent group-hover:text-white transition-all duration-300 shrink-0">
+                        {cl.key.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-bold text-text truncate tracking-tight pr-2" title={cl.key}>{cl.key}</h3>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className={`w-1.5 h-1.5 rounded-full ${hasData ? 'bg-gg' : 'bg-or'}`} />
+                          <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">{hasData ? 'Data OK' : 'No Data'}</span>
+                        </div>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-text2">{cl.ind || '—'}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-xs font-bold text-text">PIC: {cl.pic || '—'}</div>
-                    <div className="text-[10px] font-bold text-text3">AS: {cl.as || '—'}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-1.5">
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                      <button onClick={() => openEdit(cl)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-gd-bg hover:text-gd-text transition-all"><Edit3 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => handleDelete(cl.key)} className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+
+                  {/* Metadata */}
+                  <div className="space-y-3 mb-6 flex-1">
+                    <div className="flex items-center gap-3 text-xs text-text2">
+                      <div className="w-7 h-7 rounded-lg bg-surface2 flex items-center justify-center shrink-0"><Building2 className="w-3.5 h-3.5 text-text4" /></div>
+                      <span className="truncate font-bold">{cl.ind || '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-text2">
+                      <div className="w-7 h-7 rounded-lg bg-surface2 flex items-center justify-center shrink-0"><User className="w-3.5 h-3.5 text-text4" /></div>
+                      <span className="truncate">PIC: <span className="font-bold text-text">{cl.pic || '—'}</span></span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-text2">
+                      <div className="w-7 h-7 rounded-lg bg-surface2 flex items-center justify-center shrink-0"><Tag className="w-3.5 h-3.5 text-text4" /></div>
+                      <span className="truncate">CG: <span className="font-bold text-text">{cl.cg || '—'}</span></span>
+                    </div>
+                  </div>
+
+                  {/* Channels Footer */}
+                  <div className="pt-5 border-t border-border-main">
+                    <div className="text-[9px] font-bold text-text4 uppercase tracking-[0.15em] mb-3 flex items-center justify-between">
+                      <span>{cl.chs.length} Channels Tracked</span>
+                      <ArrowUpRight className="w-3 h-3 group-hover:text-accent transition-colors" />
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
                       {cl.chs.slice(0, 3).map(ch => (
-                        <div key={ch} className="w-5 h-5 rounded bg-surface2 flex items-center justify-center" title={CH_DEF[ch]?.l || ch}>
-                          <span className="text-[8px] font-black uppercase text-text4">{ch.slice(0, 1)}</span>
-                        </div>
+                        <span key={ch} className="text-[9px] font-bold px-2 py-1 rounded bg-surface2 text-text2 border border-border-main">{CH_DEF[ch]?.l || ch}</span>
                       ))}
-                      {cl.chs.length > 3 && <div className="text-[9px] font-bold text-text4">+{cl.chs.length - 3}</div>}
+                      {cl.chs.length > 3 && <span className="text-[9px] font-bold px-2 py-1 rounded bg-surface3 text-text3">+{cl.chs.length - 3}</span>}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => openEdit(cl)} className="p-2 rounded-lg hover:bg-gd-bg text-text3 hover:text-gd-text transition-all"><Edit3 className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => handleDelete(cl.key)} className="p-2 rounded-lg hover:bg-rr-bg text-text3 hover:text-rr-text transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
-                    </div>
-                  </td>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden animate-fade-in">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-surface2/50 border-b border-border-main">
+                  <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">Klien</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">Industri</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">PIC & AS</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider">Channels</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-text4 uppercase tracking-wider text-right">Aksi</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody className="divide-y divide-border-main/50">
+                {filteredClients.map(cl => (
+                  <tr key={cl.key} className="hover:bg-surface1 transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-xs font-bold shrink-0">{cl.key.slice(0, 2).toUpperCase()}</div>
+                        <div>
+                          <div className="text-sm font-bold text-text">{cl.key}</div>
+                          <div className="text-[10px] font-bold text-text4 uppercase tracking-wide">CG: {cl.cg || '—'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-bold text-text2">{cl.ind || '—'}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-xs font-bold text-text">PIC: {cl.pic || '—'}</div>
+                      <div className="text-[10px] font-bold text-text3">AS: {cl.as || '—'}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-1.5">
+                        {cl.chs.slice(0, 3).map(ch => (
+                          <div key={ch} className="w-5 h-5 rounded bg-surface2 flex items-center justify-center" title={CH_DEF[ch]?.l || ch}>
+                            <span className="text-[8px] font-black uppercase text-text4">{ch.slice(0, 1)}</span>
+                          </div>
+                        ))}
+                        {cl.chs.length > 3 && <div className="text-[9px] font-bold text-text4">+{cl.chs.length - 3}</div>}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => openEdit(cl)} className="p-2 rounded-lg hover:bg-gd-bg text-text3 hover:text-gd-text transition-all"><Edit3 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleDelete(cl.key)} className="p-2 rounded-lg hover:bg-rr-bg text-text3 hover:text-rr-text transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* ── Modal ── */}
       {showModal && (
@@ -463,6 +465,6 @@ export default function ClientsAdminPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
