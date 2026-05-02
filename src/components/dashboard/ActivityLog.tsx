@@ -1,4 +1,5 @@
 import React from 'react';
+import { Clock, Tag, ExternalLink } from 'lucide-react';
 
 interface ActivityItem {
   d: string; // raw date
@@ -15,50 +16,76 @@ interface ActivityLogProps {
 
 export const ActivityLog: React.FC<ActivityLogProps> = ({ activities, compact = false }) => {
   const typeStyles = {
-    p: 'bg-gg-bg text-gg',
-    e: 'bg-tofu-bg text-tofu',
-    c: 'bg-mofu-bg text-mofu',
-    l: 'bg-rr-bg text-rr'
-  };
-
-  const typeLabels = {
-    p: 'Promo',
-    e: 'Event',
-    c: 'Konten',
-    l: 'Launching'
+    p: { bg: 'bg-gg-bg', text: 'text-gg', border: 'border-gg-border/30', label: 'Promo' },
+    e: { bg: 'bg-tofu-bg', text: 'text-tofu', border: 'border-tofu-border/30', label: 'Event' },
+    c: { bg: 'bg-mofu-bg', text: 'text-mofu', border: 'border-mofu-border/30', label: 'Konten' },
+    l: { bg: 'bg-rr-bg', text: 'text-rr', border: 'border-rr-border/30', label: 'Launch' }
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="bg-surface2/50 border-b border-border-main">
-            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Tanggal</th>
-            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Kategori</th>
-            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Keterangan</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border-main/20">
-          {activities.map((a, i) => (
-            <tr key={i} className="hover:bg-surface2/50 transition-colors group">
-              <td className="py-4 px-6 text-sm text-text2 font-medium whitespace-nowrap tracking-tight">{a.dLabel || a.d}</td>
-              <td className="py-4 px-6">
-                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${typeStyles[a.t]} border border-current/10 shadow-sm`}>
-                  {typeLabels[a.t]}
-                </span>
-              </td>
-              <td className="py-4 px-6 text-sm text-text font-medium leading-relaxed">{a.n}</td>
-            </tr>
-          ))}
-          {activities.length === 0 && (
-            <tr>
-              <td colSpan={3} className="py-12 text-center text-sm text-text3 font-medium">
-                Belum ada aktivitas yang dicatat
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+    <div className="w-full flex flex-col divide-y divide-border-main/30">
+      {activities.length > 0 ? (
+        activities.map((a, i) => {
+          const style = typeStyles[a.t] || typeStyles.c;
+          return (
+            <div 
+              key={i} 
+              className="group flex items-start gap-5 p-6 hover:bg-surface2/40 transition-all duration-300 relative overflow-hidden"
+            >
+              {/* Timeline Marker */}
+              <div className="absolute left-[3.25rem] top-16 bottom-0 w-px bg-border-main/40 group-last:hidden" />
+              
+              {/* Client Avatar / Initial */}
+              <div className="w-11 h-11 rounded-2xl bg-white border border-border-main shadow-sm flex items-center justify-center shrink-0 group-hover:border-accent/40 group-hover:shadow-md transition-all duration-300 relative z-10">
+                 <span className="text-[11px] font-black text-text2 uppercase tracking-tighter group-hover:text-accent transition-colors">
+                    {a.c.slice(0, 2)}
+                 </span>
+                 <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white bg-gg shadow-sm" />
+              </div>
+
+              {/* Content Container */}
+              <div className="flex-1 min-w-0 space-y-2.5">
+                <div className="flex items-center justify-between gap-3">
+                   <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-wider ${style.bg} ${style.text} ${style.border}`}>
+                         {style.label}
+                      </span>
+                      <span className="text-[10px] font-bold text-text4 uppercase tracking-widest flex items-center gap-1.5">
+                         <Clock className="w-3 h-3" />
+                         {a.dLabel || a.d}
+                      </span>
+                   </div>
+                   <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-white rounded-lg border border-transparent hover:border-border-main text-text4 hover:text-accent">
+                      <ExternalLink className="w-3.5 h-3.5" />
+                   </button>
+                </div>
+
+                <div className="relative">
+                   <p className="text-sm font-medium text-text leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all duration-500">
+                      {a.n}
+                   </p>
+                </div>
+
+                <div className="flex items-center gap-4 text-[10px] font-bold text-text4/60 uppercase tracking-widest">
+                   <span className="flex items-center gap-1.5">
+                      <Tag className="w-3 h-3" />
+                      Portfolio Activity
+                   </span>
+                   <span className="w-1 h-1 rounded-full bg-border-main" />
+                   <span className="text-accent/60">Verified Admin</span>
+                </div>
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <div className="py-20 flex flex-col items-center justify-center text-center opacity-40">
+           <div className="w-16 h-16 rounded-3xl bg-surface2 flex items-center justify-center mb-4 border border-dashed border-border-main">
+              <Clock className="w-8 h-8 text-text4" />
+           </div>
+           <p className="text-xs font-bold uppercase tracking-widest">No activity recorded</p>
+        </div>
+      )}
     </div>
   );
 };

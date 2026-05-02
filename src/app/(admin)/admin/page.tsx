@@ -123,55 +123,92 @@ export default function AdminHubPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
         
         {/* Main AI Monitor (Bento Large) */}
-        <div className="lg:col-span-8 bg-white rounded-[2rem] border border-border-main shadow-sm overflow-hidden flex flex-col group hover:shadow-xl hover:border-accent/20 transition-all duration-500">
+        <div className="lg:col-span-8 bg-white rounded-[2rem] border border-border-main shadow-sm overflow-hidden flex flex-col group hover:shadow-xl hover:border-accent/10 transition-all duration-500">
           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/30">
              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20">
-                   <Zap className="w-6 h-6 fill-current" />
+                <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20 relative overflow-hidden group-hover:rotate-3 transition-transform">
+                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                   <Zap className="w-6 h-6 fill-current relative z-10" />
                 </div>
                 <div>
                    <h2 className="text-sm font-bold text-text">AI Intelligence Engine</h2>
-                   <p className="text-[10px] font-bold text-gg uppercase tracking-wider mt-0.5">Gemini 1.5 Flash • Operational</p>
+                   <div className="flex items-center gap-2 mt-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse" />
+                      <p className="text-[10px] font-bold text-gg uppercase tracking-wider">Nemotron-3 • OpenRouter Active</p>
+                   </div>
                 </div>
              </div>
-             <Link href="/admin/settings" className="w-10 h-10 rounded-xl hover:bg-white flex items-center justify-center text-text3 border border-transparent hover:border-border-main transition-all">
-                <ArrowUpRight className="w-5 h-5" />
+             <Link href="/admin/settings" className="w-10 h-10 rounded-xl hover:bg-white flex items-center justify-center text-text3 border border-transparent hover:border-border-main transition-all group/btn">
+                <ArrowUpRight className="w-5 h-5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
              </Link>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-main/50 flex-1">
-             <div className="p-10 flex flex-col justify-center">
-                <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-4">Requests Engine</div>
-                <div className="text-3xl font-bold text-text tracking-tight mb-2">{stats.aiStats.totalRequests.toLocaleString()}</div>
-                <div className="text-xs text-text3">Calls processed</div>
-                <div className="mt-8 flex items-center gap-2">
-                   <div className="flex -space-x-2">
-                      {[1,2,3].map(i => <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-surface3" />)}
+             {/* Column 1: Requests */}
+             <div className="p-10 flex flex-col justify-between group/col">
+                <div>
+                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-4">Requests Engine</div>
+                   <div className="text-3xl font-bold text-text tracking-tight mb-2 group-hover/col:text-accent transition-colors">
+                      {stats.aiStats.totalRequests.toLocaleString()}
                    </div>
-                   <span className="text-[10px] font-bold text-accent">+{(Math.random()*10).toFixed(0)} New today</span>
+                   <div className="text-xs font-medium text-text3">Analisis diproses periode ini</div>
+                </div>
+                
+                <div className="mt-8 flex items-center gap-3">
+                   <div className="flex -space-x-2">
+                      {[1,2,3].map(i => (
+                        <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-surface3 flex items-center justify-center">
+                           <div className="w-1 h-1 rounded-full bg-text4/30" />
+                        </div>
+                      ))}
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-accent">+{(Math.random()*10).toFixed(0)} New today</span>
+                      <span className="text-[9px] font-medium text-text4 uppercase tracking-tight">Real-time update</span>
+                   </div>
                 </div>
              </div>
-             <div className="p-10 flex flex-col justify-center bg-surface2/10">
-                <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-4">Data Throughput</div>
-                <div className="text-3xl font-bold text-text tracking-tight mb-2">{(stats.aiStats.totalTokens/1000).toFixed(1)}K</div>
-                <div className="text-xs text-text3">Tokens consumed</div>
-                <div className="mt-8">
-                   <div className="w-full h-2 bg-surface2 rounded-full overflow-hidden">
-                      <div className="h-full bg-accent w-3/4 shadow-[0_0_12px_rgba(var(--accent-rgb),0.4)]" />
+
+             {/* Column 2: Data Usage */}
+             <div className="p-10 flex flex-col justify-between bg-surface2/10">
+                <div>
+                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-4">Data Throughput</div>
+                   <div className="text-3xl font-bold text-text tracking-tight mb-2">
+                      {(stats.aiStats.totalTokens/1000).toFixed(1)}K
                    </div>
-                   <div className="flex justify-between mt-2">
-                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">EFFICIENCY</span>
+                   <div className="text-xs font-medium text-text3">Tokens digunakan oleh model</div>
+                </div>
+                
+                <div className="mt-8 space-y-3">
+                   <div className="w-full h-1.5 bg-surface2 rounded-full overflow-hidden p-[1px]">
+                      <div className="h-full bg-accent rounded-full w-3/4 shadow-[0_0_8px_rgba(var(--accent-rgb),0.4)]" />
+                   </div>
+                   <div className="flex justify-between items-center px-0.5">
+                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">Operational Efficiency</span>
                       <span className="text-[10px] font-bold text-text">82%</span>
                    </div>
                 </div>
              </div>
-             <div className="p-10 flex flex-col justify-center">
-                <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-4">Burn Estimation</div>
-                <div className="text-3xl font-bold text-text tracking-tight mb-2">${stats.aiStats.totalCost.toFixed(4)}</div>
-                <div className="text-xs text-text3">USD Accumulated</div>
-                <div className="mt-8 p-4 rounded-2xl bg-surface2 border border-border-main/50">
-                   <div className="text-[10px] font-bold text-text3 uppercase tracking-wider mb-1">Monthly Forecast</div>
-                   <div className="text-sm font-bold text-text tracking-tight">${(stats.aiStats.totalCost * 30).toFixed(2)}</div>
+
+             {/* Column 3: Costs */}
+             <div className="p-10 flex flex-col justify-between">
+                <div>
+                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-4">Burn Estimation</div>
+                   <div className="text-3xl font-bold text-text tracking-tight mb-2">
+                      ${stats.aiStats.totalCost.toFixed(4)}
+                   </div>
+                   <div className="text-xs font-medium text-text3">Estimasi biaya akumulasi</div>
+                </div>
+                
+                <div className="mt-8 p-5 rounded-2xl bg-surface2/50 border border-border-main/50 group/card">
+                   <div className="text-[10px] font-bold text-text3 uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-accent/40" />
+                      Monthly Forecast
+                   </div>
+                   <div className="text-lg font-bold text-text tracking-tight">
+                      ${(stats.aiStats.totalCost * 30).toFixed(2)}
+                      <span className="text-[10px] font-medium text-text4 ml-1">/ mo</span>
+                   </div>
                 </div>
              </div>
           </div>
