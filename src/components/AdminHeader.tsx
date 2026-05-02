@@ -20,7 +20,7 @@ export default function AdminHeader() {
 
   return (
     <header 
-      className="h-[60px] sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 border-b"
+      className="h-[64px] sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 border-b"
       style={{ 
         background: 'rgba(255,255,255,0.95)',
         backdropFilter: 'blur(12px)',

@@ -27,14 +27,14 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
   return (
     <aside className="w-[248px] h-screen sticky top-0 bg-surface border-r border-border-main flex flex-col shrink-0 z-40" style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
       {/* ── Logo Section ── */}
-      <div className="h-[60px] px-6 flex items-center border-b border-border-main bg-surface">
-        <Link href="/admin" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
-            <Hexagon className="w-4.5 h-4.5 text-white fill-white" />
+      <div className="h-[64px] px-5 flex items-center border-b border-border-main shrink-0 bg-surface">
+        <Link href="/admin" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm group-hover:scale-105 transition-all shrink-0">
+            <Hexagon className="w-5 h-5 text-white fill-white" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-text tracking-tight uppercase leading-none">Real Advertise</span>
-            <span className="text-[9px] font-black text-accent tracking-[0.12em] mt-1">COMMAND CENTER</span>
+          <div className="min-w-0">
+            <div className="text-sm font-bold text-text leading-tight uppercase">Real Advertise</div>
+            <div className="text-[10px] font-semibold text-text3 uppercase tracking-widest">Command Center</div>
           </div>
         </Link>
       </div>
