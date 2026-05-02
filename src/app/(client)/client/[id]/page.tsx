@@ -232,48 +232,48 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         }}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Trend Chart Area */}
-        <div className="bg-white rounded-[24px] p-8 shadow-main lg:col-span-2">
-          <TrendChart clientKey={id} />
+      {/* Automatic Calculation Metrics Bar (As per screenshot) */}
+      <div className="bg-white rounded-2xl border border-gg/20 p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-6 text-gg font-black text-[10px] uppercase tracking-widest">
+           <div className="w-4 h-4 rounded border border-gg flex items-center justify-center">
+             <div className="w-2 h-px bg-gg" />
+             <div className="w-px h-2 bg-gg absolute" />
+           </div>
+           Metrik Kalkulasi Otomatis dari 4 Input
         </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">ROAS</div>
+            <div className="text-xl font-black text-text">{bRoas ? bRoas.toFixed(2) + 'x' : '—'}</div>
+            <div className="text-[9px] text-text4 mt-1 font-medium">rev ÷ spend</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">CIR</div>
+            <div className="text-xl font-black text-text">{blCir ? blCir.toFixed(1) + '%' : '—'}</div>
+            <div className="text-[9px] text-text4 mt-1 font-medium">spend ÷ rev</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">CPO</div>
+            <div className="text-xl font-black text-text">{blCpo ? fRp(blCpo).replace('Rp ', 'Rp  ') : '—'}</div>
+            <div className="text-[9px] text-text4 mt-1 font-medium">spend ÷ orders</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">CR</div>
+            <div className="text-xl font-black text-text">{blCr ? blCr.toFixed(2) + '%' : '—'}</div>
+            <div className="text-[9px] text-text4 mt-1 font-medium">orders ÷ visitors</div>
+          </div>
+          <div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">AOV</div>
+            <div className="text-xl font-black text-text">{blAov ? fRp(blAov).replace('Rp ', 'Rp  ') : '—'}</div>
+            <div className="text-[9px] text-text4 mt-1 font-medium">rev ÷ orders</div>
+          </div>
+        </div>
+      </div>
 
-        {/* Calculated Metrics */}
-        <div className="bg-white rounded-[24px] p-8 shadow-main flex flex-col">
-          <div className="flex items-center gap-2 mb-6">
-            <Activity className="w-5 h-5 text-text" />
-            <h3 className="font-bold text-text">Performance Metrics</h3>
-          </div>
-          <div className="flex-1 flex flex-col justify-between gap-4">
-            <div className="flex justify-between items-end border-b border-border-main pb-4">
-              <div>
-                <div className="text-xs text-text3 font-medium mb-1">CIR</div>
-                <div className="text-xl font-bold text-text">{blCir ? blCir.toFixed(1) + '%' : '—'}</div>
-              </div>
-              <div className="text-xs text-text3">spend ÷ rev</div>
-            </div>
-            <div className="flex justify-between items-end border-b border-border-main pb-4">
-              <div>
-                <div className="text-xs text-text3 font-medium mb-1">CPO</div>
-                <div className="text-xl font-bold text-text">{blCpo ? fRp(blCpo) : '—'}</div>
-              </div>
-              <div className="text-xs text-text3">spend ÷ orders</div>
-            </div>
-            <div className="flex justify-between items-end border-b border-border-main pb-4">
-              <div>
-                <div className="text-xs text-text3 font-medium mb-1">CR</div>
-                <div className="text-xl font-bold text-text">{blCr ? blCr.toFixed(2) + '%' : '—'}</div>
-              </div>
-              <div className="text-xs text-text3">orders ÷ visitors</div>
-            </div>
-            <div className="flex justify-between items-end pb-2">
-              <div>
-                <div className="text-xs text-text3 font-medium mb-1">AOV</div>
-                <div className="text-xl font-bold text-text">{blAov ? fRp(blAov) : '—'}</div>
-              </div>
-              <div className="text-xs text-text3">rev ÷ orders</div>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 gap-6">
+        {/* Trend Chart Area */}
+        <div className="bg-white rounded-[24px] p-8 shadow-main">
+          <TrendChart clientKey={id} />
         </div>
       </div>
 
