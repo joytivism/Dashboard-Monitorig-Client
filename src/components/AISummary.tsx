@@ -102,8 +102,8 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
               <Sparkles className="w-6 h-6 fill-white/20 relative z-10" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-text tracking-tight">AI Strategy Insights</h3>
-              <p className="text-[10px] font-black text-text4 uppercase tracking-[0.15em]">Powered by Advanced Analytics</p>
+              <h3 className="text-sm font-bold text-text tracking-tight">AI Strategy Insights</h3>
+              <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Powered by Advanced Analytics</p>
             </div>
           </div>
 
@@ -160,10 +160,10 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
                     <Zap className="w-4 h-4 text-accent group-hover:text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-black text-text4 uppercase tracking-widest mb-1.5 opacity-80">
+                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-1.5 opacity-80">
                       Action Recommendation
                     </div>
-                    <p className="text-sm text-text font-bold leading-snug">
+                    <p className="text-sm text-text font-medium leading-snug">
                       {action}
                     </p>
                   </div>
@@ -180,7 +180,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
                 <Zap className="w-3 h-3 fill-current" />
               </div>
             </div>
-            <h4 className="text-lg font-bold text-text mb-2">Buka Wawasan Strategis</h4>
+            <h4 className="text-sm font-bold text-text mb-2">Buka Wawasan Strategis</h4>
             <p className="text-sm text-text3 max-w-[320px] mb-10 font-medium leading-relaxed">
               Analisis cerdas berdasarkan performa periode ini. Dapatkan ringkasan otomatis dan rekomendasi tindakan.
             </p>

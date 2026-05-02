@@ -25,12 +25,12 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-               <h2 className="text-base font-bold text-rr-text">Attention Needed</h2>
-               <p className="text-xs text-rr-text/60 font-semibold">High Risk Portfolio</p>
+               <h2 className="text-sm font-bold text-rr-text">Attention Needed</h2>
+               <p className="text-xs text-rr-text/60 font-medium tracking-tight">High Risk Portfolio</p>
             </div>
           </div>
           {risks.length > 0 && (
-            <span className="text-xs font-black px-3 py-1 bg-rr/10 text-rr-text rounded-xl border border-rr-border/40">
+            <span className="text-[10px] font-bold px-3 py-1 bg-rr/10 text-rr-text rounded-xl border border-rr-border/40 uppercase tracking-wider">
               {risks.length} KLIEN
             </span>
           )}
@@ -45,17 +45,17 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                 className="w-full flex items-center justify-between bg-white/70 rounded-2xl px-5 py-4 hover:bg-white hover:shadow-md transition-all group border border-transparent hover:border-rr-border/30"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-rr/10 flex items-center justify-center text-rr text-xs font-black">
+                  <div className="w-9 h-9 rounded-xl bg-rr/10 flex items-center justify-center text-rr text-[10px] font-bold">
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-bold text-rr-text leading-none mb-1.5">{cl.key}</div>
-                    <div className="text-xs text-rr-text/60 font-bold">{fRp(cl.rev)}</div>
+                    <div className="text-xs text-rr-text/60 font-medium">{fRp(cl.rev)}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   {cl.growth !== undefined && cl.growth !== null && (
-                    <span className="text-xs font-black text-rr flex items-center gap-0.5">
+                    <span className="text-xs font-bold text-rr flex items-center gap-0.5">
                       {cl.growth >= 0 ? '↑' : '↓'}{Math.abs(cl.growth).toFixed(1)}%
                     </span>
                   )}
@@ -65,7 +65,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
             ))
           ) : (
             <div className="py-12 text-center bg-white/40 rounded-2xl border border-dashed border-rr-border/40">
-               <p className="text-xs font-bold text-rr-text/40 uppercase tracking-widest">No critical alerts</p>
+               <p className="text-[10px] font-bold text-rr-text/40 uppercase tracking-wider">No critical alerts</p>
             </div>
           )}
         </div>
@@ -79,12 +79,12 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                <TrendingUp className="w-5 h-5" />
             </div>
             <div>
-               <h2 className="text-base font-bold text-gg-text">Top Growth Clients</h2>
-               <p className="text-xs text-gg-text/60 font-semibold">Opportunity Wins</p>
+               <h2 className="text-sm font-bold text-gg-text">Top Growth Clients</h2>
+               <p className="text-xs text-gg-text/60 font-medium tracking-tight">Opportunity Wins</p>
             </div>
           </div>
           {opportunities.length > 0 && (
-            <span className="text-xs font-black px-3 py-1 bg-gg/10 text-gg-text rounded-xl border border-gg-border/40">
+            <span className="text-[10px] font-bold px-3 py-1 bg-gg/10 text-gg-text rounded-xl border border-gg-border/40 uppercase tracking-wider">
               TOP {opportunities.length}
             </span>
           )}
@@ -99,16 +99,16 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                 className="w-full flex items-center justify-between bg-white/70 rounded-2xl px-5 py-4 hover:bg-white hover:shadow-md transition-all group border border-transparent hover:border-gg-border/30"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gg/10 flex items-center justify-center text-gg text-xs font-black">
+                  <div className="w-9 h-9 rounded-xl bg-gg/10 flex items-center justify-center text-gg text-[10px] font-bold">
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-bold text-gg-text leading-none mb-1.5">{cl.key}</div>
-                    <div className="text-xs text-gg-text/60 font-bold">{fRp(cl.rev)}</div>
+                    <div className="text-xs text-gg-text/60 font-medium">{fRp(cl.rev)}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-black text-gg flex items-center gap-0.5">
+                  <span className="text-xs font-bold text-gg flex items-center gap-0.5">
                     ↑{cl.growth?.toFixed(1)}%
                   </span>
                   <ChevronRight className="w-4 h-4 text-gg-text/20 group-hover:text-gg transition-colors" />
@@ -117,7 +117,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
             ))
           ) : (
             <div className="py-12 text-center bg-white/40 rounded-2xl border border-dashed border-gg-border/40">
-               <p className="text-xs font-bold text-gg-text/40 uppercase tracking-widest">Seeking opportunities</p>
+               <p className="text-[10px] font-bold text-gg-text/40 uppercase tracking-wider">Seeking opportunities</p>
             </div>
           )}
         </div>

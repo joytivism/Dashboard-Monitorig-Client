@@ -55,7 +55,6 @@ export default function AdminHubPage() {
     const pGrowth = getPct(totalRev, prevRev);
     
     const updatedClients = CLIENTS.filter(cl => DATA.some(d => d.c === cl.key && d.p === curPeriod));
-    const pendingClients = CLIENTS.filter(cl => !updatedClients.find(u => u.key === cl.key));
     const ingestionProgress = (updatedClients.length / CLIENTS.length) * 100;
 
     const { AI_LOGS } = useDashboardData();
@@ -70,269 +69,200 @@ export default function AdminHubPage() {
       attnCount: attn.length, 
       total: CLIENTS.length,
       updatedCount: updatedClients.length,
-      pending: pendingClients,
       progress: ingestionProgress,
       aiStats
     };
   }, [CLIENTS, DATA, PERIODS, curPeriod, useDashboardData()]);
 
-  const MENU = [
-    {
-      href: '/admin/data',
-      icon: Database,
-      title: 'Input Data Performa',
-      desc: 'Update data bulanan per klien. Kelola spend, revenue, dan metrik iklan lainnya.',
-      badge: 'Input',
-      iconColor: '#1D4ED8',
-      accentGradient: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
-      cta: 'Buka Form Input',
-    },
-    {
-      href: '/admin/activity',
-      icon: Activity,
-      title: 'Activity Log',
-      desc: 'Catat promo, event, launching, dan konten harian per klien secara real-time.',
-      badge: 'Real-time',
-      iconColor: '#EA580C',
-      accentGradient: 'linear-gradient(135deg, #FFF4EE 0%, #FFEDD5 100%)',
-      cta: 'Kelola Activity',
-    },
-    {
-      href: '/admin/clients',
-      icon: Users,
-      title: 'Manajemen Klien',
-      desc: 'Atur portofolio klien, konfigurasi channel, PIC, dan Account Strategist.',
-      badge: 'Admin',
-      iconColor: '#374151',
-      accentGradient: 'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',
-      cta: 'Kelola Klien',
-    },
-    {
-      href: '/admin/settings',
-      icon: Settings2,
-      title: 'Pengaturan Sistem',
-      desc: 'Konfigurasi integrasi AI, API Key OpenRouter, dan prompt analisis strategi.',
-      badge: 'Sistem',
-      iconColor: 'var(--accent)',
-      accentGradient: 'linear-gradient(135deg, var(--accent-light) 0%, var(--accent-mid) 100%)',
-      cta: 'Buka Pengaturan',
-    },
+  const QUICK_ACTIONS = [
+    { href: '/admin/data', icon: Database, title: 'Data Input', badge: 'Active', color: 'text-accent', bg: 'bg-accent/10' },
+    { href: '/admin/activity', icon: Activity, title: 'Live Log', badge: 'Real-time', color: 'text-or', bg: 'bg-or/10' },
+    { href: '/admin/clients', icon: Users, title: 'Klien', badge: `${stats.total}`, color: 'text-text2', bg: 'bg-surface3' },
+    { href: '/admin/settings', icon: Settings2, title: 'System', badge: 'AI Ready', color: 'text-gg', bg: 'bg-gg/10' },
   ];
 
   return (
-    <div className="w-full space-y-12 animate-fade-in pb-12 max-w-7xl mx-auto">
-
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-        <div className="flex items-start gap-4">
-           <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/25 shrink-0 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-              <LayoutDashboard className="w-6 h-6 relative z-10" />
-           </div>
-           <div>
-              <h1 className="text-2xl font-bold text-text tracking-tight">Admin Hub</h1>
-              <p className="text-sm font-medium text-text3 mt-1">Pusat kendali operasional dan manajemen ekosistem dashboard.</p>
-           </div>
-        </div>
+    <div className="w-full space-y-8 animate-fade-in pb-20 max-w-7xl mx-auto">
+      
+      {/* ── COMMAND HEADER ── */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-8 rounded-[2rem] border border-border-main shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none transition-transform group-hover:scale-125" />
         
-        <div className="flex items-center gap-2 bg-white border border-border-main/80 rounded-2xl px-5 py-3 shadow-sm hover:border-accent/30 transition-all group shrink-0">
-          <CalendarClock className="w-4 h-4 text-text4 group-hover:text-accent transition-colors" />
-          <span className="label-premium">Periode Aktif</span>
-          <div className="h-4 w-px bg-border-main/60 mx-2" />
-          <span className="text-sm font-bold text-text">{curPeriod}</span>
-          <span className="ml-2 text-[9px] font-black uppercase tracking-widest bg-gg-bg text-gg px-2.5 py-1 rounded-full border border-gg-border/30 animate-pulse">LIVE</span>
-        </div>
-      </div>
-
-      {/* Global Performance Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard title="Total Portfolio" value={stats.total} icon={Globe} growth={null} subtext="Klien Aktif" />
-        <MetricCard title="Blended ROAS" value={`${stats.totalRoas.toFixed(2)}x`} icon={TrendingUp} variant="accent" growth={null} subtext="Rata-rata Global" />
-        <MetricCard 
-          title="Tindakan Segera" 
-          value={stats.attnCount} 
-          icon={AlertCircle} 
-          variant={stats.attnCount > 0 ? 'rr' : 'default'}
-          growth={null} 
-          subtext="Klien Kritis" 
-        />
-        <MetricCard 
-          title="Portfolio Growth" 
-          value={stats.pGrowth !== null ? `${stats.pGrowth >= 0 ? '+' : ''}${stats.pGrowth.toFixed(1)}%` : '0%'} 
-          icon={stats.pGrowth && stats.pGrowth >= 0 ? TrendingUp : TrendingDown} 
-          variant={stats.pGrowth && stats.pGrowth >= 0 ? 'gg' : stats.pGrowth && stats.pGrowth < 0 ? 'rr' : 'default'}
-          growth={null} 
-          subtext="Kenaikan Revenue Total" 
-        />
-      </div>
-
-      {/* AI Intelligence Monitor */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden animate-fade-in group/ai relative">
-        <div className="px-8 py-5 border-b border-border-main flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface2/30">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
-                <Zap className="w-5 h-5 fill-current" />
-              </div>
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-gg rounded-full border-2 border-white animate-pulse"></span>
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-text">AI Intelligence Monitor</h2>
-              <p className="text-[10px] font-black text-gg uppercase tracking-[0.15em] mt-0.5">System Operational</p>
-            </div>
+        <div className="relative z-10 flex items-center gap-6">
+          <div className="w-16 h-16 rounded-2xl bg-text flex items-center justify-center text-white shadow-2xl rotate-3 group-hover:rotate-0 transition-transform duration-500">
+            <LayoutDashboard className="w-8 h-8" />
           </div>
-          <div className="flex items-center gap-6">
-            <div className="hidden lg:block text-right">
-              <div className="text-[10px] font-black text-text4 uppercase tracking-[0.1em]">OpenRouter API</div>
-              <div className="text-xs font-bold text-text3 mt-0.5">Gemini 1.5 Flash</div>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <h1 className="text-2xl font-bold text-text tracking-tight">Command Center</h1>
+              <span className="px-2.5 py-0.5 rounded-full bg-gg-bg text-gg-text text-[10px] font-bold uppercase tracking-wider border border-gg-border/30">Active Hub</span>
             </div>
-            <Link href="/admin/settings" className="px-5 py-2.5 bg-white border border-border-main rounded-xl text-[11px] font-black uppercase tracking-widest text-text hover:bg-accent hover:text-white hover:border-accent transition-all flex items-center gap-2">
-              Config <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <p className="text-sm font-medium text-text3 max-w-md">Sistem pemantauan pusat untuk manajemen portofolio dan operasional AI Real Advertise.</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-main/50">
-          {/* Requests Stat */}
-          <div className="p-8 hover:bg-surface2/30 transition-colors group/stat">
-            <div className="flex items-center justify-between mb-5">
-              <div className="label-premium text-text3">AI Requests</div>
-              <Activity className="w-4 h-4 text-text4 group-hover/stat:text-accent transition-all group-hover/stat:scale-110" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <div className="text-3xl font-bold text-text tracking-tighter">{stats.aiStats.totalRequests.toLocaleString()}</div>
-              <div className="text-xs font-bold text-text4 uppercase tracking-wider">Calls</div>
-            </div>
-            <div className="mt-5 flex items-center gap-2">
-               <span className="text-[10px] font-black px-2.5 py-1 rounded-lg bg-gg-bg text-gg border border-gg-border/20">
-                 +{stats.aiStats.totalRequests > 0 ? (Math.random() * 5 + 1).toFixed(0) : 0} Today
-               </span>
-               <span className="text-[10px] font-bold text-text4 uppercase tracking-widest opacity-60">Daily average</span>
-            </div>
-          </div>
-
-          {/* Tokens Stat */}
-          <div className="p-8 hover:bg-surface2/30 transition-colors group/stat">
-            <div className="flex items-center justify-between mb-5">
-              <div className="label-premium text-text3">Tokens Consumed</div>
-              <Terminal className="w-4 h-4 text-text4 group-hover/stat:text-text2 transition-all group-hover/stat:scale-110" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <div className="text-3xl font-bold text-text tracking-tighter">{(stats.aiStats.totalTokens / 1000).toFixed(1)}K</div>
-              <div className="text-xs font-bold text-text4 uppercase tracking-wider">Units</div>
-            </div>
-            <div className="mt-5 flex items-center gap-2">
-               <div className="flex-1 h-1.5 bg-surface2 rounded-full overflow-hidden">
-                  <div className="h-full bg-accent w-2/3 shadow-[0_0_8px_rgba(var(--accent-rgb),0.3)]"></div>
-               </div>
-               <span className="text-[10px] font-black text-text3 uppercase tracking-widest">Eff. 68%</span>
-            </div>
-          </div>
-
-          {/* Cost Stat */}
-          <div className="p-8 hover:bg-surface2/30 transition-colors group/stat">
-            <div className="flex items-center justify-between mb-5">
-              <div className="label-premium text-text3">Estimated Cost</div>
-              <DollarSign className="w-4 h-4 text-text4 group-hover/stat:text-gg transition-all group-hover/stat:scale-110" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <div className="text-3xl font-bold text-text tracking-tighter">${stats.aiStats.totalCost.toFixed(4)}</div>
-              <div className="text-xs font-bold text-text4 uppercase tracking-wider">USD</div>
-            </div>
-            <div className="mt-5 flex items-center justify-between">
-               <div className="text-[10px] font-black text-text3 uppercase tracking-widest opacity-80">Burn Rate</div>
-               <div className="text-[10px] font-bold text-text4 tracking-widest italic opacity-60">Est. ${(stats.aiStats.totalCost * 30).toFixed(2)}/mo</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Operational Modules */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {MENU.map(item => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="group bg-white rounded-2xl p-8 border border-border-main/60 shadow-sm hover:shadow-lg hover:border-accent/20 transition-all duration-300 flex flex-col gap-6"
-          >
-            <div className="flex items-start justify-between">
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 relative overflow-hidden"
-                style={{ background: item.accentGradient }}
-              >
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <item.icon className="w-6 h-6 relative z-10" style={{ color: item.iconColor }} />
-              </div>
-              <span className="label-premium bg-surface2 px-3 py-1 rounded-xl border border-border-main/40">{item.badge}</span>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-base font-bold text-text group-hover:text-accent transition-colors tracking-tight">{item.title}</h2>
-              <p className="text-sm text-text3 leading-relaxed font-medium line-clamp-2">{item.desc}</p>
-            </div>
-            <div className="mt-auto flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-accent">
-              {item.cta}
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-        ))}
-      </div>
-
-      {/* Client Status & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-border-main/60 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-          <div className="px-8 py-6 border-b border-border-main flex items-center justify-between bg-surface2/10">
-             <div className="flex items-center gap-3">
-                <PieChart className="w-5 h-5 text-text3" />
-                <h2 className="text-base font-bold text-text tracking-tight">Status Portfolio Klien</h2>
+        <div className="flex flex-wrap items-center gap-4 relative z-10">
+          <div className="px-5 py-3 bg-surface2/50 rounded-2xl border border-border-main flex items-center gap-4">
+             <div>
+                <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">Portfolio Status</div>
+                <div className="text-sm font-bold text-text mt-0.5 flex items-center gap-2">
+                   <span className="w-2 h-2 rounded-full bg-gg animate-pulse" />
+                   Optimized
+                </div>
              </div>
-             <Link href="/admin/clients" className="w-9 h-9 rounded-xl hover:bg-surface2 flex items-center justify-center text-text3 transition-colors border border-transparent hover:border-border-main">
-                <ArrowRight className="w-4 h-4" />
+             <div className="w-px h-8 bg-border-main/50" />
+             <div className="text-right">
+                <div className="text-[10px] font-bold text-text4 uppercase tracking-wider">Active Period</div>
+                <div className="text-sm font-bold text-text mt-0.5">{curPeriod}</div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── BENTO GRID LAYOUT ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+        
+        {/* Main AI Monitor (Bento Large) */}
+        <div className="lg:col-span-8 bg-white rounded-[2rem] border border-border-main shadow-sm overflow-hidden flex flex-col group hover:shadow-xl hover:border-accent/20 transition-all duration-500">
+          <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/30">
+             <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20">
+                   <Zap className="w-6 h-6 fill-current" />
+                </div>
+                <div>
+                   <h2 className="text-sm font-bold text-text">AI Intelligence Engine</h2>
+                   <p className="text-[10px] font-bold text-gg uppercase tracking-wider mt-0.5">Gemini 1.5 Flash • Operational</p>
+                </div>
+             </div>
+             <Link href="/admin/settings" className="w-10 h-10 rounded-xl hover:bg-white flex items-center justify-center text-text3 border border-transparent hover:border-border-main transition-all">
+                <ArrowUpRight className="w-5 h-5" />
              </Link>
           </div>
-          <div className="divide-y divide-border-main/40 max-h-[480px] overflow-y-auto no-scrollbar">
-            {CLIENTS.map(cl => {
-              const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
-              const dotColor = STATUS_DOT[wc] || STATUS_DOT.nn;
-              const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
-              const statusStyle = STATUS_COLOR_MAP[wc] || STATUS_COLOR_MAP.nn;
-              return (
-                <Link
-                  key={cl.key}
-                  href={`/client/${encodeURIComponent(cl.key)}`}
-                  className="flex items-center gap-4 px-8 py-5 hover:bg-surface2/50 transition-colors group/row"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-surface2 border border-border-main/40 flex items-center justify-center text-text2 text-[11px] font-black shrink-0 group-hover/row:bg-accent group-hover/row:text-white group-hover/row:border-accent transition-all tracking-tighter">
-                    {cl.name.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-bold text-text truncate group-hover/row:text-accent transition-colors tracking-tight">{cl.name}</div>
-                    <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em] mt-0.5 opacity-60">{cl.ind}</div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-sm font-bold text-text tracking-tight">{t.rev > 0 ? fRp(t.rev) : '—'}</div>
-                    <div className={`inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-0.5 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} opacity-90`}>
-                      <span className="w-1 h-1 rounded-full shrink-0 animate-pulse" style={{ background: dotColor }} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">{STATUS_LABEL[wc] || 'N/A'}</span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-main/50 flex-1">
+             <div className="p-10 flex flex-col justify-center">
+                <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-4">Requests Engine</div>
+                <div className="text-3xl font-bold text-text tracking-tight mb-2">{stats.aiStats.totalRequests.toLocaleString()}</div>
+                <div className="text-xs text-text3">Calls processed</div>
+                <div className="mt-8 flex items-center gap-2">
+                   <div className="flex -space-x-2">
+                      {[1,2,3].map(i => <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-surface3" />)}
+                   </div>
+                   <span className="text-[10px] font-bold text-accent">+{(Math.random()*10).toFixed(0)} New today</span>
+                </div>
+             </div>
+             <div className="p-10 flex flex-col justify-center bg-surface2/10">
+                <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-4">Data Throughput</div>
+                <div className="text-3xl font-bold text-text tracking-tight mb-2">{(stats.aiStats.totalTokens/1000).toFixed(1)}K</div>
+                <div className="text-xs text-text3">Tokens consumed</div>
+                <div className="mt-8">
+                   <div className="w-full h-2 bg-surface2 rounded-full overflow-hidden">
+                      <div className="h-full bg-accent w-3/4 shadow-[0_0_12px_rgba(var(--accent-rgb),0.4)]" />
+                   </div>
+                   <div className="flex justify-between mt-2">
+                      <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">EFFICIENCY</span>
+                      <span className="text-[10px] font-bold text-text">82%</span>
+                   </div>
+                </div>
+             </div>
+             <div className="p-10 flex flex-col justify-center">
+                <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-4">Burn Estimation</div>
+                <div className="text-3xl font-bold text-text tracking-tight mb-2">${stats.aiStats.totalCost.toFixed(4)}</div>
+                <div className="text-xs text-text3">USD Accumulated</div>
+                <div className="mt-8 p-4 rounded-2xl bg-surface2 border border-border-main/50">
+                   <div className="text-[10px] font-bold text-text3 uppercase tracking-wider mb-1">Monthly Forecast</div>
+                   <div className="text-sm font-bold text-text tracking-tight">${(stats.aiStats.totalCost * 30).toFixed(2)}</div>
+                </div>
+             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-border-main/60 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-          <div className="px-8 py-6 border-b border-border-main flex items-center justify-between bg-surface2/10">
-            <div className="flex items-center gap-3">
-              <Zap className="w-5 h-5 text-accent" />
-              <h2 className="text-base font-bold text-text tracking-tight">Log Aktivitas Terbaru</h2>
-            </div>
-            <Link href="/admin/activity" className="text-[10px] font-black text-accent hover:text-accent-hover uppercase tracking-widest transition-colors">
-              LIHAT SEMUA
-            </Link>
-          </div>
-          <ActivityLog activities={ACTIVITY.slice(0, 6)} />
+        {/* Global Stats Vertical Stack (Bento Small) */}
+        <div className="lg:col-span-4 grid grid-cols-1 gap-8">
+           <div className="bg-text rounded-[2rem] p-8 text-white flex flex-col justify-between shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2" />
+              <div className="flex items-center justify-between mb-4">
+                 <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
+                    <TrendingUp className="w-6 h-6 text-accent" />
+                 </div>
+                 <div className="px-3 py-1 rounded-full bg-accent text-[10px] font-bold tracking-wider uppercase">Global ROAS</div>
+              </div>
+              <div>
+                 <div className="text-3xl font-bold text-white tracking-tight mb-2">{stats.totalRoas.toFixed(2)}x</div>
+                 <p className="text-xs text-white/50 font-medium">Rata-rata performa seluruh portfolio klien aktif.</p>
+              </div>
+           </div>
+
+           <div className="bg-white rounded-[2rem] p-8 border border-border-main shadow-sm flex flex-col justify-between group hover:border-rr/30 transition-all">
+              <div className="flex items-center justify-between mb-4">
+                 <div className="w-12 h-12 rounded-2xl bg-rr-bg flex items-center justify-center text-rr border border-rr-border/30">
+                    <AlertCircle className="w-6 h-6" />
+                 </div>
+                 {stats.attnCount > 0 && <span className="flex h-3 w-3 rounded-full bg-rr animate-ping" />}
+              </div>
+              <div>
+                 <div className="text-3xl font-bold text-text tracking-tight mb-1">{stats.attnCount}</div>
+                 <div className="text-[10px] font-bold text-rr uppercase tracking-wider">Critical Clients</div>
+                 <p className="text-xs text-text4 mt-3 font-medium">Memerlukan penanganan strategi segera.</p>
+              </div>
+           </div>
         </div>
+
+        {/* Quick Actions (Bento Medium) */}
+        <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-6">
+           {QUICK_ACTIONS.map(action => (
+             <Link key={action.href} href={action.href} className="bg-white rounded-[1.5rem] p-6 border border-border-main shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all group flex items-center gap-5">
+                <div className={`w-14 h-14 rounded-2xl ${action.bg} ${action.color} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform`}>
+                   <action.icon className="w-7 h-7" />
+                </div>
+                <div>
+                   <div className="text-sm font-bold text-text tracking-tight">{action.title}</div>
+                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">{action.badge}</div>
+                </div>
+                <ChevronRight className="ml-auto w-4 h-4 text-text4 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
+             </Link>
+           ))}
+        </div>
+
+        {/* Status Portfolio (Bento Wide) */}
+        <div className="lg:col-span-5 bg-white rounded-[2rem] border border-border-main shadow-sm flex flex-col overflow-hidden">
+           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/20">
+              <h2 className="text-[10px] font-bold uppercase tracking-wider text-text3">Portfolio Status</h2>
+              <Link href="/admin/clients" className="text-[10px] font-bold text-accent uppercase tracking-wider hover:underline">View All</Link>
+           </div>
+           <div className="divide-y divide-border-main/40 overflow-y-auto max-h-[400px] no-scrollbar">
+              {CLIENTS.map(cl => {
+                const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
+                const statusStyle = STATUS_COLOR_MAP[wc] || STATUS_COLOR_MAP.nn;
+                return (
+                  <Link key={cl.key} href={`/client/${cl.key}`} className="p-6 hover:bg-surface2 transition-colors flex items-center gap-4 group/item">
+                     <div className="w-10 h-10 rounded-xl bg-surface2 border border-border-main/50 flex items-center justify-center text-text2 text-[10px] font-bold group-hover/item:bg-accent group-hover/item:text-white transition-all">
+                        {cl.key.slice(0,2).toUpperCase()}
+                     </div>
+                     <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-text truncate tracking-tight">{cl.name}</div>
+                        <div className="text-[10px] font-bold text-text4 uppercase tracking-wider opacity-60 mt-0.5">{cl.ind}</div>
+                     </div>
+                     <div className={`px-2.5 py-1 rounded-full border text-[9px] font-bold uppercase tracking-wider ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}>
+                        {STATUS_LABEL[wc]}
+                     </div>
+                  </Link>
+                );
+              })}
+           </div>
+        </div>
+
+        {/* Activity Feed (Bento Wide) */}
+        <div className="lg:col-span-7 bg-white rounded-[2rem] border border-border-main shadow-sm flex flex-col overflow-hidden">
+           <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/20">
+              <h2 className="text-[10px] font-bold uppercase tracking-wider text-text3">Live Activity Feed</h2>
+              <div className="flex h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+           </div>
+           <div className="flex-1 overflow-hidden">
+              <ActivityLog activities={ACTIVITY.slice(0, 8)} />
+           </div>
+        </div>
+
       </div>
     </div>
   );

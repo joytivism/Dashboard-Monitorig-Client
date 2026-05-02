@@ -144,10 +144,12 @@ export default function AdminHeader() {
                 <div className="px-5 py-4 border-b border-border-main/50 flex items-center justify-between bg-surface2/30">
                    <div className="flex items-center gap-2">
                       <Bell className="w-3.5 h-3.5 text-accent" />
-                      <h3 className="text-[10px] font-black text-text uppercase tracking-widest">Alerts Center</h3>
+                      <h3 className="text-[10px] font-bold text-text uppercase tracking-wider">Alerts Center</h3>
                    </div>
                   {unreadCount > 0 && (
-                    <span className="text-[9px] font-black px-2 py-0.5 rounded-md bg-accent text-white shadow-sm">{unreadCount} NEW</span>
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-accent text-white shadow-sm">
+                       {unreadCount} NEW
+                    </span>
                   )}
                 </div>
 
@@ -157,7 +159,7 @@ export default function AdminHeader() {
                       <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-4 border border-border-main/50">
                         <Info className="w-6 h-6 text-text4 opacity-30" />
                       </div>
-                      <p className="text-[10px] font-bold text-text4 uppercase tracking-widest">Everything is optimal</p>
+                      <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Everything is optimal</p>
                     </div>
                   ) : (
                     notifications.map((n, i) => (
@@ -192,7 +194,7 @@ export default function AdminHeader() {
                   <div className="p-3 bg-surface2/20 border-t border-border-main/50">
                     <button 
                       onClick={handleMarkAllRead}
-                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border-main/60 bg-white text-[9px] font-black text-text3 hover:text-accent hover:border-accent/30 hover:shadow-sm uppercase tracking-widest transition-all"
+                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border-main/60 bg-white text-[9px] font-bold text-text3 hover:text-accent hover:border-accent/30 hover:shadow-sm uppercase tracking-wider transition-all"
                     >
                       <CheckCheck className="w-3.5 h-3.5" /> Mark all as read
                     </button>
@@ -208,7 +210,7 @@ export default function AdminHeader() {
         <div className="flex items-center gap-3 pl-1">
           <div className="text-right hidden sm:block">
             <div className="text-xs font-bold text-text leading-none mb-1">Admin User</div>
-            <div className="text-[9px] font-black text-accent uppercase tracking-[0.1em]">Superuser</div>
+            <div className="text-[9px] font-bold text-accent uppercase tracking-wider">Superuser</div>
           </div>
           <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black border border-border-main/50 shadow-sm group cursor-pointer hover:border-accent/40 transition-all">
              <User className="w-5 h-5 opacity-30 group-hover:opacity-60 transition-opacity" />

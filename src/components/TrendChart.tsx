@@ -184,9 +184,9 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-text flex items-center gap-2">
           Tren Periode 
-          <span className="text-text3 font-medium">· pilih maks. 3 metrik</span>
+          <span className="text-text3 font-medium opacity-60">· pilih maks. 3 metrik</span>
         </h3>
-        <div className="text-xs font-semibold text-text3">
+        <div className="text-[10px] font-bold text-text4 uppercase tracking-wider bg-surface2 px-2.5 py-1 rounded-lg border border-border-main/50">
           {activeMetrics.length}/3 aktif
         </div>
       </div>
