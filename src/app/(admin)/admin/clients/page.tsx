@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { 
   Users, Plus, Search, Edit2, Trash2, 
   LayoutGrid, List, CheckCircle2, AlertCircle, 
-  Hash, User, Briefcase, Target, X
+  Hash, User, Briefcase, Target, X, AlertTriangle
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -23,7 +23,8 @@ function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } |
 }
 
 export default function ClientsAdminPage() {
-  const { CLIENTS } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
+  const curPeriod = PERIODS[PERIODS.length - 1];
   const router = useRouter();
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [showModal, setShowModal] = useState(false);
@@ -31,6 +32,9 @@ export default function ClientsAdminPage() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ key: string; name?: string } | null>(null);
+
   const [search, setSearch] = useState('');
   
   const [form, setForm] = useState({
@@ -75,6 +79,28 @@ export default function ClientsAdminPage() {
       troas: { ...c.troas }
     });
     setShowModal(true);
+  };
+
+  const handleDelete = async (key: string, name?: string) => {
+    setDeleteTarget({ key, name });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('clients').delete().eq('client_key', deleteTarget.key);
+      if (error) throw error;
+      setToast({ type: 'success', text: `Klien ${deleteTarget.name || deleteTarget.key} berhasil dihapus.` });
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
+      router.refresh();
+    } catch (err: any) {
+      setToast({ type: 'error', text: err.message || 'Gagal menghapus.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,18 +150,6 @@ export default function ClientsAdminPage() {
       setToast({ type: 'error', text: err.message || 'Gagal menyimpan klien.' });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDelete = async (key: string) => {
-    if (!confirm(`Hapus klien ${key}?`)) return;
-    try {
-      const { error } = await supabase.from('clients').delete().eq('client_key', key);
-      if (error) throw error;
-      setToast({ type: 'success', text: 'Klien berhasil dihapus.' });
-      router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menghapus.' });
     }
   };
 
@@ -383,6 +397,41 @@ export default function ClientsAdminPage() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[11000] flex items-center justify-center p-6 animate-fade-in">
+           <div className="absolute inset-0 bg-text/40 backdrop-blur-md" onClick={() => !loading && setShowDeleteModal(false)} />
+           <div className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl relative z-10 overflow-hidden animate-scale-up border border-border-main">
+              <div className="p-10 text-center">
+                 <div className="w-20 h-20 rounded-3xl bg-rr/10 text-rr flex items-center justify-center mx-auto mb-6">
+                    <AlertTriangle className="w-10 h-10" />
+                 </div>
+                 <h3 className="text-xl font-bold text-text mb-3">Hapus Data Klien?</h3>
+                 <p className="text-sm text-text3 leading-relaxed mb-8">
+                    Aksi ini akan menghapus semua konfigurasi untuk klien <span className="font-bold text-text">"{deleteTarget?.name || deleteTarget?.key}"</span> secara permanen.
+                 </p>
+                 
+                 <div className="flex flex-col gap-3">
+                    <button
+                      onClick={confirmDelete}
+                      disabled={loading}
+                      className="h-12 w-full bg-rr text-white rounded-xl font-bold text-sm hover:bg-rr/90 transition-all shadow-lg shadow-rr/20 flex items-center justify-center gap-2"
+                    >
+                      {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'YA, HAPUS PERMANEN'}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteModal(false)}
+                      disabled={loading}
+                      className="h-12 w-full bg-surface2 text-text font-bold text-sm rounded-xl hover:bg-surface3 transition-all"
+                    >
+                      BATALKAN
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
       )}
     </>
   );
