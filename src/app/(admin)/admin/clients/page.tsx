@@ -117,7 +117,10 @@ export default function ClientsAdminPage() {
     { label: 'Industri', key: 'industry', ph: 'Contoh: Fashion / Kecantikan' },
     { label: 'PIC', key: 'pic_name', ph: 'Contoh: Joy' },
     { label: 'Account Strategist', key: 'account_strategist', ph: 'Contoh: Fahmi' },
-    { label: 'Brand Category (CG)', key: 'brand_category', ph: 'Contoh: Dica / Bara' }  return (
+    { label: 'Brand Category (CG)', key: 'brand_category', ph: 'Contoh: Dica / Bara' },
+  ];
+
+  return (
     <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
       <Toast toast={toast} />
 
