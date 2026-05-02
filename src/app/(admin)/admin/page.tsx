@@ -7,8 +7,8 @@ import { clientWorst, fRp, totals } from '@/lib/utils';
 import {
   Database, Activity, Users, ArrowUpRight, TrendingUp,
   AlertCircle, CheckCircle2, Zap, BarChart3, CalendarClock,
-  ShieldCheck, Settings2, ArrowRight, LayoutDashboard,
-  Wallet, PieChart, Globe
+  Settings2, ArrowRight, LayoutDashboard,
+  Wallet, PieChart, Globe, ClipboardCheck, Clock
 } from 'lucide-react';
 
 const STATUS_COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
@@ -46,7 +46,24 @@ export default function AdminHubPage() {
     const attn = CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
     const good = CLIENTS.filter(cl => ['gg', 'gd'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
     const totalRoas = totalSpend > 0 ? totalRev / totalSpend : 0;
-    return { totalRev, totalSpend, attn: attn.length, good: good.length, totalRoas, total: CLIENTS.length };
+    
+    // Ingestion Stats
+    const updatedClients = CLIENTS.filter(cl => {
+       const hasData = DATA.some(d => d.c === cl.key && d.p === curPeriod);
+       return hasData;
+    });
+    const pendingClients = CLIENTS.filter(cl => !updatedClients.find(u => u.key === cl.key));
+    const ingestionProgress = (updatedClients.length / CLIENTS.length) * 100;
+
+    return { 
+      totalRev, totalSpend, totalRoas, 
+      attn: attn.length, 
+      good: good.length, 
+      total: CLIENTS.length,
+      updatedCount: updatedClients.length,
+      pending: pendingClients,
+      progress: ingestionProgress
+    };
   }, [CLIENTS, DATA, PERIODS, curPeriod]);
 
   const MENU = [
@@ -141,46 +158,75 @@ export default function AdminHubPage() {
         ))}
       </div>
 
-      {/* ── Financial Summary Strip ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-8 group hover:shadow-md transition-all">
-        <div className="flex items-center justify-between mb-8">
-           <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-text3">
-                 <Wallet className="w-4 h-4" />
+      {/* ── Data Ingestion Velocity (Replacement Section) ── */}
+      <div className="bg-white rounded-3xl border border-border-main shadow-sm p-8 group hover:shadow-md transition-all overflow-hidden relative">
+        {/* Background Accent */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+        
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
+          <div className="flex-1 space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center text-accent shadow-sm border border-border-main/50">
+                <ClipboardCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-sm font-bold text-text">Economic Performance Pulse</h3>
-           </div>
-           <div className="text-[10px] font-bold text-text4 uppercase tracking-wider px-3 py-1 rounded-full bg-surface2 border border-border-main">{curPeriod}</div>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-8">
-          {[
-            { label: 'Total Revenue',  value: fRp(stats.totalRev), color: 'text-text' },
-            { label: 'Total Ad Spend', value: fRp(stats.totalSpend), color: 'text-text' },
-            { label: 'Net Difference', value: fRp(stats.totalRev - stats.totalSpend), color: 'text-text' },
-            { label: 'Est. CIR Avg',      value: stats.totalRev > 0 ? (stats.totalSpend / stats.totalRev * 100).toFixed(1) + '%' : '—', color: 'text-text' },
-          ].map((item, i) => (
-            <div key={i} className="space-y-1">
-              <div className="text-xs font-semibold text-text3 uppercase tracking-wider">{item.label}</div>
-              <div className={`text-xl font-bold text-text tracking-tight`}>{item.value}</div>
+              <div>
+                <h3 className="text-lg font-bold text-text">Data Ingestion Velocity</h3>
+                <p className="text-xs text-text3 font-medium">Pelacakan kemajuan input data portfolio periode <span className="text-accent font-bold">{curPeriod}</span></p>
+              </div>
             </div>
-          ))}
-        </div>
-        
-        <div className="relative pt-2">
-           <div className="flex justify-between text-[10px] font-bold text-text4 mb-3 uppercase tracking-wider">
-              <div className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-accent" /> Ad Spend</div>
-              <div className="flex items-center gap-2">Revenue <div className="w-1.5 h-1.5 rounded-full bg-gd" /></div>
-           </div>
-           <div className="h-1.5 bg-surface2 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-1000 ease-out"
-                style={{
-                  width: `${Math.min(100, (stats.totalRev / (stats.totalRev + stats.totalSpend)) * 100)}%`,
-                  background: 'linear-gradient(90deg, var(--accent), var(--color-gd))',
-                }}
-              />
-           </div>
+
+            <div className="space-y-3">
+               <div className="flex items-end justify-between">
+                  <div className="flex items-center gap-2">
+                     <span className="text-3xl font-black text-text">{stats.updatedCount}</span>
+                     <span className="text-sm font-bold text-text4 uppercase tracking-widest">/ {stats.total} Klien</span>
+                  </div>
+                  <span className="text-sm font-black text-accent">{stats.progress.toFixed(0)}% Selesai</span>
+               </div>
+               <div className="h-3 bg-surface2 rounded-full overflow-hidden border border-border-main/30">
+                  <div 
+                    className="h-full bg-accent rounded-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(255,99,1,0.3)]"
+                    style={{ width: `${stats.progress}%` }}
+                  />
+               </div>
+            </div>
+          </div>
+
+          <div className="w-full lg:w-[400px] bg-surface2/50 rounded-2xl border border-border-main p-5 flex flex-col gap-4">
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                   <Clock className="w-3.5 h-3.5 text-text4" />
+                   <span className="text-[10px] font-black text-text3 uppercase tracking-widest">Pending Updates</span>
+                </div>
+                <span className="text-[10px] font-bold text-rr-text bg-rr-bg px-2 py-0.5 rounded-full border border-rr-border/50">{stats.pending.length} Klien</span>
+             </div>
+             
+             <div className="flex flex-wrap gap-2">
+                {stats.pending.length > 0 ? (
+                  stats.pending.slice(0, 6).map(cl => (
+                    <div key={cl.key} className="px-3 py-1.5 bg-white border border-border-main rounded-xl text-[10px] font-bold text-text shadow-sm hover:border-accent/30 transition-colors">
+                       {cl.key}
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-center gap-2 text-gd-text font-bold text-[11px] py-2">
+                     <CheckCircle2 className="w-4 h-4" /> Portfolio is up to date!
+                  </div>
+                )}
+                {stats.pending.length > 6 && (
+                   <div className="px-3 py-1.5 bg-surface3 border border-border-main rounded-xl text-[10px] font-bold text-text4">
+                      +{stats.pending.length - 6} more
+                   </div>
+                )}
+             </div>
+
+             <Link 
+              href="/admin/data" 
+              className="mt-2 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-text text-white text-[10px] font-black uppercase tracking-widest hover:bg-accent transition-all shadow-sm active:scale-95"
+             >
+                Lanjutkan Input Data <ArrowRight className="w-3.5 h-3.5" />
+             </Link>
+          </div>
         </div>
       </div>
 
