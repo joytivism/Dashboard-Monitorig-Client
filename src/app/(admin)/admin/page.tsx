@@ -3,12 +3,12 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useDashboardData } from '@/components/DataProvider';
-import { clientWorst, fRp, totals } from '@/lib/utils';
+import { clientWorst, fRp, totals, pct as getPct } from '@/lib/utils';
 import {
   Database, Activity, Users, ArrowUpRight, TrendingUp,
   AlertCircle, CheckCircle2, Zap, BarChart3, CalendarClock,
   Settings2, ArrowRight, LayoutDashboard,
-  Wallet, PieChart, Globe, ClipboardCheck, Clock
+  Wallet, PieChart, Globe, ClipboardCheck, Clock, TrendingDown
 } from 'lucide-react';
 
 const STATUS_COLOR_MAP: Record<string, { bg: string; text: string; border: string }> = {
@@ -37,15 +37,24 @@ export default function AdminHubPage() {
   const curPeriod = PERIODS[PERIODS.length - 1];
 
   const stats = useMemo(() => {
-    let totalRev = 0, totalSpend = 0;
+    let totalRev = 0, totalSpend = 0, prevRev = 0;
+    const prevIdx = PERIODS.indexOf(curPeriod) - 1;
+    const prevPeriod = prevIdx >= 0 ? PERIODS[prevIdx] : '';
+
     CLIENTS.forEach(cl => {
       const t = totals(CLIENTS, DATA, cl.key, curPeriod);
       totalRev += t.rev;
       totalSpend += t.sp;
+
+      if (prevPeriod) {
+        const tp = totals(CLIENTS, DATA, cl.key, prevPeriod);
+        prevRev += tp.rev;
+      }
     });
+
     const attn = CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
-    const good = CLIENTS.filter(cl => ['gg', 'gd'].includes(clientWorst(CLIENTS, DATA, PERIODS, cl.key, curPeriod)));
     const totalRoas = totalSpend > 0 ? totalRev / totalSpend : 0;
+    const pGrowth = getPct(totalRev, prevRev);
     
     // Ingestion Stats
     const updatedClients = CLIENTS.filter(cl => {
@@ -56,9 +65,8 @@ export default function AdminHubPage() {
     const ingestionProgress = (updatedClients.length / CLIENTS.length) * 100;
 
     return { 
-      totalRev, totalSpend, totalRoas, 
+      totalRev, totalSpend, totalRoas, pGrowth,
       attn: attn.length, 
-      good: good.length, 
       total: CLIENTS.length,
       updatedCount: updatedClients.length,
       pending: pendingClients,
@@ -141,7 +149,14 @@ export default function AdminHubPage() {
           { label: 'Total Portfolio', value: stats.total, sub: 'Klien Aktif', icon: Globe, color: 'text-text3', bg: 'bg-surface2' },
           { label: 'Blended ROAS', value: `${stats.totalRoas.toFixed(2)}x`, sub: 'Rata-rata Global', icon: TrendingUp, color: 'text-accent', bg: 'bg-accent/5' },
           { label: 'Tindakan Segera', value: stats.attn, sub: 'Klien Kritis', icon: AlertCircle, color: stats.attn > 0 ? 'text-rr-text' : 'text-text3', bg: stats.attn > 0 ? 'bg-rr-bg' : 'bg-surface2' },
-          { label: 'Status Prima', value: stats.good, sub: 'Klien Berhasil', icon: CheckCircle2, color: stats.good > 0 ? 'text-gd-text' : 'text-text3', bg: stats.good > 0 ? 'bg-gd-bg' : 'bg-surface2' },
+          { 
+            label: 'Portfolio Growth', 
+            value: stats.pGrowth !== null ? `${stats.pGrowth >= 0 ? '+' : ''}${stats.pGrowth.toFixed(1)}%` : '0%', 
+            sub: 'Kenaikan Revenue Total', 
+            icon: stats.pGrowth && stats.pGrowth >= 0 ? TrendingUp : TrendingDown, 
+            color: stats.pGrowth && stats.pGrowth >= 0 ? 'text-gd-text' : stats.pGrowth && stats.pGrowth < 0 ? 'text-rr-text' : 'text-text3', 
+            bg: stats.pGrowth && stats.pGrowth >= 0 ? 'bg-gd-bg' : stats.pGrowth && stats.pGrowth < 0 ? 'bg-rr-bg' : 'bg-surface2' 
+          },
         ].map((card, i) => (
           <div key={i} className={`bg-white rounded-2xl border border-border-main shadow-sm p-6 flex flex-col gap-5 transition-all hover:shadow-md hover:border-border-alt`}>
             <div className="flex items-center justify-between">
@@ -158,9 +173,8 @@ export default function AdminHubPage() {
         ))}
       </div>
 
-      {/* ── Data Ingestion Velocity (Replacement Section) ── */}
+      {/* ── Data Ingestion Velocity ── */}
       <div className="bg-white rounded-3xl border border-border-main shadow-sm p-8 group hover:shadow-md transition-all overflow-hidden relative">
-        {/* Background Accent */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-3xl" />
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
