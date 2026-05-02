@@ -232,47 +232,36 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
         }}
       />
 
-      {/* Automatic Calculation Metrics Bar (As per screenshot) */}
-      <div className="bg-white rounded-2xl border border-gg/20 p-6 shadow-sm">
-        <div className="flex items-center gap-2 mb-6 text-gg font-black text-[10px] uppercase tracking-widest">
-           <div className="w-4 h-4 rounded border border-gg flex items-center justify-center">
-             <div className="w-2 h-px bg-gg" />
-             <div className="w-px h-2 bg-gg absolute" />
+      {/* Strategic Calculation Matrix (Aligned with design-system.md) */}
+      <div className="bg-white rounded-3xl border border-border-main p-6 shadow-sm group hover:shadow-md transition-shadow animate-fade-in">
+        <div className="flex items-center gap-2 mb-8">
+           <div className="w-5 h-5 rounded-md bg-gg/10 flex items-center justify-center text-gg border border-gg/20">
+             <div className="w-2.5 h-0.5 bg-gg" />
+             <div className="w-0.5 h-2.5 bg-gg absolute" />
            </div>
-           Metrik Kalkulasi Otomatis dari 4 Input
+           <h3 className="text-[10px] font-black text-gg uppercase tracking-[0.12em]">Metrik Kalkulasi Otomatis dari 4 Input</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          <div>
-            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">ROAS</div>
-            <div className="text-xl font-black text-text">{bRoas ? bRoas.toFixed(2) + 'x' : '—'}</div>
-            <div className="text-[9px] text-text4 mt-1 font-medium">rev ÷ spend</div>
-          </div>
-          <div>
-            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">CIR</div>
-            <div className="text-xl font-black text-text">{blCir ? blCir.toFixed(1) + '%' : '—'}</div>
-            <div className="text-[9px] text-text4 mt-1 font-medium">spend ÷ rev</div>
-          </div>
-          <div>
-            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">CPO</div>
-            <div className="text-xl font-black text-text">{blCpo ? fRp(blCpo).replace('Rp ', 'Rp  ') : '—'}</div>
-            <div className="text-[9px] text-text4 mt-1 font-medium">spend ÷ orders</div>
-          </div>
-          <div>
-            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">CR</div>
-            <div className="text-xl font-black text-text">{blCr ? blCr.toFixed(2) + '%' : '—'}</div>
-            <div className="text-[9px] text-text4 mt-1 font-medium">orders ÷ visitors</div>
-          </div>
-          <div>
-            <div className="text-[10px] font-bold text-text4 uppercase tracking-widest mb-1">AOV</div>
-            <div className="text-xl font-black text-text">{blAov ? fRp(blAov).replace('Rp ', 'Rp  ') : '—'}</div>
-            <div className="text-[9px] text-text4 mt-1 font-medium">rev ÷ orders</div>
-          </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-y-8 gap-x-12">
+          {[
+            { l: 'ROAS', v: bRoas ? bRoas.toFixed(2) + 'x' : '—', sub: 'rev ÷ spend' },
+            { l: 'CIR', v: blCir ? blCir.toFixed(1) + '%' : '—', sub: 'spend ÷ rev' },
+            { l: 'CPO', v: blCpo ? fRp(blCpo) : '—', sub: 'spend ÷ orders' },
+            { l: 'CR', v: blCr ? blCr.toFixed(2) + '%' : '—', sub: 'orders ÷ visitors' },
+            { l: 'AOV', v: blAov ? fRp(blAov) : '—', sub: 'rev ÷ orders' },
+          ].map((m, i) => (
+            <div key={i} className="relative">
+              <div className="text-[10px] font-bold text-text4 uppercase tracking-[0.16em] mb-2">{m.l}</div>
+              <div className="text-2xl font-black text-text tracking-tighter mb-1.5">{m.v}</div>
+              <div className="text-[9px] font-bold text-text3/50 uppercase tracking-widest">{m.sub}</div>
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
-        {/* Trend Chart Area */}
-        <div className="bg-white rounded-[24px] p-8 shadow-main">
+        {/* Performance Vectors (Trend Chart) */}
+        <div className="bg-white rounded-3xl p-8 border border-border-main shadow-sm animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <TrendChart clientKey={id} />
         </div>
       </div>
