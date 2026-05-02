@@ -88,6 +88,19 @@ export default function AdminHubPage() {
       accentGradient: 'linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)',
       cta: 'Kelola Klien',
     },
+    {
+      href: '/admin/settings',
+      icon: Settings2,
+      title: 'Pengaturan Sistem',
+      desc: 'Konfigurasi API Key OpenRouter, Model AI, dan Prompt Strategi Analisis.',
+      badge: 'Sistem',
+      badgeColor: 'var(--accent-light)',
+      badgeText: 'var(--accent)',
+      iconBg: 'var(--accent-light)',
+      iconColor: 'var(--accent)',
+      accentGradient: 'linear-gradient(135deg, var(--accent-light) 0%, var(--accent-mid) 100%)',
+      cta: 'Buka Pengaturan',
+    },
   ];
 
   const recentActivity = ACTIVITY.slice(0, 7);
@@ -149,18 +162,18 @@ export default function AdminHubPage() {
           return (
             <div
               key={i}
-              className="bg-white rounded-2xl p-6 border shadow-sm flex flex-col gap-3 transition-shadow hover:shadow-md"
-              style={{ borderColor: sc ? sc.border : 'var(--border)', background: sc ? sc.bg : '#fff' }}
+              className="bg-white rounded-2xl p-6 border border-border-main shadow-sm flex flex-col gap-3 transition-shadow hover:shadow-md"
+              style={sc ? { borderColor: sc.border, background: sc.bg } : {}}
             >
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium" style={{ color: sc ? sc.text : 'var(--text3)' }}>{card.label}</span>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: card.iconBg }}>
+                <span className="text-xs font-semibold text-text3 uppercase tracking-wider" style={sc ? { color: sc.text } : {}}>{card.label}</span>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-surface3" style={sc ? { background: 'white' } : {}}>
                   <card.icon className="w-4 h-4" style={{ color: card.iconColor }} />
                 </div>
               </div>
               <div>
-                <div className="text-3xl font-bold tracking-tight" style={{ color: sc ? sc.text : 'var(--text)' }}>{card.value}</div>
-                <div className="text-xs mt-1" style={{ color: sc ? sc.text + '99' : 'var(--text3)' }}>{card.sub}</div>
+                <div className="text-3xl font-bold text-text tracking-tight" style={sc ? { color: sc.text } : {}}>{card.value}</div>
+                <div className="text-xs text-text3 mt-1" style={sc ? { color: sc.text, opacity: 0.7 } : {}}>{card.sub}</div>
               </div>
             </div>
           );
@@ -170,8 +183,8 @@ export default function AdminHubPage() {
       {/* ── Revenue Strip ── */}
       <div className="bg-white rounded-2xl border border-border-main shadow-sm p-6">
         <div className="flex items-center gap-2 mb-6">
-          <BarChart3 className="w-4 h-4 text-text3" />
-          <span className="text-sm font-semibold text-text2">Ringkasan Finansial · <span className="text-text">{curPeriod}</span></span>
+          <BarChart3 className="w-4 h-4 text-text4" />
+          <h3 className="text-sm font-bold text-text">Ringkasan Finansial · <span className="text-text2">{curPeriod}</span></h3>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
           {[
@@ -188,8 +201,8 @@ export default function AdminHubPage() {
         </div>
         {/* Progress bar */}
         {stats.totalRev > 0 && (
-          <div className="mt-5">
-            <div className="flex justify-between text-[10px] font-semibold text-text4 mb-1.5 uppercase tracking-wider">
+          <div className="mt-6">
+            <div className="flex justify-between text-[9px] font-black text-text4 mb-2 uppercase tracking-[0.12em]">
               <span>Ad Spend</span><span>Revenue</span>
             </div>
             <div className="h-1.5 bg-surface3 rounded-full overflow-hidden">

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Shield, Lock } from 'lucide-react';
-import AdminSidebar from '@/components/AdminSidebar';
+import AdminTopbar from '@/components/AdminTopbar';
 
 export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState(false);
@@ -93,15 +93,13 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
     );
   }
 
-  /* ── Authorized shell: Sidebar + Content ── */
+  /* ── Authorized Admin Shell: Topbar + Max-width Content ── */
   return (
-    <>
-      <AdminSidebar onLogout={handleLogout} />
-      <div className="flex-1 ml-[240px] flex flex-col min-h-screen bg-bg">
-        <main className="flex-1 p-8 w-full max-w-7xl mx-auto">
-          {children}
-        </main>
-      </div>
-    </>
+    <div className="flex-1 flex flex-col min-h-screen bg-bg">
+      <AdminTopbar onLogout={handleLogout} />
+      <main className="flex-1 px-6 py-7 max-w-7xl mx-auto w-full">
+        {children}
+      </main>
+    </div>
   );
 }

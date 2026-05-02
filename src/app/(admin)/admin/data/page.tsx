@@ -111,58 +111,69 @@ export default function DataInputPage() {
     } finally { setLoading(false); }
   };
 
-  const INPUT_CLS = 'w-full h-10 px-3 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all';
+  const INPUT_CLS = 'w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all';
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="max-w-5xl mx-auto space-y-7 animate-fade-in pb-12">
       <Toast toast={toast} />
+
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-3">
+            <Database className="w-7 h-7 text-accent" />
+            Input Data Performa
+          </h1>
+          <p className="text-sm text-text3 mt-1">Masukkan data metrik iklan harian/bulanan ke database.</p>
+        </div>
+      </div>
 
 
       {/* ── Step 1: Client & Period ── */}
       <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
         {/* Step label */}
-        <div className="px-6 py-4 border-b border-border-main flex items-center gap-3">
-          <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center text-white text-xs font-black shrink-0">1</div>
+        <div className="px-6 py-5 border-b border-border-main flex items-center gap-3 bg-surface1/50">
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white text-xs font-black shrink-0 shadow-sm shadow-accent/20">1</div>
           <div>
-            <div className="text-sm font-bold text-text">Pilih Klien & Periode</div>
-            <div className="text-xs text-text3">Tentukan klien dan bulan periode data yang akan diinput.</div>
+            <h2 className="text-sm font-bold text-text">Pilih Klien & Periode</h2>
+            <p className="text-xs text-text3">Tentukan klien dan bulan periode data yang akan diinput.</p>
           </div>
         </div>
 
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Client */}
             <div>
-              <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-2">Klien</label>
+              <label className="text-[11px] font-bold text-text3 uppercase tracking-wider block mb-2">Klien</label>
               <select
                 value={selectedClient}
                 onChange={e => setSelectedClient(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
+                className={INPUT_CLS}
               >
                 <option value="">— Pilih Klien —</option>
                 {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
               </select>
               {client && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-text3">
-                  <div className="w-5 h-5 rounded-lg bg-accent/10 flex items-center justify-center text-accent text-[9px] font-black">
+                <div className="mt-2.5 flex items-center gap-2 text-xs text-text3">
+                  <div className="w-6 h-6 rounded-lg bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black border border-border-main">
                     {client.key.slice(0, 2).toUpperCase()}
                   </div>
-                  {client.chs.length} channel · {client.ind}
+                  {client.chs.length} channel aktif · <span className="font-semibold text-text2">{client.ind}</span>
                 </div>
               )}
             </div>
 
             {/* Period */}
             <div>
-              <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-2">Periode</label>
-              <div className="space-y-2">
+              <label className="text-[11px] font-bold text-text3 uppercase tracking-wider block mb-2">Periode</label>
+              <div className="space-y-3">
                 <select
                   value={useNewPeriod ? '__new__' : selectedPeriod}
                   onChange={e => {
                     if (e.target.value === '__new__') { setUseNewPeriod(true); }
                     else { setUseNewPeriod(false); setSelectedPeriod(e.target.value); }
                   }}
-                  className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
+                  className={INPUT_CLS}
                 >
                   <option value="">— Pilih Periode —</option>
                   {PERIODS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -173,7 +184,7 @@ export default function DataInputPage() {
                     type="month"
                     value={newPeriod}
                     onChange={e => setNewPeriod(e.target.value)}
-                    className="w-full h-11 px-4 rounded-xl border border-accent bg-accent/5 text-sm font-semibold text-text focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+                    className="w-full h-11 px-4 rounded-xl border border-accent bg-accent-light text-sm font-bold text-text focus:outline-none focus:ring-4 focus:ring-accent/10 transition-all animate-fade-in"
                   />
                 )}
               </div>
@@ -182,24 +193,25 @@ export default function DataInputPage() {
 
           {/* Status & CTA */}
           {canProceed && (
-            <div className="mt-5 flex items-center justify-between gap-4 pt-4 border-t border-border-main">
+            <div className="mt-6 flex items-center justify-between gap-4 pt-6 border-t border-border-main">
               <div className="flex items-center gap-2">
                 {isUpdateMode ? (
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full bg-gd-bg text-gd-text border border-gd-border">
-                    <CheckCircle2 className="w-3 h-3" /> Data ada — mode update
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full bg-gd-bg text-gd-text border border-gd-border">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Data ada — mode update
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full bg-surface3 text-text3 border border-border-main">
-                    <Database className="w-3 h-3" /> Data baru
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-full bg-surface3 text-text3 border border-border-main">
+                    <Database className="w-3.5 h-3.5" /> Data baru
                   </span>
                 )}
+                <div className="h-4 w-px bg-border-main mx-1" />
                 <span className="text-xs text-text3">
-                  <span className="font-bold text-text">{selectedClient}</span> · <span className="font-bold text-text">{periodToUse}</span>
+                  <span className="font-bold text-text">{selectedClient}</span> · <span className="font-bold text-text2">{periodToUse}</span>
                 </span>
               </div>
               <button
                 onClick={() => document.getElementById('step2')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center gap-2 px-5 h-10 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm"
+                className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm shadow-accent/10"
               >
                 Isi Data Channel <ArrowRight className="w-4 h-4" />
               </button>
@@ -212,29 +224,25 @@ export default function DataInputPage() {
       {canProceed && client && rows.length > 0 && (
         <div id="step2" className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
           {/* Step label */}
-          <div className="px-6 py-4 border-b border-border-main flex items-center justify-between">
+          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface1/50">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center text-white text-xs font-black shrink-0">2</div>
+              <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-white text-xs font-black shrink-0 shadow-sm shadow-accent/20">2</div>
               <div>
-                <div className="text-sm font-bold text-text">Input Data per Channel</div>
-                <div className="text-xs text-text3">
-                  <span className="font-semibold text-accent">{selectedClient}</span>
-                  {' · '}
-                  <span className="font-semibold text-text">{periodToUse}</span>
-                  {' · '}
-                  {rows.length} channel
-                </div>
+                <h2 className="text-sm font-bold text-text">Input Data per Channel</h2>
+                <p className="text-xs text-text3">
+                  Data untuk <span className="font-bold text-accent">{selectedClient}</span> periode <span className="font-bold text-text">{periodToUse}</span>
+                </p>
               </div>
             </div>
             <button
               onClick={() => setRows(client.chs.map(() => EMPTY_ROW()))}
-              className="flex items-center gap-1.5 text-xs font-semibold text-text3 hover:text-rr-text px-3 py-2 rounded-xl hover:bg-rr-bg transition-all"
+              className="flex items-center gap-2 text-xs font-bold text-text3 hover:text-rr-text px-4 py-2 rounded-xl hover:bg-rr-bg transition-all border border-transparent hover:border-rr-border"
             >
-              <RotateCcw className="w-3.5 h-3.5" /> Reset
+              <RotateCcw className="w-3.5 h-3.5" /> Reset Form
             </button>
           </div>
 
-          <div className="p-5 space-y-4">
+          <div className="p-6 space-y-6">
             {rows.map((row, i) => {
               const aware = isAware(row.ch);
               const chDef = CH_DEF[row.ch];
@@ -245,40 +253,42 @@ export default function DataInputPage() {
               const roasOk = roasVal && targetRoas ? roasVal >= Number(targetRoas) : null;
 
               return (
-                <div key={row.ch} className="border border-border-main rounded-2xl overflow-hidden">
+                <div key={row.ch} className="border border-border-main rounded-2xl overflow-hidden bg-white hover:border-border-alt transition-colors shadow-sm">
                   {/* Channel header */}
                   <div className={`flex items-center gap-3 px-5 py-3 border-b ${s.header}`}>
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${s.badge}`}>
-                      {stage.toUpperCase()}
+                    <span className={`text-[10px] font-black uppercase tracking-[0.12em] px-2.5 py-1 rounded-lg ${s.badge}`}>
+                      {stage}
                     </span>
-                    <span className="text-sm font-bold text-text">{chDef?.l || row.ch}</span>
-                    <span className="text-xs text-text3 ml-auto">
-                      {aware ? 'Isi reach & impresi' : 'Isi revenue & orders'}
-                    </span>
+                    <span className="text-sm font-bold text-text tracking-tight">{chDef?.l || row.ch}</span>
+                    <div className="ml-auto flex items-center gap-2">
+                       <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">
+                        {aware ? 'Awareness Focus' : 'Performance Focus'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Fields grid */}
-                  <div className="p-5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  <div className="p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {/* Spend — always */}
                     <div>
-                      <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Ad Spend (Rp)</label>
-                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                      <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Ad Spend (Rp)</label>
+                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                     </div>
 
                     {/* Revenue channel fields */}
                     {!aware && <>
                       <div>
-                        <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Revenue (Rp)</label>
-                        <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Revenue (Rp)</label>
+                        <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Orders</label>
-                        <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Orders</label>
+                        <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       {chDef?.stage === 'mofu' && (
                         <div>
-                          <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Visitors</label>
-                          <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                          <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Visitors</label>
+                          <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                         </div>
                       )}
                     </>}
@@ -286,31 +296,31 @@ export default function DataInputPage() {
                     {/* Awareness channel fields */}
                     {aware && <>
                       <div>
-                        <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Reach</label>
-                        <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Reach</label>
+                        <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Impressions</label>
-                        <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Impressions</label>
+                        <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                       <div>
-                        <label className="text-[10px] font-bold text-text4 uppercase tracking-wider block mb-1.5">Results</label>
-                        <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className={INPUT_CLS} />
+                        <label className="text-[10px] font-black text-text3 uppercase tracking-wider block mb-2">Results</label>
+                        <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className={INPUT_CLS.replace('h-11', 'h-10')} />
                       </div>
                     </>}
 
                     {/* Live ROAS preview */}
                     {!aware && roasVal !== null && (
                       <div className="flex items-end">
-                        <div className={`h-10 px-3 rounded-xl border text-sm font-bold flex items-center gap-2 w-full justify-center ${
+                        <div className={`h-10 px-4 rounded-xl border text-sm font-bold flex items-center gap-2 w-full justify-center transition-all ${
                           roasOk === true  ? 'bg-gg-bg border-gg-border text-gg-text' :
                           roasOk === false ? 'bg-rr-bg border-rr-border text-rr-text' :
-                          'bg-accent/10 border-accent/20 text-accent'
+                          'bg-accent-light border-accent-mid text-accent'
                         }`}>
                           <TrendingUp className="w-3.5 h-3.5 shrink-0" />
-                          {roasVal.toFixed(2)}x
+                          <span className="tracking-tight">{roasVal.toFixed(2)}x</span>
                           {targetRoas && (
-                            <span className="text-[10px] opacity-70">/ {targetRoas}x</span>
+                            <span className="text-[10px] opacity-70 font-medium">/ {targetRoas}x</span>
                           )}
                         </div>
                       </div>
@@ -322,20 +332,23 @@ export default function DataInputPage() {
           </div>
 
           {/* Submit bar */}
-          <div className="px-6 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-between gap-4">
-            <p className="text-xs text-text3 max-w-sm">
-              Data yang sudah ada akan di-<strong>update</strong> (upsert). Kosongkan field yang tidak ada datanya.
-            </p>
+          <div className="px-8 py-5 border-t border-border-main bg-surface2/50 flex items-center justify-between gap-6">
+            <div className="flex items-start gap-3 max-w-md">
+              <Info className="w-4 h-4 text-text4 mt-0.5" />
+              <p className="text-[11px] text-text3 leading-normal font-medium">
+                Sistem akan melakukan <span className="font-bold text-text">Upsert</span> (update jika data sudah ada, insert jika baru). Biarkan kosong jika tidak ada data untuk kolom tersebut.
+              </p>
+            </div>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex items-center gap-2 px-8 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 shrink-0 shadow-sm"
+              className="flex items-center gap-2.5 px-10 h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 shrink-0 shadow-lg shadow-text/10"
             >
               {loading
                 ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 : <Save className="w-4 h-4" />
               }
-              Simpan Data
+              Simpan Semua Data
             </button>
           </div>
         </div>
@@ -343,12 +356,12 @@ export default function DataInputPage() {
 
       {/* Empty state if no client/period yet */}
       {!canProceed && (
-        <div className="bg-white rounded-2xl border border-dashed border-border-alt p-12 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-surface3 flex items-center justify-center mx-auto mb-4">
-            <Database className="w-6 h-6 text-text4" />
+        <div className="bg-white rounded-2xl border border-dashed border-border-alt p-20 text-center animate-fade-in shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-6 border border-border-main">
+            <Database className="w-8 h-8 text-text4" />
           </div>
-          <div className="text-sm font-semibold text-text3 mb-1">Pilih klien dan periode terlebih dahulu</div>
-          <div className="text-xs text-text4">Form input data channel akan muncul di sini.</div>
+          <h3 className="text-base font-bold text-text mb-2">Pilih klien dan periode untuk memulai</h3>
+          <p className="text-sm text-text3 max-w-xs mx-auto">Setelah klien dan periode valid ditentukan, form input channel akan muncul secara otomatis.</p>
         </div>
       )}
     </div>

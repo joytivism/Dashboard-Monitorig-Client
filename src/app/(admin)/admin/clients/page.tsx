@@ -117,51 +117,60 @@ export default function ClientsAdminPage() {
     { label: 'Industri', key: 'industry', ph: 'Contoh: Fashion / Kecantikan' },
     { label: 'PIC', key: 'pic_name', ph: 'Contoh: Joy' },
     { label: 'Account Strategist', key: 'account_strategist', ph: 'Contoh: Fahmi' },
-    { label: 'Brand Category (CG)', key: 'brand_category', ph: 'Contoh: Dica / Bara' },
-  ];
-
-  return (
-    <div className="space-y-6 animate-fade-in">
+    { label: 'Brand Category (CG)', key: 'brand_category', ph: 'Contoh: Dica / Bara' }  return (
+    <div className="max-w-7xl mx-auto space-y-7 animate-fade-in pb-12">
       <Toast toast={toast} />
 
-      {/* ── Top Actions ── */}
-      <div className="flex justify-end">
+      {/* ── Header ── */}
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <h1 className="text-2xl font-black text-text tracking-tight flex items-center gap-3">
+            <Users className="w-7 h-7 text-accent" />
+            Manajemen Klien
+          </h1>
+          <p className="text-sm text-text3 mt-1">Daftar klien aktif dan konfigurasi channel promosi.</p>
+        </div>
         <button
           onClick={openNew}
-          className="flex items-center gap-2 px-5 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm shrink-0"
+          className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all shadow-sm shadow-accent/10 shrink-0"
         >
           <Plus className="w-4 h-4" /> Tambah Klien
         </button>
       </div>
 
       {/* ── Filter Bar ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-            <Users className="w-5 h-5 text-accent" />
+      <div className="bg-white rounded-2xl border border-border-main shadow-sm p-5 flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-surface2 flex items-center justify-center border border-border-main shrink-0">
+            <Users className="w-6 h-6 text-text2" />
           </div>
           <div>
-            <div className="text-sm font-bold text-text">{CLIENTS.length} Klien Aktif</div>
-            <div className="text-xs text-text3">Periode: <span className="font-semibold text-text">{curPeriod}</span></div>
+            <div className="text-sm font-black text-text tracking-tight">{CLIENTS.length} Klien Terdaftar</div>
+            <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mt-0.5">Status: <span className="text-gg-text font-black">All Active</span></div>
           </div>
         </div>
         {/* Search */}
         <div className="relative w-full md:w-auto">
-          <Search className="w-3.5 h-3.5 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-text4 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Cari klien..."
-            className="w-full md:w-64 pl-9 pr-4 h-10 bg-surface2 border border-border-main rounded-xl text-sm font-medium focus:outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+            placeholder="Cari nama klien atau industri..."
+            className="w-full md:w-80 pl-10 pr-4 h-11 bg-surface2 border border-border-main rounded-xl text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
           />
         </div>
       </div>
 
       {/* ── Client Grid ── */}
       {filteredClients.length === 0 ? (
-        <div className="py-16 text-center text-sm text-text3 bg-white rounded-2xl border border-border-main shadow-sm">
-          {search ? 'Tidak ada klien yang cocok dengan pencarian.' : 'Belum ada klien yang terdaftar.'}
+        <div className="py-24 text-center bg-white rounded-2xl border border-dashed border-border-alt shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-4">
+             <Search className="w-8 h-8 text-text4" />
+          </div>
+          <p className="text-sm font-bold text-text3">
+            {search ? 'Tidak ada klien yang cocok dengan pencarian.' : 'Belum ada klien yang terdaftar.'}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -169,38 +178,36 @@ export default function ClientsAdminPage() {
             const dataCount = DATA.filter(d => d.c === cl.key && d.p === curPeriod).length;
             const hasData = dataCount > 0;
             return (
-              <div key={cl.key} className="group bg-white rounded-2xl p-5 border border-border-main shadow-sm hover:shadow-md transition-all flex flex-col relative overflow-hidden">
+              <div key={cl.key} className="group bg-white rounded-2xl p-6 border border-border-main shadow-sm hover:shadow-md transition-all flex flex-col relative overflow-hidden animate-fade-in">
                 
                 {/* Top: Avatar & Actions */}
-                <div className="flex items-start justify-between gap-3 mb-4 mt-1">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg font-black group-hover:bg-accent group-hover:text-white transition-all duration-200 shrink-0">
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-sm font-black group-hover:bg-accent group-hover:text-white transition-all duration-300 shrink-0">
                       {cl.key.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-base font-bold text-text truncate pr-2" title={cl.key}>{cl.key}</h3>
-                      <span className={`inline-flex items-center gap-1.5 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        hasData ? 'bg-gg-bg text-gg-text border border-gg-border/50' : 'bg-or-bg text-or-text border border-or-border/50'
+                      <h3 className="text-sm font-bold text-text truncate tracking-tight pr-2" title={cl.key}>{cl.key}</h3>
+                      <span className={`inline-flex items-center gap-1.5 mt-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                        hasData ? 'bg-gg-bg text-gg-text border-gg-border/50' : 'bg-or-bg text-or-text border-or-border/50'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${hasData ? 'bg-gg' : 'bg-or'}`} />
-                        {hasData ? `Data ${curPeriod}` : 'No Data'}
+                        {hasData ? `Data OK` : 'No Data'}
                       </span>
                     </div>
                   </div>
                   
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                     <button
                       onClick={() => openEdit(cl)}
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-gd-bg hover:text-gd-text transition-all"
-                      title="Edit"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(cl.key)}
                       className="w-8 h-8 rounded-lg flex items-center justify-center text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"
-                      title="Hapus"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -208,30 +215,26 @@ export default function ClientsAdminPage() {
                 </div>
 
                 {/* Meta Info */}
-                <div className="space-y-2 mb-5 flex-1">
-                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                <div className="space-y-3 mb-6 flex-1">
+                  <div className="flex items-center gap-3 text-xs text-text3">
                     <Building2 className="w-3.5 h-3.5 text-text4 shrink-0" />
-                    <span className="truncate">{cl.ind && cl.ind !== '—' ? cl.ind : 'Industri belum diatur'}</span>
+                    <span className="truncate font-medium">{cl.ind && cl.ind !== '—' ? cl.ind : '—'}</span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                  <div className="flex items-center gap-3 text-xs text-text3">
                     <Tag className="w-3.5 h-3.5 text-text4 shrink-0" />
-                    <span className="truncate">CG: <span className="font-medium text-text2">{cl.cg && cl.cg !== '—' ? cl.cg : '-'}</span></span>
+                    <span className="truncate">CG: <span className="font-bold text-text2">{cl.cg && cl.cg !== '—' ? cl.cg : '—'}</span></span>
                   </div>
-                  <div className="flex items-center gap-2.5 text-xs text-text3">
+                  <div className="flex items-center gap-3 text-xs text-text3">
                     <User className="w-3.5 h-3.5 text-text4 shrink-0" />
-                    <span className="truncate">PIC: <span className="font-medium text-text2">{cl.pic && cl.pic !== '—' ? cl.pic : '-'}</span></span>
-                  </div>
-                  <div className="flex items-center gap-2.5 text-xs text-text3">
-                    <Briefcase className="w-3.5 h-3.5 text-text4 shrink-0" />
-                    <span className="truncate">AS: <span className="font-medium text-text2">{cl.as && cl.as !== '—' ? cl.as : '-'}</span></span>
+                    <span className="truncate">PIC: <span className="font-bold text-text2">{cl.pic && cl.pic !== '—' ? cl.pic : '—'}</span></span>
                   </div>
                 </div>
 
                 {/* Channels */}
-                <div className="pt-4 border-t border-border-main">
-                  <div className="text-[10px] font-black text-text4 uppercase tracking-wider mb-2.5 flex items-center justify-between">
-                    <span>Channels</span>
-                    <span className="bg-surface2 text-text3 px-1.5 py-0.5 rounded-md">{cl.chs.length}</span>
+                <div className="pt-5 border-t border-border-main">
+                  <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-3 flex items-center justify-between">
+                    <span>Active Channels</span>
+                    <span className="bg-surface3 text-text2 px-2 py-0.5 rounded-md font-black">{cl.chs.length}</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {cl.chs.slice(0, 4).map(ch => {
@@ -246,11 +249,8 @@ export default function ClientsAdminPage() {
                     })}
                     {cl.chs.length > 4 && (
                       <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-surface3 text-text3 border border-border-main">
-                        +{cl.chs.length - 4} lagi
+                        +{cl.chs.length - 4}
                       </span>
-                    )}
-                    {cl.chs.length === 0 && (
-                      <span className="text-xs text-text4 italic">Belum ada channel</span>
                     )}
                   </div>
                 </div>
@@ -262,36 +262,37 @@ export default function ClientsAdminPage() {
 
       {/* ── Modal ── */}
       {showModal && (
-        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[10vh] pb-[10vh] px-5">
-          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-full">
+        <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[10vh]">
+          <div className="absolute inset-0 bg-black/25 backdrop-blur-sm animate-fade-in" onClick={() => setShowModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-border-main overflow-hidden animate-fade-in flex flex-col max-h-[85vh]">
             {/* Modal header */}
-            <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b border-border-main">
+            <div className="flex shrink-0 items-center justify-between px-7 py-6 border-b border-border-main bg-surface1/50">
               <div>
-                <h3 className="text-base font-bold text-text">
+                <h3 className="text-lg font-black text-text tracking-tight">
                   {editKey ? `Edit Klien: ${editKey}` : 'Tambah Klien Baru'}
                 </h3>
-                <p className="text-xs text-text3 mt-0.5">
-                  {editKey ? 'Ubah konfigurasi klien dan channel.' : 'Daftarkan klien baru ke dalam sistem.'}
-                </p>
+                <p className="text-xs text-text3 mt-0.5">Konfigurasi metadata klien dan channel iklan.</p>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-8 h-8 rounded-xl hover:bg-surface2 flex items-center justify-center text-text3 transition-colors"
+                className="w-9 h-9 rounded-xl hover:bg-surface3 flex items-center justify-center text-text3 transition-all"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSave} className="flex-1 flex flex-col min-h-0">
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto p-7 space-y-8">
                 {/* Basic info */}
-                <div className="p-6 space-y-4 border-b border-border-main">
-                  <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Informasi Dasar</div>
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-5">
+                  <div className="text-[10px] font-black text-text4 uppercase tracking-[0.15em] flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    Informasi Dasar
+                  </div>
+                  <div className="grid grid-cols-2 gap-5">
                     {FORM_FIELDS.map(f => (
                       <div key={f.key} className={f.span ? 'col-span-2' : ''}>
-                        <label className="text-[11px] font-bold text-text3 uppercase tracking-wide block mb-1.5">{f.label}</label>
+                        <label className="text-[11px] font-bold text-text3 uppercase tracking-wider block mb-2">{f.label}</label>
                         <input
                           type="text"
                           value={(form as any)[f.key]}
@@ -299,7 +300,7 @@ export default function ClientsAdminPage() {
                           onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))}
                           required={f.required}
                           placeholder={f.ph}
-                          className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all disabled:opacity-40"
                         />
                       </div>
                     ))}
@@ -307,39 +308,40 @@ export default function ClientsAdminPage() {
                 </div>
 
                 {/* Channels */}
-                <div className="p-6 space-y-3">
-                  <div className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Channel yang Ditrack</div>
-                  <div className="grid grid-cols-2 gap-2 items-start">
+                <div className="space-y-5">
+                   <div className="text-[10px] font-black text-text4 uppercase tracking-[0.15em] flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    Konfigurasi Channels
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
                     {Object.entries(CH_DEF).map(([ch, def]) => {
                       const active = form.chs.includes(ch);
                       const stage = def.stage || 'bofu';
                       const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;
                       return (
-                        <div key={ch} className="space-y-1">
+                        <div key={ch} className="space-y-2">
                           <button
                             type="button"
                             onClick={() => toggleCh(ch)}
-                            className={`w-full px-4 py-2.5 rounded-xl border text-left text-sm font-semibold transition-all flex items-center gap-2.5 ${
-                              active ? 'bg-text text-white border-text shadow-sm' : 'bg-surface2 text-text2 border-border-main hover:border-border-alt'
+                            className={`w-full px-4 py-3 rounded-xl border text-left transition-all flex items-center gap-3 ${
+                              active 
+                                ? 'bg-text text-white border-text shadow-md shadow-text/10' 
+                                : 'bg-surface2 text-text2 border-border-main hover:border-border-alt'
                             }`}
                           >
-                            <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-white/80' : s.dot}`} />
-                            <span className="flex-1 truncate">{def.l}</span>
-                            <span className={`text-[9px] font-bold uppercase tracking-wider ${active ? 'text-white/50' : 'text-text4'}`}>
-                              {def.stage}
-                            </span>
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${active ? 'bg-white' : s.dot}`} />
+                            <span className="flex-1 text-xs font-bold truncate">{def.l}</span>
                           </button>
                           {active && (
-                            <div className="flex items-center gap-2 px-2 py-1 bg-surface2 rounded-lg">
-                              <span className="text-[10px] text-text3 shrink-0">Target ROAS:</span>
+                            <div className="flex items-center gap-2 px-3 py-2 bg-accent-light rounded-xl border border-accent-mid animate-fade-in">
+                              <span className="text-[10px] font-bold text-accent shrink-0 uppercase">Target ROAS</span>
                               <input
                                 type="number" step="0.1"
                                 value={form.troas[ch] || ''}
                                 onChange={e => setForm(f => ({ ...f, troas: { ...f.troas, [ch]: e.target.value } }))}
-                                placeholder="misal: 4"
-                                className="flex-1 h-7 px-2 rounded-lg border border-border-main bg-white text-xs font-semibold text-text focus:outline-none focus:border-accent transition-all"
+                                placeholder="4.0"
+                                className="flex-1 h-7 px-2 rounded-lg border border-accent-mid bg-white text-xs font-bold text-text focus:outline-none focus:ring-2 focus:ring-accent/10 transition-all"
                               />
-                              <span className="text-[10px] text-text3">x</span>
                             </div>
                           )}
                         </div>
@@ -350,24 +352,21 @@ export default function ClientsAdminPage() {
               </div>
 
               {/* Footer */}
-              <div className="shrink-0 px-6 py-4 border-t border-border-main bg-surface2/40 flex items-center justify-between gap-4">
+              <div className="shrink-0 px-7 py-5 border-t border-border-main bg-surface2/50 flex items-center justify-between gap-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-5 h-10 rounded-xl border border-border-main text-sm font-semibold text-text2 hover:bg-surface2 transition-all"
+                  className="px-6 h-11 rounded-xl border border-border-main text-sm font-bold text-text2 hover:bg-surface3 transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 px-6 h-10 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50"
+                  className="flex items-center gap-2.5 px-10 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all shadow-lg shadow-text/10 disabled:opacity-50"
                 >
-                  {loading
-                    ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : <Save className="w-4 h-4" />
-                  }
-                  Simpan Klien
+                  {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+                  Simpan Perubahan
                 </button>
               </div>
             </form>

@@ -97,7 +97,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl space-y-6 animate-fade-in pb-12">
+    <div className="max-w-5xl mx-auto space-y-7 animate-fade-in pb-12">
       {/* Toast Notification */}
       {toast && (
         <div className={`fixed top-[76px] right-6 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
