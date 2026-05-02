@@ -129,7 +129,7 @@ export default function AdminHubPage() {
               <LayoutDashboard className="w-6 h-6" />
            </div>
            <div>
-              <h1 className="text-3xl font-bold text-text tracking-tight">Admin Hub</h1>
+              <h1 className="text-2xl font-bold text-text tracking-tight">Admin Hub</h1>
               <p className="text-sm font-medium text-text3 mt-1">Pusat kendali operasional dan manajemen ekosistem dashboard.</p>
            </div>
         </div>
@@ -166,7 +166,7 @@ export default function AdminHubPage() {
       </div>
 
       {/* AI Health & Cost Monitoring */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-surface2/40 p-6 rounded-3xl border border-border-main/50">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-surface2/40 p-6 rounded-2xl border border-border-main/50">
         <div className="flex items-center gap-4 px-2">
            <div className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-accent shadow-sm">
               <Zap className="w-5 h-5 fill-current" />
@@ -203,7 +203,7 @@ export default function AdminHubPage() {
           <Link
             key={item.href}
             href={item.href}
-            className="group bg-white rounded-3xl p-8 border border-border-main shadow-sm hover:shadow-xl hover:border-transparent transition-all duration-300 flex flex-col gap-6"
+            className="group bg-white rounded-2xl p-8 border border-border-main shadow-sm hover:shadow-lg hover:border-transparent transition-all duration-300 flex flex-col gap-6"
           >
             <div className="flex items-start justify-between">
               <div
@@ -228,7 +228,7 @@ export default function AdminHubPage() {
 
       {/* Client Status & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-2 bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
           <div className="px-8 py-6 border-b border-border-main flex items-center justify-between">
              <div className="flex items-center gap-3">
                 <PieChart className="w-5 h-5 text-text3" />
@@ -270,7 +270,7 @@ export default function AdminHubPage() {
           </div>
         </div>
 
-        <div className="lg:col-span-3 bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+        <div className="lg:col-span-3 bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
           <div className="px-8 py-6 border-b border-border-main flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Zap className="w-5 h-5 text-accent" />

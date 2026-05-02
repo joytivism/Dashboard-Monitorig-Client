@@ -106,7 +106,7 @@ function OverviewContent() {
             <Activity className="w-5 h-5 text-accent" />
             <span className="text-sm font-bold text-text3 tracking-tight">Overview Dashboard</span>
           </div>
-          <h1 className="text-3xl font-bold text-text tracking-tight">Performa Portofolio</h1>
+          <h1 className="text-2xl font-bold text-text tracking-tight">Performa Portofolio</h1>
           <p className="text-sm text-text3 mt-1.5 font-medium">Ringkasan performa seluruh klien aktif.</p>
         </div>
 

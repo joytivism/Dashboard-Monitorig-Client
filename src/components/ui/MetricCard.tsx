@@ -1,5 +1,4 @@
-import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 interface MetricCardProps {
   title: string;
@@ -30,9 +29,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   };
 
   return (
-    <div className={`${variantStyles[variant]} rounded-3xl p-6 border shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 ${className}`}>
+    <div className={`${variantStyles[variant]} rounded-2xl p-6 border shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 ${className}`}>
       <div className="flex justify-between items-start mb-6">
-        <div className="text-sm font-bold text-text3 tracking-tight">{title}</div>
+        <div className="text-[10px] font-black text-text3 uppercase tracking-[0.12em]">{title}</div>
         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${variant === 'accent' ? 'bg-accent/10 text-accent' : 'bg-surface2 text-text'}`}>
           <Icon className="w-5 h-5" />
         </div>
@@ -41,8 +40,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       <div className="flex items-center gap-3 mb-2">
         <div className="text-3xl font-bold text-text tracking-tight">{value}</div>
         {growth !== undefined && growth !== null && (
-          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isUp ? 'bg-gg-bg text-gg' : 'bg-rr-bg text-rr'} border border-current/10 shadow-sm`}>
-            {isUp ? '↑' : '↓'} {Math.abs(growth).toFixed(1)}%
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black ${isUp ? 'bg-gg-bg text-gg' : 'bg-rr-bg text-rr'} border border-current/10 shadow-sm`}>
+            {isUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+            {Math.abs(growth).toFixed(1)}%
           </span>
         )}
       </div>

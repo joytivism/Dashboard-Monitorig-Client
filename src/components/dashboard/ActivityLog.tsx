@@ -29,13 +29,13 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ activities, compact = 
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-border-main shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
       <table className="w-full text-left">
         <thead>
           <tr className="bg-surface2/50 border-b border-border-main">
-            <th className="py-4 px-6 text-xs font-bold text-text3">Tanggal</th>
-            <th className="py-4 px-6 text-xs font-bold text-text3">Kategori</th>
-            <th className="py-4 px-6 text-xs font-bold text-text3">Keterangan</th>
+            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-widest">Tanggal</th>
+            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-widest">Kategori</th>
+            <th className="py-4 px-6 text-[10px] font-black text-text4 uppercase tracking-widest">Keterangan</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border-main/30">
