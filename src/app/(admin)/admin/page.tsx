@@ -116,134 +116,131 @@ export default function AdminHubPage() {
       {/* ── BENTO GRID LAYOUT ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
         
-        {/* Main AI Monitor (Bento Large) - REBUILT POWERFUL & INTERACTIVE */}
-        <div className="lg:col-span-8 bg-white rounded-[2rem] border border-border-main shadow-sm overflow-hidden flex flex-col group/bento hover:shadow-2xl hover:border-accent/10 transition-all duration-500 relative">
-          {/* Header Area */}
-          <div className="p-8 border-b border-border-main flex items-center justify-between bg-surface2/30 relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-             <div className="flex items-center gap-5 relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-text text-white flex items-center justify-center shadow-xl shadow-text/20 group-hover/bento:rotate-[-4deg] transition-all duration-500 relative">
-                   <div className="absolute inset-0 bg-gradient-to-tr from-accent/40 to-transparent opacity-0 group-hover/bento:opacity-100 transition-opacity rounded-2xl" />
-                   <Zap className="w-7 h-7 fill-accent group-hover/bento:scale-110 transition-transform" />
-                </div>
-                <div>
-                   <h2 className="text-sm font-bold text-text mb-1.5 flex items-center gap-2">
-                      AI Intelligence Engine
-                      <span className="w-2 h-2 rounded-full bg-gg animate-pulse" />
-                   </h2>
-                   <div className="flex items-center gap-3">
-                      <div className="px-2.5 py-1 rounded-lg bg-white border border-border-main/50 shadow-sm flex items-center gap-2">
-                         <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                         <span className="text-[10px] font-bold text-text uppercase tracking-wider">Nemotron-3 v1.0</span>
-                      </div>
-                      <span className="text-[10px] font-bold text-gg uppercase tracking-wider opacity-60">OpenRouter Active</span>
-                   </div>
-                </div>
-             </div>
-             
-             <div className="flex items-center gap-2 relative z-10">
-                <button className="w-10 h-10 rounded-xl bg-white border border-border-main/50 flex items-center justify-center text-text3 hover:text-accent hover:border-accent/30 hover:shadow-md transition-all active:scale-95">
-                   <Activity className="w-4.5 h-4.5" />
-                </button>
-                <Link href="/admin/settings" className="w-10 h-10 rounded-xl bg-white border border-border-main/50 flex items-center justify-center text-text3 hover:text-accent hover:border-accent/30 hover:shadow-md transition-all active:scale-95">
-                   <ArrowUpRight className="w-5 h-5" />
-                </Link>
-             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border-main/50 flex-1 relative z-10">
-             {/* Column 1: Live Requests */}
-             <div className="p-8 flex flex-col group/col hover:bg-surface2/10 transition-colors cursor-default">
-                <div className="flex-1">
-                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6 flex items-center justify-between">
-                      Requests Engine
-                      <div className="flex gap-1">
-                         {[1,2,3].map(i => <div key={i} className={`w-1 h-1 rounded-full bg-accent/40 animate-bounce delay-${i*200}`} />)}
-                      </div>
-                   </div>
-                   <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/col:translate-x-1 transition-transform">
-                      {stats.aiStats.totalRequests.toLocaleString()}
-                   </div>
-                   <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Analisis diproses dalam sesi aktif periode ini.</p>
-                </div>
-                
-                <div className="mt-10 flex items-center justify-between bg-surface2/30 p-4 rounded-2xl border border-border-main/40 shadow-inner h-[80px] relative overflow-hidden group/pulse">
-                   <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-transparent opacity-0 group-hover/pulse:opacity-100 transition-opacity" />
-                   
-                   <div className="flex -space-x-3 relative z-10">
-                      {[1,2,3,4].map(i => (
-                        <div key={i} className="relative">
-                           <div className="absolute inset-0 rounded-2xl bg-accent/20 animate-ping opacity-20" style={{ animationDuration: `${2 + i*0.5}s` }} />
-                           <div className="w-10 h-10 rounded-2xl border-2 border-white bg-white flex items-center justify-center shadow-sm relative z-20 overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent" />
-                              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(var(--accent-rgb),0.8)]" />
-                           </div>
+        {/* Main AI Monitor (Bento Large) */}
+        <div className="lg:col-span-8 bg-white rounded-[2.5rem] border border-border-main shadow-sm overflow-hidden flex flex-col group/engine transition-all duration-500">
+           {/* Header Area: Integrated & Sharp */}
+           <div className="p-8 border-b border-border-main bg-surface2/10 flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                 <div className="w-14 h-14 rounded-2xl bg-text flex items-center justify-center shadow-xl shadow-text/10 group-hover/engine:bg-accent transition-colors duration-500">
+                    <Zap className="w-6 h-6 text-white" />
+                 </div>
+                 <div className="space-y-1.5">
+                    <div className="flex items-center gap-2.5">
+                       <h2 className="text-base font-black text-text tracking-tight">AI Intelligence Engine</h2>
+                       <div className="w-1.5 h-1.5 rounded-full bg-gg shadow-[0_0_8px_#10b981]" />
+                    </div>
+                    <div className="flex items-center gap-3">
+                       <div className="px-2.5 py-1 rounded-lg bg-white border border-border-main shadow-sm flex items-center gap-2">
+                          <div className="w-1 h-1 rounded-full bg-or" />
+                          <span className="text-[9px] font-black text-text uppercase tracking-widest">NEMOTRON-3 V1.0</span>
+                       </div>
+                       <span className="text-[9px] font-black text-accent uppercase tracking-widest opacity-60">OPENROUTER ACTIVE</span>
+                    </div>
+                 </div>
+              </div>
+              <div className="flex items-center gap-2">
+                 <button className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-text3 hover:text-accent hover:border-accent transition-all">
+                    <Activity className="w-4 h-4" />
+                 </button>
+                 <Link href="/admin/settings" className="w-10 h-10 rounded-xl bg-white border border-border-main flex items-center justify-center text-text3 hover:text-accent hover:border-accent transition-all">
+                    <ArrowUpRight className="w-4 h-4" />
+                 </Link>
+              </div>
+           </div>
+
+           {/* Metrics Architecture: 3-Column Precise Grid */}
+           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border-main/50">
+              
+              {/* Column 1: Node Requests */}
+              <div className="p-8 flex flex-col hover:bg-surface2/20 transition-colors group/node cursor-default">
+                 <div className="flex-1 mb-10">
+                    <div className="flex items-center justify-between mb-8">
+                       <span className="text-[9px] font-black text-text4 uppercase tracking-[0.2em]">Requests Engine</span>
+                       <div className="flex gap-1">
+                          {[1,2,3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-border-main group-hover/node:bg-accent/40 transition-colors" />)}
+                       </div>
+                    </div>
+                    <div className="text-5xl font-black text-text tracking-tighter mb-3 transition-transform group-hover/node:translate-x-1">
+                       {stats.aiStats.totalRequests}
+                    </div>
+                    <p className="text-xs font-semibold text-text3 leading-relaxed max-w-[180px]">Analisis diproses dalam sesi aktif periode ini.</p>
+                 </div>
+                 
+                 <div className="bg-white border border-border-main/60 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div className="flex -space-x-2">
+                       {[1,2,3,4].map(i => (
+                          <div key={i} className="w-9 h-9 rounded-xl border-2 border-white bg-surface2 flex items-center justify-center relative overflow-hidden">
+                             <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover/node:opacity-100 transition-opacity" />
+                             <div className="w-1.5 h-1.5 rounded-full bg-accent/30 group-hover/node:bg-accent transition-colors" />
+                          </div>
+                       ))}
+                    </div>
+                    <div className="text-right">
+                       <div className="text-[11px] font-black text-accent tracking-tighter">+{stats.aiStats.todayRequests} TODAY</div>
+                       <div className="text-[8px] font-bold text-text4 uppercase tracking-widest opacity-50">ENGINE ACTIVE</div>
+                    </div>
+                 </div>
+              </div>
+
+              {/* Column 2: Data Throughput */}
+              <div className="p-8 flex flex-col hover:bg-surface2/20 transition-colors group/node border-x border-border-main/50 cursor-default">
+                 <div className="flex-1 mb-10">
+                    <div className="flex items-center justify-between mb-8">
+                       <span className="text-[9px] font-black text-text4 uppercase tracking-[0.2em]">Data Throughput</span>
+                       <Zap className="w-3 h-3 text-border-main group-hover/node:text-accent transition-colors" />
+                    </div>
+                    <div className="text-5xl font-black text-text tracking-tighter mb-3 transition-transform group-hover/node:scale-105 origin-left">
+                       {(stats.aiStats.totalTokens/1000).toFixed(1)}K
+                    </div>
+                    <p className="text-xs font-semibold text-text3 leading-relaxed max-w-[180px]">Total token yang dikonsumsi oleh model strategi.</p>
+                 </div>
+                 
+                 <div className="space-y-3">
+                    <div className="flex justify-between items-end">
+                       <span className="text-[9px] font-black text-text4 uppercase tracking-widest">Efficiency Status</span>
+                       <span className="text-[10px] font-black text-text tracking-tighter">82.4%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-surface2 rounded-full overflow-hidden border border-border-main/20">
+                       <div className="h-full bg-gradient-to-r from-accent to-or w-[82.4%] relative overflow-hidden">
+                          <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              {/* Column 3: Burn Estimation */}
+              <div className="p-8 flex flex-col hover:bg-surface2/20 transition-colors group/node cursor-default">
+                 <div className="flex-1 mb-10">
+                    <div className="flex items-center justify-between mb-8">
+                       <span className="text-[9px] font-black text-text4 uppercase tracking-[0.2em]">Burn Estimation</span>
+                       <div className="w-1.5 h-1.5 rounded-full bg-rr" />
+                    </div>
+                    <div className="text-5xl font-black text-text tracking-tighter mb-3 transition-transform group-hover/node:-translate-y-1">
+                       ${stats.aiStats.totalCost.toFixed(4)}
+                    </div>
+                    <p className="text-xs font-semibold text-text3 leading-relaxed max-w-[180px]">Estimasi biaya API akumulasi berjalan.</p>
+                 </div>
+
+                 <div className="bg-text p-6 rounded-3xl shadow-xl shadow-text/20 relative overflow-hidden group/forecast">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/forecast:opacity-20 transition-opacity">
+                       <Activity className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="relative z-10 space-y-2">
+                       <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-gg" />
+                          <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Monthly Forecast</span>
+                       </div>
+                       <div className="flex items-baseline gap-1.5">
+                          <span className="text-xl font-black text-white tracking-tighter">
+                             ${(stats.aiStats.totalCost * 30).toFixed(2)}
+                          </span>
+                          <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">est / mo</span>
                         </div>
-                      ))}
-                   </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
 
-                   <div className="text-right relative z-10">
-                      <div className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-br from-or to-accent uppercase tracking-tighter leading-none mb-0.5">
-                         +{stats.aiStats.todayRequests} Today
-                      </div>
-                      <div className="flex items-center justify-end gap-1.5">
-                         <div className="w-1 h-1 rounded-full bg-gg animate-pulse shadow-[0_0_5px_#10b981]" />
-                         <div className="text-[9px] font-bold text-text4 uppercase tracking-widest opacity-60">Engine Active</div>
-                      </div>
-                   </div>
-                </div>
-             </div>
-
-             {/* Column 2: Data & Efficiency */}
-             <div className="p-8 flex flex-col bg-surface2/5 hover:bg-surface2/20 transition-colors cursor-default group/eff border-x border-border-main/50">
-                <div className="flex-1">
-                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6">Data Throughput</div>
-                   <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/eff:scale-105 transition-transform origin-left">
-                      {(stats.aiStats.totalTokens/1000).toFixed(1)}K
-                   </div>
-                   <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Total token yang dikonsumsi oleh model strategi.</p>
-                </div>
-                
-                <div className="mt-10 flex flex-col justify-center h-[80px] space-y-3">
-                   <div className="flex justify-between items-end">
-                      <span className="text-[10px] font-bold text-text4 uppercase tracking-widest">Efficiency Status</span>
-                      <span className="text-xs font-bold text-text tracking-tighter">82.4%</span>
-                   </div>
-                   <div className="w-full h-2.5 bg-white rounded-full border border-border-main/50 overflow-hidden p-0.5 shadow-inner">
-                      <div className="h-full bg-gradient-to-r from-accent/80 to-accent rounded-full w-3/4 shadow-[0_0_15px_rgba(var(--accent-rgb),0.4)] relative overflow-hidden">
-                         <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:1.2rem_1.2rem] animate-[move-stripe_1s_linear_infinite]" />
-                      </div>
-                   </div>
-                </div>
-             </div>
-
-             {/* Column 3: Burn Estimation */}
-             <div className="p-8 flex flex-col group/burn hover:bg-surface2/10 transition-colors cursor-default">
-                <div className="flex-1">
-                   <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-6 flex items-center justify-between">
-                      Burn Estimation
-                      <div className="w-2 h-2 rounded-full bg-rr animate-pulse" />
-                   </div>
-                   <div className="text-4xl font-bold text-text tracking-tighter mb-2 group-hover/burn:-translate-y-1 transition-transform">
-                      ${stats.aiStats.totalCost.toFixed(4)}
-                   </div>
-                   <p className="text-xs font-medium text-text3 leading-relaxed max-w-[200px]">Estimasi biaya API akumulasi berjalan.</p>
-                </div>
-
-                <div className="mt-10 bg-text text-white p-4 rounded-2xl shadow-xl flex flex-col justify-center h-[80px] group-hover/burn:scale-[1.02] transition-transform">
-                   <div className="flex items-center gap-2 mb-1">
-                      <Activity className="w-3 h-3 text-gg" />
-                      <span className="text-[9px] font-bold text-white/50 uppercase tracking-widest">Monthly Forecast</span>
-                   </div>
-                   <div className="flex items-baseline gap-1.5">
-                      <span className="text-lg font-bold text-white tracking-tighter">
-                         ${(stats.aiStats.totalCost * 30).toFixed(2)}
-                      </span>
-                      <span className="text-[9px] font-bold text-white/40 uppercase">est / mo</span>
-                   </div>
-                </div>
-             </div>
-          </div>
         </div>
 
         {/* Global Stats Vertical Stack (Bento Small) */}
