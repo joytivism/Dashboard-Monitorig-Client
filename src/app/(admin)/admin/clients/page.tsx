@@ -36,6 +36,7 @@ export default function ClientsAdminPage() {
   
   const [form, setForm] = useState({
     client_key: '',
+    name: '',
     industry: '',
     pic_name: '',
     account_strategist: '',
@@ -65,7 +66,7 @@ export default function ClientsAdminPage() {
 
   const openNew = () => {
     setEditKey(null);
-    setForm({ client_key: '', industry: '', pic_name: '', account_strategist: '', brand_category: '', chs: [], troas: {} });
+    setForm({ client_key: '', name: '', industry: '', pic_name: '', account_strategist: '', brand_category: '', chs: [], troas: {} });
     setShowModal(true);
   };
 
@@ -73,6 +74,7 @@ export default function ClientsAdminPage() {
     setEditKey(c.key);
     setForm({
       client_key: c.key,
+      name: c.key, // Assuming name matches key for now, or fetch if available
       industry: c.ind,
       pic_name: c.pic,
       account_strategist: c.as,
@@ -87,21 +89,45 @@ export default function ClientsAdminPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const payload = {
+      // 1. Upsert to clients table
+      const clientPayload = {
         client_key: form.client_key,
+        name: form.name || form.client_key,
         industry: form.industry,
         pic_name: form.pic_name,
         account_strategist: form.account_strategist,
-        brand_category: form.brand_category,
-        channels: form.chs,
-        target_roas: form.troas
+        brand_category: form.brand_category
       };
 
-      const { error } = await supabase
+      const { error: clientError } = await supabase
         .from('clients')
-        .upsert(payload, { onConflict: 'client_key' });
+        .upsert(clientPayload, { onConflict: 'client_key' });
 
-      if (error) throw error;
+      if (clientError) throw clientError;
+
+      // 2. Sync client_channels
+      // For simplicity: delete existing channels for this client and re-insert
+      // This is safer than individual upserts when channels are removed
+      const { error: deleteError } = await supabase
+        .from('client_channels')
+        .delete()
+        .eq('client_key', form.client_key);
+      
+      if (deleteError) throw deleteError;
+
+      if (form.chs.length > 0) {
+        const channelsPayload = form.chs.map(ch => ({
+          client_key: form.client_key,
+          channel_key: ch,
+          target_roas: form.troas[ch] ? Number(form.troas[ch]) : null
+        }));
+
+        const { error: chError } = await supabase
+          .from('client_channels')
+          .insert(channelsPayload);
+        
+        if (chError) throw chError;
+      }
       
       setToast({ type: 'success', text: `Klien ${form.client_key} berhasil ${editKey ? 'diperbarui' : 'ditambahkan'}!` });
       setShowModal(false);
@@ -128,7 +154,8 @@ export default function ClientsAdminPage() {
   const CHANNELS = ['FB', 'IG', 'TikTok', 'Google', 'Shopee', 'Tokopedia', 'Lazada', 'Website'];
 
   const FORM_FIELDS = [
-    { label: 'Client Key', key: 'client_key', ph: 'NamaKlien', disabled: !!editKey, required: true, span: true, icon: Hash },
+    { label: 'Client Key (ID)', key: 'client_key', ph: 'NamaKlien', disabled: !!editKey, required: true, span: true, icon: Hash },
+    { label: 'Display Name', key: 'name', ph: 'Contoh: Nama Klien Resmi', required: true, span: true, icon: User },
     { label: 'Industri', key: 'industry', ph: 'Contoh: Fashion / Kecantikan', icon: Briefcase },
     { label: 'PIC', key: 'pic_name', ph: 'Contoh: Joy', icon: User },
     { label: 'Account Strategist', key: 'account_strategist', ph: 'Contoh: Fahmi', icon: Target },

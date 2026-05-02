@@ -66,11 +66,11 @@ export default function ActivityPage() {
     if (!form.client_key || !form.name || !form.date) return;
     setLoading(true);
     try {
-      const { error } = await supabase.from('client_activity').insert({
+      const { error } = await supabase.from('activity_logs').insert({
         client_key: form.client_key,
-        type: form.type,
-        name: form.name,
-        date: form.date
+        log_type: form.type,
+        note: form.name,
+        log_date: form.date
       });
       if (error) throw error;
       setToast({ type: 'success', text: 'Activity berhasil ditambahkan!' });
@@ -88,7 +88,7 @@ export default function ActivityPage() {
     if (!id) return;
     if (!confirm('Hapus activity ini?')) return;
     try {
-      const { error } = await supabase.from('client_activity').delete().eq('id', id);
+      const { error } = await supabase.from('activity_logs').delete().eq('id', id);
       if (error) throw error;
       setToast({ type: 'success', text: 'Activity berhasil dihapus.' });
       router.refresh();
