@@ -65,7 +65,8 @@ export default function SettingsPage() {
     try {
       const updates = [
         { key: 'openrouter_key', value: apiKey },
-        { key: 'ai_prompt', value: prompt }
+        { key: 'ai_prompt', value: prompt },
+        { key: 'ai_model', value: currentModel }
       ];
 
       for (const update of updates) {
@@ -158,26 +159,44 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* AI Model Info Card (Read Only) */}
+        {/* AI Model Management Card */}
         <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-border-main flex items-center gap-3 bg-surface1/50">
-            <div className="w-8 h-8 rounded-xl bg-gd-bg text-gd-text border border-gd-border flex items-center justify-center">
-              <Bot className="w-4 h-4" />
+          <div className="px-6 py-4 border-b border-border-main flex items-center justify-between bg-surface1/50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-gd-bg text-gd-text border border-gd-border flex items-center justify-center">
+                <Bot className="w-4 h-4" />
+              </div>
+              <h2 className="text-sm font-bold text-text">Model AI (LLM)</h2>
             </div>
-            <h2 className="text-sm font-bold text-text text-gd-text">Model AI Aktif</h2>
+            {currentModel && (
+              <button
+                onClick={() => setCurrentModel('')}
+                className="text-[10px] font-bold text-rr-text hover:bg-rr-bg px-3 py-1.5 rounded-lg transition-all"
+              >
+                Hapus & Ganti Baru
+              </button>
+            )}
           </div>
-          <div className="p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center border border-border-main">
-              <Terminal className="w-6 h-6 text-text3" />
+          <div className="p-6">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center border border-border-main shrink-0">
+                <Terminal className="w-6 h-6 text-text3" />
+              </div>
+              <div className="flex-1">
+                <label className="text-[11px] font-bold text-text3 uppercase tracking-wider block mb-2">Model ID (OpenRouter)</label>
+                <input
+                  type="text"
+                  value={currentModel}
+                  onChange={(e) => setCurrentModel(e.target.value)}
+                  placeholder="Contoh: google/gemini-pro-1.5 atau nvidia/nemotron-3..."
+                  className="w-full h-12 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
+                />
+              </div>
             </div>
-            <div>
-              <div className="text-sm font-black text-text tracking-tight font-mono">{currentModel}</div>
-              <div className="text-xs text-text4 mt-0.5">Model ini dikonfigurasi melalui database untuk stabilitas sistem.</div>
-            </div>
-            <div className="ml-auto">
-              <span className="px-3 py-1.5 rounded-full bg-gg-bg text-gg-text border border-gg-border text-[10px] font-black uppercase tracking-widest">
-                Active
-              </span>
+            
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-surface2 border border-border-main text-[10px] text-text3 font-medium">
+              <Info className="w-3.5 h-3.5" />
+              Masukkan Model ID lengkap dari OpenRouter untuk menggunakan model AI yang berbeda.
             </div>
           </div>
         </div>
