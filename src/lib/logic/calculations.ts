@@ -1,5 +1,5 @@
 import { gd, pct } from '../utils';
-import { type DataEntry, type ChannelDef } from './data';
+import { type DataEntry, type ChannelDef } from '../data';
 
 export interface FunnelData {
   tofu: { sp: number; reach: number; impr: number; res: number };
