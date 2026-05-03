@@ -231,6 +231,17 @@
     font: inherit;
   }
 
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--panel) inset;
+    transition: background-color 9999s ease-in-out 0s;
+    caret-color: var(--text-primary);
+  }
+
   button {
     cursor: pointer;
   }
