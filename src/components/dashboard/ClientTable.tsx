@@ -1,13 +1,12 @@
 import React from 'react';
-import { Search, Filter, ChevronRight, Zap } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 import { useDashboardData } from '@/components/DataProvider';
-import { STATUS_BG, STATUS_DOT, ORD, LM } from '@/lib/data';
+import { STATUS_DOT, LM, type Client, type DataEntry } from '@/lib/data';
 import { totals, clientWorst, fRp } from '@/lib/utils';
-import Sparkline from '@/components/ui/Sparkline';
 
 interface ClientTableProps {
-  clients: any[];
-  data: any[];
+  clients: Client[];
+  data: DataEntry[];
   periods: string[];
   currentPeriod: string;
   onClientClick: (clientKey: string) => void;

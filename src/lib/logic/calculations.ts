@@ -1,4 +1,5 @@
-import { gd, prev, pct } from '../utils';
+import { gd, pct } from '../utils';
+import { type DataEntry, type ChannelDef } from './data';
 
 export interface FunnelData {
   tofu: { sp: number; reach: number; impr: number; res: number };
@@ -6,8 +7,8 @@ export interface FunnelData {
   bofu: { sp: number; ord: number; rev: number };
 }
 
-export const calculateFunnelMetrics = (CH_DEF: Record<string, any>, data: any[], clientId: string, chs: string[], period: string) => {
-  let stats = {
+export const calculateFunnelMetrics = (CH_DEF: Record<string, ChannelDef>, data: DataEntry[], clientId: string, chs: string[], period: string) => {
+  const stats = {
     tofu: { sp: 0, reach: 0, impr: 0, res: 0 },
     mofu: { vis: 0, ord: 0, rev: 0 },
     bofu: { sp: 0, ord: 0, rev: 0 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useDashboardData } from '@/components/DataProvider';
 import { clientWorst, totals, pct as getPct } from '@/lib/utils';
 import {
-  Database, Activity, Users, ArrowUpRight, TrendingUp,
+  Database, Activity, Users, TrendingUp,
   Zap, LayoutDashboard, Settings2, AlertCircle, ChevronRight
 } from 'lucide-react';
 

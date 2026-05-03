@@ -1,5 +1,4 @@
-import { ORD } from './data';
-import type { DataEntry, Client, ChannelDef } from './data';
+import { ORD, type DataEntry, type Client, type ChannelDef } from './data';
 
 export function gd(DATA: DataEntry[], c: string, ch: string, p: string): DataEntry | null { 
   return DATA.find(x => x.c === c && x.ch === ch && x.p === p) || null; 

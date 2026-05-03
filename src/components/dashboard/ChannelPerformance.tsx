@@ -1,12 +1,12 @@
 import { Zap, Smartphone, ShoppingCart, Activity } from 'lucide-react';
 import { useDashboardData } from '@/components/DataProvider';
-import { STAGE_LABEL, LM } from '@/lib/data';
+import { STAGE_LABEL, LM, type DataEntry } from '@/lib/data';
 import { gd, roas, fK, fRp, isAware, chWorstKey } from '@/lib/utils';
 
 interface ChannelPerformanceProps {
   clientId: string;
   channels: string[];
-  data: any[];
+  data: DataEntry[];
   periods: string[];
   currentPeriod: string;
 }
