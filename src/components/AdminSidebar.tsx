@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  Database, Activity, Users, LayoutDashboard, Settings2, Hexagon, LogOut, ChevronRight, ExternalLink
+  Database, Activity, Users, LayoutDashboard, Settings2, Hexagon, LogOut, ChevronRight, ExternalLink, Zap
 } from 'lucide-react';
 import { logout } from '@/app/actions/auth';
 
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: '/admin',          icon: LayoutDashboard, label: 'Admin Hub' },
   { href: '/admin/data',     icon: Database,        label: 'Input Data' },
   { href: '/admin/activity', icon: Activity,        label: 'Activity Log' },
+  { href: '/admin/ai',       icon: Zap,             label: 'AI Monitoring' },
   { href: '/admin/clients',  icon: Users,           label: 'Kelola Klien' },
   { href: '/admin/settings', icon: Settings2,       label: 'Pengaturan' },
 ];

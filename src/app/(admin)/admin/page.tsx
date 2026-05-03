@@ -70,9 +70,9 @@ export default function AdminHubPage() {
 
   const QUICK_ACTIONS = [
     { href: '/admin/data', icon: Database, title: 'Data Input', badge: 'Active', color: 'text-accent', bg: 'bg-accent/10' },
+    { href: '/admin/ai', icon: Zap, title: 'AI Monitoring', badge: 'System', color: 'text-accent', bg: 'bg-accent/10' },
     { href: '/admin/activity', icon: Activity, title: 'Live Log', badge: 'Real-time', color: 'text-or', bg: 'bg-or/10' },
     { href: '/admin/clients', icon: Users, title: 'Klien', badge: `${stats.total}`, color: 'text-text2', bg: 'bg-surface3' },
-    { href: '/admin/settings', icon: Settings2, title: 'System', badge: 'AI Ready', color: 'text-gg', bg: 'bg-gg/10' },
   ];
 
   return (
