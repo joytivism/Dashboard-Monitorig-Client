@@ -151,17 +151,17 @@ export default function AdminHubPage() {
                        return (
                           <div key={cl.key} className="flex items-center justify-between p-4 rounded-xl bg-white border border-border-main hover:shadow-sm transition-all group/item">
                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-gg/10 text-gg flex items-center justify-center text-xs font-black group-hover/item:bg-gg group-hover/item:text-white transition-all">
+                                <div className="w-9 h-9 rounded-xl bg-gg/10 text-gg flex items-center justify-center text-[10px] font-black group-hover/item:bg-gg group-hover/item:text-white transition-all">
                                    {cl.key.slice(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                   <div className="text-sm font-medium text-text">{cl.name}</div>
-                                   <div className="text-xs text-text3">{cl.ind}</div>
+                                   <div className="text-[11px] font-black text-text uppercase tracking-tight">{cl.name}</div>
+                                   <div className="text-[9px] font-bold text-text3 uppercase tracking-wider mt-0.5">{cl.ind}</div>
                                 </div>
                              </div>
                               <div className="text-right">
                                 <div className="text-base font-bold text-gg tabular-nums tracking-tight">{t.roas?.toFixed(2) || '0.00'}x</div>
-                                <div className="type-overline !text-[10px]">ROAS</div>
+                                <div className="type-overline !text-[9px]">ROAS</div>
                              </div>
                           </div>
                        );
@@ -183,17 +183,17 @@ export default function AdminHubPage() {
                        return (
                           <div key={cl.key} className="flex items-center justify-between p-4 rounded-xl bg-white border border-border-main hover:shadow-sm transition-all group/item">
                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-rr/10 text-rr flex items-center justify-center text-xs font-black group-hover/item:bg-rr group-hover/item:text-white transition-all">
+                                <div className="w-9 h-9 rounded-xl bg-rr/10 text-rr flex items-center justify-center text-[10px] font-black group-hover/item:bg-rr group-hover/item:text-white transition-all">
                                    {cl.key.slice(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                   <div className="text-sm font-medium text-text">{cl.name}</div>
-                                   <div className="text-xs text-text3">{status === 'rr' ? 'Kritis' : 'Waspada'}</div>
+                                   <div className="text-[11px] font-black text-text uppercase tracking-tight">{cl.name}</div>
+                                   <div className="text-[9px] font-bold text-text3 uppercase tracking-wider mt-0.5">{status === 'rr' ? 'KRITIS' : 'WASPADA'}</div>
                                 </div>
                              </div>
                               <div className="text-right">
                                 <div className="text-base font-bold text-rr tabular-nums tracking-tight">{t.roas?.toFixed(2) || '0.00'}x</div>
-                                <div className="type-overline !text-[10px]">ROAS</div>
+                                <div className="type-overline !text-[9px]">ROAS</div>
                              </div>
                           </div>
                        );
@@ -285,12 +285,12 @@ export default function AdminHubPage() {
                 const statusStyle = STATUS_COLOR_MAP[wc] || STATUS_COLOR_MAP.nn;
                 return (
                   <Link key={cl.key} href={`/client/${cl.key}`} className="p-5 hover:bg-surface2 transition-colors flex items-center gap-4 group/item">
-                     <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-xs font-black group-hover/item:bg-accent group-hover/item:text-white transition-all">
+                     <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black group-hover/item:bg-accent group-hover/item:text-white transition-all">
                         {cl.key.slice(0,2).toUpperCase()}
                      </div>
                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-text truncate">{cl.name}</div>
-                        <div className="text-xs text-text3 truncate">{cl.ind}</div>
+                        <div className="text-[11px] font-black text-text uppercase truncate">{cl.name}</div>
+                        <div className="text-[9px] font-bold text-text3 uppercase truncate">{cl.ind}</div>
                      </div>
                      <div className={`chip ${statusStyle.bg.replace('bg-','chip-').replace('-bg','')}`}>
                         {STATUS_LABEL[wc]}

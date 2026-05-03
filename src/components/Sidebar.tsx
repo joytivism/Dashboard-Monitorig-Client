@@ -23,7 +23,7 @@ function SidebarContent() {
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-surface border-r border-border-main flex flex-col z-40"
+    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-surface border-r border-border-main flex flex-col z-40 uppercase"
       style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
 
       {/* ── Logo ── */}
@@ -32,8 +32,8 @@ function SidebarContent() {
           <Hexagon className="w-4.5 h-4.5 text-white fill-white" />
         </div>
         <div className="min-w-0">
-          <div className="text-[11px] font-black text-text tracking-tight uppercase leading-none">Real Advertise</div>
-          <div className="text-[9px] font-bold text-text3 uppercase tracking-wider mt-0.5">Command Center</div>
+          <div className="text-[11px] font-black text-text tracking-tight leading-none">Real Advertise</div>
+          <div className="text-[9px] font-bold text-text3 tracking-wider mt-0.5">Command Center</div>
         </div>
       </div>
 
@@ -42,26 +42,26 @@ function SidebarContent() {
 
         {/* Main Menu */}
         <div>
-          <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-2 px-3">Main Menu</div>
+          <div className="text-[9px] font-black text-text4 tracking-[0.12em] mb-2 px-3">Main Menu</div>
           <div className="flex flex-col gap-0.5">
             <Link
               href={`/${queryString}`}
-              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[11px] font-black transition-all duration-200 ${
                 isHome ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
               }`}
             >
               <LayoutDashboard className={`w-4 h-4 shrink-0 ${isHome ? 'text-white' : 'text-text4 group-hover:text-accent'}`} />
-              <span className="flex-1 truncate">Dashboard</span>
+              <span className="flex-1 truncate tracking-wider">Dashboard</span>
               {isHome && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
             </Link>
             <Link
               href="/admin"
-              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[11px] font-black transition-all duration-200 ${
                 isAdmin ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
               }`}
             >
               <Settings className={`w-4 h-4 shrink-0 ${isAdmin ? 'text-white' : 'text-text4 group-hover:text-accent'}`} />
-              <span className="flex-1 truncate">Admin Hub</span>
+              <span className="flex-1 truncate tracking-wider">Admin Hub</span>
               {isAdmin && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
             </Link>
           </div>
@@ -69,7 +69,7 @@ function SidebarContent() {
 
         {/* Clients Section */}
         <div className="flex-1">
-          <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-2 px-3">Active Clients</div>
+          <div className="text-[9px] font-black text-text4 tracking-[0.12em] mb-2 px-3">Active Clients</div>
           <div className="flex flex-col gap-0.5">
             {CLIENTS.map((cl) => {
               const isActive = pathname === `/client/${cl.key}`;
@@ -79,7 +79,7 @@ function SidebarContent() {
                 <Link
                   key={cl.key}
                   href={`/client/${cl.key}${queryString}`}
-                  className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[11px] font-black transition-all duration-200 ${
                     isActive ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
                   }`}
                 >
@@ -89,7 +89,7 @@ function SidebarContent() {
                   }`}>
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
-                  <span className="flex-1 truncate">{cl.name}</span>
+                  <span className="flex-1 truncate tracking-wider">{cl.name}</span>
                   {/* Status dot */}
                   <span
                     className="w-1.5 h-1.5 rounded-full shrink-0 transition-all shadow-sm"
@@ -110,8 +110,8 @@ function SidebarContent() {
                  RA
               </div>
               <div className="flex flex-col min-w-0">
-                 <span className="text-xs font-bold text-text truncate leading-none">Real Advertise</span>
-                 <span className="text-[10px] font-bold text-text3 uppercase tracking-wider mt-1.5">Enterprise Hub</span>
+                 <span className="text-[10px] font-black text-text truncate leading-none">Real Advertise</span>
+                 <span className="text-[9px] font-bold text-text3 tracking-wider mt-1.5">Enterprise Hub</span>
               </div>
            </div>
         </div>
@@ -119,7 +119,7 @@ function SidebarContent() {
         <form action={logout}>
           <button 
             type="submit"
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[10px] font-bold text-rr uppercase tracking-wider hover:bg-rr-bg transition-all group"
+            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[10px] font-black text-rr tracking-wider hover:bg-rr-bg transition-all group"
           >
             <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
             <span>Sign Out</span>
