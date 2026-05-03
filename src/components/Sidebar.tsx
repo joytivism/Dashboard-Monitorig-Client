@@ -27,22 +27,22 @@ function SidebarContent() {
       style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
 
       {/* ── Logo ── */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-border-main shrink-0">
-        <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm shrink-0">
-          <Hexagon className="w-5 h-5 text-white fill-white" />
+      <div className="h-[60px] flex items-center gap-3 px-6 border-b border-border-main shrink-0 bg-white">
+        <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/20 shrink-0">
+          <Hexagon className="w-4.5 h-4.5 text-white fill-white" />
         </div>
         <div className="min-w-0">
-          <div className="type-overline !text-text leading-tight !tracking-tight">Real Advertise</div>
-          <div className="type-overline !text-[10px] !text-text3">Command Center</div>
+          <div className="text-[11px] font-black text-text tracking-tight uppercase leading-none">Real Advertise</div>
+          <div className="text-[9px] font-bold text-text3 uppercase tracking-wider mt-0.5">Command Center</div>
         </div>
       </div>
 
       {/* ── Nav ── */}
-      <div className="flex-1 overflow-y-auto no-scrollbar py-4 flex flex-col gap-5 px-3">
+      <div className="flex-1 overflow-y-auto no-scrollbar py-4 flex flex-col gap-6 px-3">
 
         {/* Main Menu */}
         <div>
-          <div className="type-overline !text-[9px] mb-2 px-2">Menu</div>
+          <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-2 px-3">Main Menu</div>
           <div className="flex flex-col gap-0.5">
             <Link
               href={`/${queryString}`}
@@ -50,9 +50,9 @@ function SidebarContent() {
                 isHome ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 shrink-0" />
+              <LayoutDashboard className={`w-4 h-4 shrink-0 ${isHome ? 'text-white' : 'text-text4 group-hover:text-accent'}`} />
               <span className="flex-1 truncate">Dashboard</span>
-              {!isHome && <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />}
+              {isHome && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
             </Link>
             <Link
               href="/admin"
@@ -60,16 +60,16 @@ function SidebarContent() {
                 isAdmin ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
               }`}
             >
-              <Settings className="w-4 h-4 shrink-0" />
+              <Settings className={`w-4 h-4 shrink-0 ${isAdmin ? 'text-white' : 'text-text4 group-hover:text-accent'}`} />
               <span className="flex-1 truncate">Admin Hub</span>
-              {!isAdmin && <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />}
+              {isAdmin && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
             </Link>
           </div>
         </div>
 
         {/* Clients Section */}
         <div className="flex-1">
-          <div className="type-overline !text-[9px] mb-2 px-2">Klien Aktif</div>
+          <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-2 px-3">Active Clients</div>
           <div className="flex flex-col gap-0.5">
             {CLIENTS.map((cl) => {
               const isActive = pathname === `/client/${cl.key}`;
@@ -84,16 +84,16 @@ function SidebarContent() {
                   }`}
                 >
                   {/* Avatar */}
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 transition-colors duration-200 ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-surface3 text-text2'
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 transition-all duration-200 ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-surface3 text-text2 group-hover:bg-accent group-hover:text-white'
                   }`}>
-                    {cl.name.slice(0, 2).toUpperCase()}
+                    {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <span className="flex-1 truncate">{cl.name}</span>
                   {/* Status dot */}
                   <span
-                    className="w-2 h-2 rounded-full shrink-0 transition-colors"
-                    style={{ background: isActive ? 'rgba(255,255,255,0.7)' : dotColor }}
+                    className="w-1.5 h-1.5 rounded-full shrink-0 transition-all shadow-sm"
+                    style={{ background: isActive ? 'rgba(255,255,255,0.8)' : dotColor }}
                   />
                 </Link>
               );
@@ -103,24 +103,26 @@ function SidebarContent() {
       </div>
 
       {/* ── Footer ── */}
-      <div className="px-5 py-4 border-t border-border-main shrink-0 space-y-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-            <span className="text-accent text-[10px] font-black">RA</span>
-          </div>
-          <div className="min-w-0">
-            <div className="type-overline !text-text leading-tight truncate !tracking-tight">Real Advertise</div>
-            <div className="type-overline !text-[10px] !text-text3">Admin Dashboard</div>
-          </div>
+      <div className="p-4 border-t border-border-main bg-surface2/50 shrink-0">
+        <div className="bg-white rounded-2xl p-4 border border-border-main shadow-sm mb-3">
+           <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-[10px] font-black">
+                 RA
+              </div>
+              <div className="flex flex-col min-w-0">
+                 <span className="text-xs font-bold text-text truncate leading-none">Real Advertise</span>
+                 <span className="text-[10px] font-bold text-text3 uppercase tracking-wider mt-1.5">Enterprise Hub</span>
+              </div>
+           </div>
         </div>
         
         <form action={logout}>
           <button 
             type="submit"
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rr hover:bg-rr-bg transition-colors group"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[10px] font-bold text-rr uppercase tracking-wider hover:bg-rr-bg transition-all group"
           >
             <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            Sign Out
+            <span>Sign Out</span>
           </button>
         </form>
       </div>
