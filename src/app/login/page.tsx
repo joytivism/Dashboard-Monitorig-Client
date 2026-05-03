@@ -55,12 +55,12 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label className="type-overline ml-1">Email Address</label>
+              <label className="type-overline ml-1">Username or Email</label>
               <input
                 name="email"
-                type="email"
+                type="text"
                 required
-                placeholder="name@company.com"
+                placeholder="admin_joy atau name@company.com"
                 className="w-full h-13 px-5 rounded-2xl bg-surface2 border border-border-main text-sm font-medium focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/40 transition-all placeholder:text-text4"
               />
             </div>

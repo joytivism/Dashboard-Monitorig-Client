@@ -6,8 +6,23 @@ import { redirect } from 'next/navigation';
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
-  const email = formData.get('email') as string;
+  const identifier = formData.get('email') as string;
   const password = formData.get('password') as string;
+
+  let email = identifier;
+
+  // Username lookup logic
+  if (!identifier.includes('@')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('username', identifier)
+      .single();
+    
+    if (profile?.email) {
+      email = profile.email;
+    }
+  }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
