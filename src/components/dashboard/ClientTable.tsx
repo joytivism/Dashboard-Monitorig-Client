@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, ChevronRight } from 'lucide-react';
 import { useDashboardData } from '@/components/DataProvider';
-import { STATUS_DOT, LM, type Client, type DataEntry } from '@/lib/data';
+import { STATUS_DOT, STATUS_BG, LM, type Client, type DataEntry } from '@/lib/data';
 import { totals, clientWorst, fRp } from '@/lib/utils';
 
 interface ClientTableProps {
