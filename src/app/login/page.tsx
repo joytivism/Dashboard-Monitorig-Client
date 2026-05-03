@@ -39,14 +39,8 @@ export default function LoginPage() {
         <div className="w-full lg:w-[45%] p-10 lg:p-16 flex flex-col justify-center bg-white border-r border-border-main">
           
           <div className="mb-10">
-            <div className="flex items-center gap-3 mb-8">
-               <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-lg shadow-accent/20">
-                  <Hexagon className="w-6 h-6 fill-white" />
-               </div>
-               <span className="text-sm font-black text-text tracking-tighter">Real Advertise</span>
-            </div>
-            <h1 className="text-3xl font-bold text-text tracking-tight mb-2">Welcome Back!</h1>
-            <p className="text-sm text-text3 font-medium">Please enter your credentials to login.</p>
+            <h1 className="text-display mb-2">Welcome Back!</h1>
+            <p className="text-body font-medium">Please enter your credentials to login.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -122,21 +116,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Social Login Section */}
-          <div className="mt-12">
-             <div className="relative flex items-center justify-center mb-6">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border-main"></div></div>
-                <span className="relative px-4 bg-white text-[10px] font-black text-text4  tracking-[0.12em]">Social Sign In</span>
-             </div>
-             
-             <div className="grid grid-cols-3 gap-3">
-                {[Compass, Share2, Smartphone].map((Icon, i) => (
-                   <button key={i} type="button" className="flex items-center justify-center h-11 rounded-xl border border-border-main hover:bg-surface2 hover:border-accent/30 transition-all group">
-                      <Icon className="w-4 h-4 text-text3 group-hover:text-accent transition-colors" />
-                   </button>
-                ))}
-             </div>
-          </div>
         </div>
 
         {/* ── RIGHT SIDE: VISUAL SECTION ── */}
