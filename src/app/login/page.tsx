@@ -27,30 +27,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-white font-sans overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-bg font-sans overflow-hidden p-6 relative">
       
-      {/* ── LEFT SIDE: LOGIN FORM ── */}
-      <div className="w-full lg:w-[45%] flex flex-col items-center justify-center p-8 lg:p-20 relative animate-fade-in">
-        
-        {/* Logo (Top Left Mobile) */}
-        <div className="absolute top-8 left-8 flex items-center gap-2 lg:hidden">
-           <Hexagon className="w-6 h-6 text-accent fill-accent/10" />
-           <span className="font-black text-text text-sm tracking-tighter">REAL ADVERTISE</span>
-        </div>
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-        <div className="w-full max-w-[400px]">
-          {/* Header */}
-          <div className="mb-10 text-center lg:text-left flex flex-col items-center lg:items-start">
-            <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 shadow-sm border border-accent/20">
-               <Hexagon className="w-8 h-8 text-accent fill-accent" />
+      <div className="w-full max-w-5xl flex bg-white rounded-3xl border border-border-main shadow-2xl overflow-hidden relative z-10 animate-fade-in" style={{ boxShadow: '0 20px 60px -12px rgba(0,0,0,0.1)' }}>
+        
+        {/* ── LEFT SIDE: LOGIN FORM ── */}
+        <div className="w-full lg:w-[45%] p-10 lg:p-16 flex flex-col justify-center bg-white border-r border-border-main">
+          
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-8">
+               <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-lg shadow-accent/20">
+                  <Hexagon className="w-6 h-6 fill-white" />
+               </div>
+               <span className="text-sm font-black text-text tracking-tighter">REAL ADVERTISE</span>
             </div>
-            <h1 className="text-3xl font-black text-text tracking-tight mb-2">Login to your account!</h1>
-            <p className="text-sm text-text3 font-medium">Enter your credentials to access the command center.</p>
+            <h1 className="text-3xl font-bold text-text tracking-tight mb-2">Welcome Back!</h1>
+            <p className="text-sm text-text3 font-medium">Please enter your credentials to login.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="flex items-center gap-3 p-4 rounded-2xl bg-rr-bg/10 border border-rr-border/20 text-rr text-xs font-bold animate-shake">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-rr-bg border border-rr-border text-rr-text text-xs font-bold animate-shake">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {error}
               </div>
@@ -58,15 +59,15 @@ export default function LoginPage() {
 
             {/* Identifier Input */}
             <div className="space-y-2">
-              <label className="type-overline ml-1 text-text2">Username or Email</label>
+              <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block ml-1">Email / Username</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 group-focus-within:text-accent transition-colors" />
                 <input
                   name="email"
                   type="text"
                   required
-                  placeholder="eg. admin_joy"
-                  className="w-full h-13 pl-11 pr-5 rounded-2xl bg-surface2 border border-border-main text-sm font-medium focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all placeholder:text-text4"
+                  placeholder="admin@realadvertise.id"
+                  className="w-full h-12 pl-11 pr-5 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
                 />
               </div>
             </div>
@@ -74,7 +75,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
-                <label className="type-overline text-text2">Password</label>
+                <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block ml-1">Password</label>
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 group-focus-within:text-accent transition-colors" />
@@ -83,7 +84,7 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   placeholder="••••••••••••"
-                  className="w-full h-13 pl-11 pr-12 rounded-2xl bg-surface2 border border-border-main text-sm font-medium focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all placeholder:text-text4"
+                  className="w-full h-12 pl-11 pr-12 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all"
                 />
                 <button
                   type="button"
@@ -95,105 +96,111 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center justify-between px-1 pt-1">
                <label className="flex items-center gap-2 cursor-pointer group">
-                  <input type="checkbox" className="w-4 h-4 rounded border-border-main text-accent focus:ring-accent/20" />
-                  <span className="text-xs font-semibold text-text3 group-hover:text-text transition-colors">Remember me</span>
+                  <input type="checkbox" className="w-4 h-4 rounded-md border-border-main text-accent focus:ring-accent/20 transition-all" />
+                  <span className="text-xs font-semibold text-text3 group-hover:text-text transition-colors">Keep me signed in</span>
                </label>
-               <button type="button" className="text-xs font-bold text-accent hover:underline">Forgot Password?</button>
+               <button type="button" className="text-xs font-bold text-accent hover:text-accent-hover transition-colors">Forgot Password?</button>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-13 bg-accent hover:bg-accent-hover text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-3 disabled:opacity-70 mt-2"
+              className="w-full h-12 bg-accent hover:bg-accent-hover text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-2 disabled:opacity-70 mt-4"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                "LOGIN"
+                <>
+                  SIGN IN
+                  <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center ml-2">
+                    <Hexagon className="w-3 h-3 fill-white" />
+                  </div>
+                </>
               )}
             </button>
           </form>
 
-          {/* Social Login */}
-          <div className="mt-10">
-             <div className="relative flex items-center justify-center mb-8">
+          {/* Social Login Section */}
+          <div className="mt-12">
+             <div className="relative flex items-center justify-center mb-6">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border-main"></div></div>
-                <span className="relative px-4 bg-white text-[10px] font-bold text-text4 uppercase tracking-widest">Or login with</span>
+                <span className="relative px-4 bg-white text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Social Sign In</span>
              </div>
              
-             <div className="grid grid-cols-3 gap-4">
+             <div className="grid grid-cols-3 gap-3">
                 {[Compass, Share2, Smartphone].map((Icon, i) => (
-                   <button key={i} type="button" className="flex items-center justify-center h-12 rounded-2xl border border-border-main hover:bg-surface2 hover:border-text4 transition-all group">
-                      <Icon className="w-5 h-5 text-text2 group-hover:scale-110 transition-transform" />
+                   <button key={i} type="button" className="flex items-center justify-center h-11 rounded-xl border border-border-main hover:bg-surface2 hover:border-accent/30 transition-all group">
+                      <Icon className="w-4 h-4 text-text3 group-hover:text-accent transition-colors" />
                    </button>
                 ))}
              </div>
           </div>
         </div>
-      </div>
 
-      {/* ── RIGHT SIDE: VISUAL SECTION ── */}
-      <div className="hidden lg:flex flex-1 p-10 items-center justify-center">
-        <div className="w-full h-full bg-accent/5 rounded-[48px] border border-accent/10 relative overflow-hidden flex flex-col items-center justify-center">
+        {/* ── RIGHT SIDE: VISUAL SECTION ── */}
+        <div className="hidden lg:flex flex-1 p-12 bg-surface2 relative overflow-hidden flex-col items-center justify-center text-center">
           
-          {/* Background Patterns */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(2,132,199,0.08)_0%,transparent_70%)]" />
-          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-
-          {/* Content */}
-          <div className="relative z-10 text-center px-20">
-             <h2 className="text-4xl font-black text-text tracking-tighter mb-4 leading-tight">
-                Monitor Better <br />
-                <span className="text-accent">Everywhere</span>
+          {/* Subtle Grid Pattern */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+            style={{ backgroundImage: 'radial-gradient(#0A0A0B 0.5px, transparent 0.5px)', backgroundSize: '16px 16px' }} />
+          
+          <div className="relative z-10 max-w-sm">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-black uppercase tracking-widest mb-6">
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                Next-Gen Monitoring
+             </div>
+             <h2 className="text-4xl font-bold text-text tracking-tighter mb-6 leading-[1.1]">
+                Unified <span className="text-accent">Advertising</span> Intelligence
              </h2>
-             <p className="text-base text-text3 font-medium max-w-sm mx-auto mb-20 leading-relaxed">
-                Comprehensive data monitoring for all your digital marketing channels in one unified platform.
+             <p className="text-sm text-text3 font-medium leading-relaxed mb-16">
+                Satu dashboard pusat untuk memantau ROAS, spend, dan performa AI di semua channel pemasaran Anda.
              </p>
 
-             {/* Orbit Animation */}
-             <div className="relative w-80 h-80 mx-auto">
-                {/* Center Logo */}
-                <div className="absolute inset-0 flex items-center justify-center z-20">
-                   <div className="w-24 h-24 rounded-3xl bg-accent shadow-2xl shadow-accent/40 flex items-center justify-center animate-bounce-slow">
-                      <Hexagon className="w-12 h-12 text-white fill-white" />
+             {/* Animated Illustration Mockup */}
+             <div className="relative w-full aspect-square max-w-[320px] mx-auto">
+                {/* Orbit Rings */}
+                <div className="absolute inset-0 border border-border-main rounded-full" />
+                <div className="absolute inset-8 border border-border-main rounded-full opacity-50" />
+                
+                {/* Center Core */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                   <div className="w-20 h-20 rounded-[2rem] bg-accent shadow-2xl shadow-accent/40 flex items-center justify-center animate-bounce-slow relative z-20">
+                      <BarChart2 className="w-10 h-10 text-white" />
                    </div>
                 </div>
 
-                {/* Orbit Rings */}
-                <div className="absolute inset-0 border border-accent/10 rounded-full animate-spin-slow"></div>
-                <div className="absolute inset-[-40px] border border-accent/5 rounded-full animate-reverse-spin"></div>
-
-                {/* Orbit Icons */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-1">
-                   <Compass className="w-6 h-6 text-[#4285F4]" />
+                {/* Floating Elements */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-1">
+                   <Smartphone className="w-6 h-6 text-accent" />
                 </div>
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-2">
-                   <Share2 className="w-6 h-6 text-[#1877F2]" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 rounded-2xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-2">
+                   <Share2 className="w-6 h-6 text-accent" />
                 </div>
-                <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-3">
-                   <Globe className="w-6 h-6 text-[#00a1a6]" />
+                <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-3">
+                   <Compass className="w-6 h-6 text-accent" />
                 </div>
-                <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-4">
-                   <BarChart2 className="w-6 h-6 text-[#ff6301]" />
+                <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-4">
+                   <Globe className="w-6 h-6 text-accent" />
                 </div>
              </div>
           </div>
 
-          {/* Footer Desc */}
-          <div className="absolute bottom-12 text-center">
-             <p className="text-xs font-bold text-text3 max-w-xs mx-auto opacity-60 italic">
-                Compatible with Google Ads, Meta, TikTok, and most web analytics for a smooth monitoring experience.
-             </p>
-             {/* Pagination Dots */}
-             <div className="flex items-center justify-center gap-2 mt-6">
-                <div className="w-8 h-1.5 rounded-full bg-accent"></div>
-                <div className="w-2 h-1.5 rounded-full bg-accent/20"></div>
-                <div className="w-2 h-1.5 rounded-full bg-accent/20"></div>
+          {/* Feature List Footer */}
+          <div className="absolute bottom-12 flex items-center justify-center gap-8">
+             <div className="flex flex-col items-center gap-1">
+                <span className="text-xs font-bold text-text tracking-tight">10+ Channels</span>
+                <span className="text-[10px] font-medium text-text3">Integration</span>
+             </div>
+             <div className="w-px h-6 bg-border-main" />
+             <div className="flex flex-col items-center gap-1">
+                <span className="text-xs font-bold text-text tracking-tight">Real-time</span>
+                <span className="text-[10px] font-medium text-text3">AI Logging</span>
              </div>
           </div>
         </div>
+
       </div>
     </div>
   );
