@@ -17,21 +17,23 @@ interface MetricCardProps {
   className?: string;
 }
 
-const toneClasses = {
+type MetricCardTone = NonNullable<MetricCardProps['tone']>;
+
+const toneClasses: Record<MetricCardTone, string> = {
   default: 'bg-white border-border-main',
   accent: 'bg-white border-accent/15',
   success: 'bg-white border-gg-border/60',
   danger: 'bg-white border-rr-border/60',
 };
 
-const iconToneClasses = {
+const iconToneClasses: Record<MetricCardTone, string> = {
   default: 'bg-surface2 text-text2 border border-border-main/70',
   accent: 'bg-accent text-white border border-accent shadow-[0_12px_24px_rgba(255,106,26,0.18)]',
   success: 'bg-gg-bg text-gg-text border border-gg-border/70',
   danger: 'bg-rr-bg text-rr-text border border-rr-border/70',
 };
 
-function mapLegacyVariant(variant: MetricCardProps['variant']): MetricCardProps['tone'] {
+function mapLegacyVariant(variant: MetricCardProps['variant']): MetricCardTone {
   if (variant === 'accent') return 'accent';
   if (variant === 'gg') return 'success';
   if (variant === 'rr') return 'danger';
@@ -51,7 +53,7 @@ export default function MetricCard({
   href,
   className,
 }: MetricCardProps) {
-  const resolvedTone = tone || mapLegacyVariant(variant);
+  const resolvedTone: MetricCardTone = tone ?? mapLegacyVariant(variant);
   const resolvedTrend = trend ?? growth ?? null;
   const resolvedCaption = caption ?? subtext;
   const isUp = resolvedTrend !== null && resolvedTrend >= 0;
