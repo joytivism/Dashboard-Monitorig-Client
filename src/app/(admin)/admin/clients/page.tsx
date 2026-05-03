@@ -218,64 +218,56 @@ export default function ClientsAdminPage() {
 
         {/* ── Clients View ── */}
         {view === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map(cl => (
-               <div key={cl.key} className="group relative bg-surface rounded-[2.5rem] border border-border-main p-8 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col h-full">
+               <div key={cl.key} className="bg-white rounded-2xl border border-border-main shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full group">
                   
-                  {/* Premium Action Overlay */}
-                  <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
-                     <button onClick={() => openEdit(cl)} className="w-10 h-10 rounded-xl bg-surface shadow-xl border border-border-main text-text3 hover:text-accent flex items-center justify-center transition-all">
-                        <Edit2 className="w-4 h-4" />
-                     </button>
-                     <button onClick={() => handleDelete(cl.key)} className="w-10 h-10 rounded-xl bg-surface shadow-xl border border-border-main text-text3 hover:text-rr flex items-center justify-center transition-all">
-                        <Trash2 className="w-4 h-4" />
-                     </button>
-                  </div>
-
-                  {/* Header: Identity */}
-                  <div className="flex items-center gap-5 mb-8">
-                     <div className="w-16 h-16 rounded-2xl bg-accent/5 border border-accent/10 flex items-center justify-center text-accent font-black text-xl shadow-inner group-hover:bg-accent group-hover:text-white transition-all duration-500 shrink-0">
-                        {cl.key.slice(0,2).toUpperCase()}
-                     </div>
-                     <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-1.5">
-                           <span className="type-overline !text-[10px] !text-accent bg-accent/5 px-2 py-0.5 rounded-md border border-accent/10">{cl.cg || 'N/A'}</span>
-                           <span className="type-overline !text-[10px] !text-text4">{cl.ind}</span>
+                  {/* Header: Identity & Actions */}
+                  <div className="flex items-start justify-between mb-6">
+                     <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xs font-black group-hover:bg-accent group-hover:text-white transition-all duration-200 shrink-0">
+                           {cl.key.slice(0, 2).toUpperCase()}
                         </div>
-                        <h3 className="text-xl font-bold text-text tracking-tight truncate leading-none group-hover:text-accent transition-colors">{cl.name}</h3>
-                     </div>
-                  </div>
-
-                  {/* Body: Strategist Details */}
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-6 mb-8 flex-1">
-                     <div className="space-y-1.5 p-4 rounded-2xl bg-surface2/50 border border-border-main/40 group-hover:bg-white group-hover:border-accent/20 transition-all">
-                        <div className="flex items-center gap-2 mb-1">
-                           <Target className="w-3 h-3 text-accent" />
-                           <span className="type-overline !text-[9px]">Account Strategist</span>
+                        <div className="min-w-0">
+                           <h3 className="text-sm font-bold text-text truncate leading-tight mb-1">{cl.name}</h3>
+                           <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold text-accent uppercase tracking-wider">{cl.cg || 'N/A'}</span>
+                              <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">• {cl.ind}</span>
+                           </div>
                         </div>
-                        <div className="text-sm font-bold text-text truncate">{cl.as || '—'}</div>
                      </div>
-                     <div className="space-y-1.5 p-4 rounded-2xl bg-surface2/50 border border-border-main/40 group-hover:bg-white group-hover:border-accent/20 transition-all">
-                        <div className="flex items-center gap-2 mb-1">
-                           <User className="w-3 h-3 text-text3" />
-                           <span className="type-overline !text-[9px]">PIC Client</span>
-                        </div>
-                        <div className="text-sm font-bold text-text truncate">{cl.pic || '—'}</div>
+                     
+                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button onClick={() => openEdit(cl)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface2 text-text3 transition-all">
+                           <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => handleDelete(cl.key)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface2 text-text3 hover:text-red-600 transition-all">
+                           <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                      </div>
                   </div>
 
-                  {/* Footer: Tech Stack / Channels */}
-                  <div className="pt-6 border-t border-border-main/50">
-                     <div className="type-overline !text-[9px] mb-4 opacity-50">Deployed Channels</div>
-                     <div className="flex flex-wrap gap-2">
-                        {cl.chs.length > 0 ? cl.chs.map((ch: string) => (
-                          <div key={ch} className="px-3 py-1.5 rounded-lg bg-surface2 border border-border-main/60 text-[10px] font-black text-text2 uppercase tracking-tight hover:border-accent hover:text-accent transition-all cursor-default">
-                             {ch.replace('_', ' ')}
-                          </div>
-                        )) : (
-                          <span className="text-[10px] font-bold text-text4 italic">No channels assigned</span>
-                        )}
+                  {/* Body: Team Details */}
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                     <div className="space-y-1">
+                        <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">Account Strategist</div>
+                        <div className="text-sm font-medium text-text truncate">{cl.as || '—'}</div>
                      </div>
+                     <div className="space-y-1">
+                        <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">PIC Client</div>
+                        <div className="text-sm font-medium text-text truncate">{cl.pic || '—'}</div>
+                     </div>
+                  </div>
+
+                  {/* Footer: Channels */}
+                  <div className="mt-auto pt-5 border-t border-border-main flex flex-wrap gap-1.5">
+                     {cl.chs.length > 0 ? cl.chs.map((ch: string) => (
+                        <span key={ch} className="chip chip-nn">
+                           {ch.replace('_', ' ')}
+                        </span>
+                     )) : (
+                        <span className="text-[10px] text-text4 italic font-medium">No channels assigned</span>
+                     )}
                   </div>
                </div>
              ))}

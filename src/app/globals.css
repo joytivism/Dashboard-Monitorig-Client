@@ -7,18 +7,18 @@
   --surface2: #F7F9FC;
   --surface3: #EEF1F6;
 
-  --text: #0F172A;
-  --text2: #475569;
-  --text3: #94A3B8;
-  --text4: #CBD5E1;
+  --text: #0A0A0B;
+  --text2: #374151;
+  --text3: #6B7280;
+  --text4: #9CA3AF;
 
-  --border: #E2E8F0;
-  --border2: #CBD5E1;
+  --border: #E5E7EB;
+  --border2: #D1D5DB;
 
-  --accent: #0284C7;
-  --accent-hover: #0369A1;
-  --accent-light: #F0F9FF;
-  --accent-mid: #BAE6FD;
+  --accent: #ff6301;
+  --accent-hover: #e55700;
+  --accent-light: #FFF4EE;
+  --accent-mid: #FFD9C0;
 
   /* Funnel colors */
   --tofu: #00a1a6;
