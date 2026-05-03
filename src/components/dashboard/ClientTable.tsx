@@ -92,7 +92,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
           </div>
         </div>
         
-        <div className="overline bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
+        <div className="type-overline bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
           Total {clients.length} Klien
         </div>
       </div>
@@ -113,7 +113,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                 <th 
                    key={h.key} 
                    onClick={() => onSort(h.key)}
-                   className={`py-3 overline cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : 'px-4'} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : ''}`}
+                   className={`py-3 type-overline cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : 'px-4'} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : ''}`}
                 >
                   <div className={`flex items-center gap-1.5 ${i === 6 ? 'justify-end' : 'justify-start'}`}>
                     {h.label}

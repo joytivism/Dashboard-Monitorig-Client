@@ -168,7 +168,7 @@
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ── Typography Utilities ── */
-.overline {
+.type-overline {
   @apply text-[11px] font-bold text-text3 uppercase tracking-[0.15em];
 }
 

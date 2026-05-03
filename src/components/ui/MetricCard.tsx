@@ -31,7 +31,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   return (
     <div className={`${variantStyles[variant]} rounded-2xl p-6 border shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-300 ${className}`}>
       <div className="flex justify-between items-start mb-6">
-        <div className="overline">{title}</div>
+        <div className="type-overline">{title}</div>
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${variant === 'accent' ? 'bg-accent text-white shadow-lg shadow-accent/20' : 'bg-surface2 text-text3 border border-border-main/50'}`}>
           <Icon className="w-5 h-5" />
         </div>

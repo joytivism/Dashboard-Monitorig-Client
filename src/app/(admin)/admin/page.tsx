@@ -98,7 +98,7 @@ export default function AdminHubPage() {
         <div className="flex flex-wrap items-center gap-4 relative z-10">
           <div className="px-5 py-3 bg-surface2 rounded-xl border border-border-main flex items-center gap-4">
               <div>
-                <div className="overline">Portfolio Status</div>
+                <div className="type-overline">Portfolio Status</div>
                 <div className="text-sm font-bold text-text mt-1 flex items-center gap-2">
                    <span className="dot dot-gg animate-pulse" />
                    Optimized
@@ -106,7 +106,7 @@ export default function AdminHubPage() {
              </div>
              <div className="w-px h-8 bg-border-main" />
              <div className="text-right">
-                <div className="overline">Active Period</div>
+                <div className="type-overline">Active Period</div>
                 <div className="text-sm font-bold text-text mt-1">{curPeriod}</div>
              </div>
           </div>
@@ -141,7 +141,7 @@ export default function AdminHubPage() {
               {/* Column 1: Top Gainers */}
                <div className="p-6 flex flex-col hover:bg-surface2 transition-colors group/gainers">
                  <div className="flex items-center justify-between mb-6">
-                    <span className="overline">Top Performers</span>
+                    <span className="type-overline">Top Performers</span>
                     <TrendingUp className="w-4 h-4 text-gg" />
                  </div>
                  
@@ -161,7 +161,7 @@ export default function AdminHubPage() {
                              </div>
                               <div className="text-right">
                                 <div className="text-base font-bold text-gg tabular-nums tracking-tight">{t.roas?.toFixed(2) || '0.00'}x</div>
-                                <div className="overline !text-[10px]">ROAS</div>
+                                <div className="type-overline !text-[10px]">ROAS</div>
                              </div>
                           </div>
                        );
@@ -172,7 +172,7 @@ export default function AdminHubPage() {
               {/* Column 2: At-Risk */}
               <div className="p-6 flex flex-col hover:bg-surface2 transition-colors group/risk">
                  <div className="flex items-center justify-between mb-6">
-                    <span className="overline">At-Risk Clients</span>
+                    <span className="type-overline">At-Risk Clients</span>
                     <AlertCircle className="w-4 h-4 text-rr" />
                  </div>
 
@@ -193,7 +193,7 @@ export default function AdminHubPage() {
                              </div>
                               <div className="text-right">
                                 <div className="text-base font-bold text-rr tabular-nums tracking-tight">{t.roas?.toFixed(2) || '0.00'}x</div>
-                                <div className="overline !text-[10px]">ROAS</div>
+                                <div className="type-overline !text-[10px]">ROAS</div>
                              </div>
                           </div>
                        );
@@ -207,7 +207,7 @@ export default function AdminHubPage() {
               <div className="flex items-center justify-between mb-3">
                  <div className="flex items-center gap-2">
                     <Database className="w-4 h-4 text-text3" />
-                    <span className="overline">Agency Budget Pacing</span>
+                    <span className="type-overline">Agency Budget Pacing</span>
                  </div>
                  <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-text">74.2%</span>
@@ -229,14 +229,14 @@ export default function AdminHubPage() {
                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
                     <TrendingUp className="w-5 h-5 text-white" />
                  </div>
-                 <span className="overline !text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 !text-white">Global Avg</span>
+                 <span className="type-overline !text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 !text-white">Global Avg</span>
               </div>
               
               <div className="relative z-10">
                  <div className="text-3xl font-bold text-white tracking-tight mb-1">
                     {stats.totalRoas.toFixed(2)}x
                  </div>
-                 <h3 className="overline !text-white/50">Average ROAS</h3>
+                 <h3 className="type-overline !text-white/50">Average ROAS</h3>
               </div>
            </div>
 
@@ -252,7 +252,7 @@ export default function AdminHubPage() {
                  <div className="text-3xl font-bold text-text tracking-tight mb-1">
                     {stats.attnCount}
                  </div>
-                 <h3 className="overline">Critical Clients</h3>
+                 <h3 className="type-overline">Critical Clients</h3>
               </div>
            </div>
         </div>
@@ -266,7 +266,7 @@ export default function AdminHubPage() {
                 </div>
                 <div>
                    <div className="text-sm font-bold text-text tracking-tight">{action.title}</div>
-                   <div className="overline !text-[10px] mt-0.5">{action.badge}</div>
+                   <div className="type-overline !text-[10px] mt-0.5">{action.badge}</div>
                 </div>
                 <ChevronRight className="ml-auto w-4 h-4 text-text4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
              </Link>
@@ -276,8 +276,8 @@ export default function AdminHubPage() {
         {/* Status Portfolio (Bento Wide) */}
         <div className="lg:col-span-5 bg-white rounded-2xl border border-border-main shadow-sm flex flex-col overflow-hidden">
            <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2/50">
-              <h2 className="overline">Portfolio Status</h2>
-              <Link href="/admin/clients" className="overline !text-accent hover:underline">View All</Link>
+              <h2 className="type-overline">Portfolio Status</h2>
+              <Link href="/admin/clients" className="type-overline !text-accent hover:underline">View All</Link>
            </div>
            <div className="divide-y divide-border-main overflow-y-auto max-h-[400px] no-scrollbar">
               {CLIENTS.map(cl => {
@@ -304,7 +304,7 @@ export default function AdminHubPage() {
         {/* Activity Feed (Bento Wide) */}
         <div className="lg:col-span-7 bg-white rounded-2xl border border-border-main shadow-sm flex flex-col overflow-hidden">
            <div className="p-6 border-b border-border-main flex items-center justify-between bg-surface2/50">
-              <h2 className="overline">Live Activity Feed</h2>
+              <h2 className="type-overline">Live Activity Feed</h2>
               <span className="dot dot-accent animate-pulse" />
            </div>
            <div className="flex-1 overflow-hidden">
