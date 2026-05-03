@@ -98,6 +98,15 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
 
 /* ── Base ── */
 @layer base {
@@ -124,7 +133,9 @@
 .animate-fade-in  { animation: fadeIn 0.35s ease forwards; }
 .animate-slide-in { animation: slideInLeft 0.3s ease forwards; }
 .animate-spin     { animation: spin 0.8s linear infinite; }
-.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+.animate-shine    { animation: shine 1.5s ease-in-out infinite; }
+.animate-shake    { animation: shake 0.4s ease-in-out 3; }
 
 /* ── Status dots ── */
 .dot { @apply w-2 h-2 rounded-full shrink-0 inline-block; }
