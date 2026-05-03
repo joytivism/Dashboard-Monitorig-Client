@@ -43,7 +43,7 @@ export default function LoginPage() {
                <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-lg shadow-accent/20">
                   <Hexagon className="w-6 h-6 fill-white" />
                </div>
-               <span className="text-sm font-black text-text tracking-tighter">REAL ADVERTISE</span>
+               <span className="text-sm font-black text-text tracking-tighter">Real Advertise</span>
             </div>
             <h1 className="text-3xl font-bold text-text tracking-tight mb-2">Welcome Back!</h1>
             <p className="text-sm text-text3 font-medium">Please enter your credentials to login.</p>
@@ -59,7 +59,7 @@ export default function LoginPage() {
 
             {/* Identifier Input */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block ml-1">Email / Username</label>
+              <label className="text-[10px] font-bold text-text3  tracking-wider block ml-1">Email / Username</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 group-focus-within:text-accent transition-colors" />
                 <input
@@ -75,7 +75,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
-                <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block ml-1">Password</label>
+                <label className="text-[10px] font-bold text-text3  tracking-wider block ml-1">Password</label>
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 group-focus-within:text-accent transition-colors" />
@@ -113,10 +113,10 @@ export default function LoginPage() {
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  SIGN IN
-                  <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center ml-2">
-                    <Hexagon className="w-3 h-3 fill-white" />
-                  </div>
+                   Sign In
+                   <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center ml-2">
+                     <Hexagon className="w-3 h-3 fill-white" />
+                   </div>
                 </>
               )}
             </button>
@@ -126,7 +126,7 @@ export default function LoginPage() {
           <div className="mt-12">
              <div className="relative flex items-center justify-center mb-6">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border-main"></div></div>
-                <span className="relative px-4 bg-white text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Social Sign In</span>
+                <span className="relative px-4 bg-white text-[10px] font-black text-text4  tracking-[0.12em]">Social Sign In</span>
              </div>
              
              <div className="grid grid-cols-3 gap-3">
@@ -147,7 +147,7 @@ export default function LoginPage() {
             style={{ backgroundImage: 'radial-gradient(#0A0A0B 0.5px, transparent 0.5px)', backgroundSize: '16px 16px' }} />
           
           <div className="relative z-10 max-w-sm">
-             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-black uppercase tracking-widest mb-6">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-black  tracking-widest mb-6">
                 <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                 Next-Gen Monitoring
              </div>

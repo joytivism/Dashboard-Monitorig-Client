@@ -30,7 +30,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
             </div>
           </div>
           {risks.length > 0 && (
-            <span className="text-[10px] font-bold px-3 py-1 bg-rr/10 text-rr-text rounded-xl border border-rr-border/40 uppercase tracking-wider">
+            <span className="text-[10px] font-bold px-3 py-1 bg-rr/10 text-rr-text rounded-xl border border-rr-border/40  tracking-wider">
               {risks.length} KLIEN
             </span>
           )}
@@ -65,7 +65,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
             ))
           ) : (
             <div className="py-12 text-center bg-white/40 rounded-2xl border border-dashed border-rr-border/40">
-               <p className="text-[10px] font-bold text-rr-text/40 uppercase tracking-wider">No critical alerts</p>
+               <p className="text-[10px] font-bold text-rr-text/40  tracking-wider">No critical alerts</p>
             </div>
           )}
         </div>
@@ -84,7 +84,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
             </div>
           </div>
           {opportunities.length > 0 && (
-            <span className="text-[10px] font-bold px-3 py-1 bg-gg/10 text-gg-text rounded-xl border border-gg-border/40 uppercase tracking-wider">
+            <span className="text-[10px] font-bold px-3 py-1 bg-gg/10 text-gg-text rounded-xl border border-gg-border/40  tracking-wider">
               TOP {opportunities.length}
             </span>
           )}
@@ -117,7 +117,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
             ))
           ) : (
             <div className="py-12 text-center bg-white/40 rounded-2xl border border-dashed border-gg-border/40">
-               <p className="text-[10px] font-bold text-gg-text/40 uppercase tracking-wider">Seeking opportunities</p>
+               <p className="text-[10px] font-bold text-gg-text/40  tracking-wider">Seeking opportunities</p>
             </div>
           )}
         </div>

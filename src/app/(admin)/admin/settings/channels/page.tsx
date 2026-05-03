@@ -103,11 +103,11 @@ export default function ChannelSettingsPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface2/50 border-b border-border-main">
-              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/4">ID Channel (Unique)</th>
-              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/4">Nama Tampilan</th>
-              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/6">Stage</th>
-              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-1/6">Type</th>
-              <th className="py-5 px-6 text-[10px] font-black text-text4 uppercase tracking-widest w-[80px]">Aksi</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4  tracking-widest w-1/4">ID Channel (Unique)</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4  tracking-widest w-1/4">Nama Tampilan</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4  tracking-widest w-1/6">Stage</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4  tracking-widest w-1/6">Type</th>
+              <th className="py-5 px-6 text-[10px] font-black text-text4  tracking-widest w-[80px]">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-main/40">

@@ -141,7 +141,7 @@ export default function DataInputPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Client Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3 uppercase tracking-wider px-1">Pilih Klien</label>
+              <label className="text-xs font-semibold text-text3  tracking-wider px-1">Pilih Klien</label>
               <div className="relative">
                  <select
                     value={selectedClient}
@@ -157,7 +157,7 @@ export default function DataInputPage() {
 
             {/* Period Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3 uppercase tracking-wider px-1">Periode Laporan</label>
+              <label className="text-xs font-semibold text-text3  tracking-wider px-1">Periode Laporan</label>
               <div className="space-y-3">
                 <div className="relative">
                    <select
@@ -242,7 +242,7 @@ export default function DataInputPage() {
                     <span className={s.badge}>{stage}</span>
                     <h3 className="text-sm font-bold text-text">{chDef?.l || row.ch}</h3>
                     <div className="ml-auto hidden sm:block">
-                       <span className="text-[10px] font-bold text-text3 uppercase tracking-wider">
+                       <span className="text-[10px] font-bold text-text3  tracking-wider">
                         {aware ? 'Awareness' : 'Performance'}
                       </span>
                     </div>
@@ -251,37 +251,37 @@ export default function DataInputPage() {
                   {/* Input Fields Grid */}
                   <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6 bg-surface2/30">
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Ad Spend (Rp)</label>
+                      <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Ad Spend (Rp)</label>
                       <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                     </div>
 
                     {!aware ? (
                       <>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Revenue (Rp)</label>
+                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Revenue (Rp)</label>
                           <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Orders</label>
+                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Orders</label>
                           <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                         <div className="space-y-1.5">
-                           <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Results/Visits</label>
+                           <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Results/Visits</label>
                            <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                       </>
                     ) : (
                       <>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Reach</label>
+                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Reach</label>
                           <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Impressions</label>
+                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Impressions</label>
                           <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3 uppercase tracking-wider block px-1">Results</label>
+                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Results</label>
                           <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
                         </div>
                       </>

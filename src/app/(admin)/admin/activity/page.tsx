@@ -208,7 +208,7 @@ export default function ActivityPage() {
               <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Klien</label>
+                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Klien</label>
                     <div className="relative">
                        <select
                          value={form.client_key}
@@ -224,7 +224,7 @@ export default function ActivityPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Tipe Aktivitas</label>
+                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Tipe Aktivitas</label>
                     <div className="grid grid-cols-2 gap-2">
                       {Object.entries(TYPE_MAP).map(([k, v]) => (
                         <button
@@ -244,7 +244,7 @@ export default function ActivityPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Nama Aktivitas / Catatan</label>
+                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Nama Aktivitas / Catatan</label>
                     <input
                       type="text"
                       value={form.name}
@@ -256,7 +256,7 @@ export default function ActivityPage() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">Tanggal</label>
+                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Tanggal</label>
                     <input
                       type="date"
                       value={form.date}

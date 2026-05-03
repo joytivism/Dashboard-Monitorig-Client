@@ -25,7 +25,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[248px] h-screen sticky top-0 bg-surface border-r border-border-main flex flex-col shrink-0 z-40 uppercase" style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
+    <aside className="w-[248px] h-screen sticky top-0 bg-surface border-r border-border-main flex flex-col shrink-0 z-40" style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
       {/* ── Logo Section ── */}
       <div className="h-[60px] px-6 flex items-center border-b border-border-main shrink-0 bg-white">
         <Link href="/admin" className="flex items-center gap-3 group">
@@ -87,7 +87,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
            >
              <div className="flex items-center gap-2">
                 <ExternalLink className="w-3 h-3 text-text4 group-hover:text-accent transition-colors" />
-                DASHBOARD
+                Dashboard
              </div>
              <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5" />
            </Link>

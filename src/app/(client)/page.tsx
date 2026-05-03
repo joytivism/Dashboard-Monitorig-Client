@@ -104,7 +104,7 @@ function OverviewContent() {
         <div>
           <div className="flex items-center gap-2 mb-2.5">
             <Activity className="w-4 h-4 text-accent" />
-            <span className="text-[10px] font-bold text-text3 uppercase tracking-wider">Overview Dashboard</span>
+            <span className="text-[10px] font-bold text-text3  tracking-wider">Overview Dashboard</span>
           </div>
           <h1 className="text-2xl font-bold text-text tracking-tight">Performa Portofolio</h1>
           <p className="text-sm text-text3 mt-1.5 font-medium opacity-80">Ringkasan performa seluruh klien aktif periode ini.</p>

@@ -123,21 +123,6 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "tnum";
   }
 
-  h1, h2, h3, h4, h5, h6, 
-  button, 
-  label,
-  .type-overline,
-  .badge,
-  .chip,
-  .label-premium {
-    @apply uppercase tracking-wider;
-  }
-
-  aside a, 
-  nav a {
-    @apply uppercase;
-  }
-
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
@@ -195,7 +180,7 @@
 
 /* ── Typography Utilities ── */
 .type-overline {
-  @apply text-[11px] font-bold text-text3 uppercase tracking-[0.15em];
+  @apply text-[11px] font-bold text-text3 tracking-[0.15em];
 }
 
 .tabular-nums {
@@ -203,7 +188,7 @@
 }
 
 .label-premium {
-  @apply text-[10px] font-black text-text3 uppercase tracking-[0.12em];
+  @apply text-[10px] font-black text-text3 tracking-[0.12em];
 }
 
 @keyframes move-stripe {

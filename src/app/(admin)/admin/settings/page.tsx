@@ -83,7 +83,7 @@ export default function SettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
         <Settings className="w-10 h-10 text-text4 mb-4" />
-        <p className="text-xs font-bold text-text3 uppercase tracking-wider">Memuat pengaturan...</p>
+        <p className="text-xs font-bold text-text3  tracking-wider">Memuat pengaturan...</p>
       </div>
     );
   }
@@ -144,7 +144,7 @@ export default function SettingsPage() {
           </div>
           <div className="p-8">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3 uppercase tracking-wider px-1">OpenRouter API Key</label>
+              <label className="text-xs font-semibold text-text3  tracking-wider px-1">OpenRouter API Key</label>
               <input
                 type="password"
                 value={apiKey}
@@ -169,7 +169,7 @@ export default function SettingsPage() {
           </div>
           <div className="p-8">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3 uppercase tracking-wider px-1">Model ID (OpenRouter)</label>
+              <label className="text-xs font-semibold text-text3  tracking-wider px-1">Model ID (OpenRouter)</label>
               <input
                 type="text"
                 value={currentModel}

@@ -186,7 +186,7 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
           Tren Periode 
           <span className="text-text3 font-medium opacity-60">· pilih maks. 3 metrik</span>
         </h3>
-        <div className="text-[10px] font-bold text-text4 uppercase tracking-wider bg-surface2 px-2.5 py-1 rounded-lg border border-border-main/50">
+        <div className="text-[10px] font-bold text-text4  tracking-wider bg-surface2 px-2.5 py-1 rounded-lg border border-border-main/50">
           {activeMetrics.length}/3 aktif
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
           return (
             <div key={mk} className="flex items-center gap-2">
               <div className="w-4 h-0.5" style={{ backgroundColor: tm.color }}></div>
-              <span className="text-[11px] font-bold text-text2 uppercase tracking-wider">{tm.l}</span>
+              <span className="text-[11px] font-bold text-text2  tracking-wider">{tm.l}</span>
             </div>
           );
         })}

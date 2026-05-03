@@ -231,8 +231,8 @@ export default function ClientsAdminPage() {
                         <div className="min-w-0">
                            <h3 className="text-sm font-bold text-text truncate leading-tight mb-1">{cl.name}</h3>
                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-bold text-accent uppercase tracking-wider">{cl.cg || 'N/A'}</span>
-                              <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">• {cl.ind}</span>
+                              <span className="text-[10px] font-bold text-accent  tracking-wider">{cl.cg || 'N/A'}</span>
+                              <span className="text-[10px] font-bold text-text4  tracking-wider">• {cl.ind}</span>
                            </div>
                         </div>
                      </div>
@@ -250,11 +250,11 @@ export default function ClientsAdminPage() {
                   {/* Body: Team Details */}
                   <div className="grid grid-cols-2 gap-4 mb-8">
                      <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">Account Strategist</div>
+                        <div className="text-[10px] font-bold text-text3  tracking-wider">Account Strategist</div>
                         <div className="text-sm font-medium text-text truncate">{cl.as || '—'}</div>
                      </div>
                      <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text3 uppercase tracking-wider">PIC Client</div>
+                        <div className="text-[10px] font-bold text-text3  tracking-wider">PIC Client</div>
                         <div className="text-sm font-medium text-text truncate">{cl.pic || '—'}</div>
                      </div>
                   </div>
@@ -277,10 +277,10 @@ export default function ClientsAdminPage() {
              <table className="w-full text-left">
                 <thead>
                    <tr className="bg-surface2/50 border-b border-border-main">
-                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Klien</th>
-                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Industri</th>
-                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">AS / PIC</th>
-                      <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider text-right">Aksi</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Klien</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Industri</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">AS / PIC</th>
+                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider text-right">Aksi</th>
                    </tr>
                 </thead>
                 <tbody className="divide-y divide-border-main">
@@ -340,7 +340,7 @@ export default function ClientsAdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {FORM_FIELDS.map(f => (
                     <div key={f.key} className={f.span ? 'md:col-span-2' : ''}>
-                      <label className="text-xs font-semibold text-text3 uppercase tracking-wider block mb-2 px-1">{f.label}</label>
+                      <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">{f.label}</label>
                       <input
                         type="text"
                         value={(form as any)[f.key]}
@@ -355,7 +355,7 @@ export default function ClientsAdminPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-xs font-semibold text-text3 uppercase tracking-wider block px-1">Channels & Targets</label>
+                  <label className="text-xs font-semibold text-text3  tracking-wider block px-1">Channels & Targets</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                      {CHANNELS.map(ch => {
                        const active = form.chs.includes(ch);
@@ -381,7 +381,7 @@ export default function ClientsAdminPage() {
                      <div className="bg-surface2 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {form.chs.map(ch => (
                           <div key={ch} className="space-y-1.5">
-                             <label className="text-[10px] font-bold text-text3 uppercase">{ch} Target (x)</label>
+                             <label className="text-[10px] font-bold text-text3 ">{ch} Target (x)</label>
                              <input
                                type="number"
                                step="0.1"

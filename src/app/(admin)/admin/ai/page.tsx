@@ -33,7 +33,7 @@ export default function AIMonitoringPage() {
         
         <div className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-border-main shadow-sm">
            <div className="w-2 h-2 rounded-full bg-gg animate-pulse" />
-           <span className="text-[10px] font-bold text-text2 uppercase tracking-wider">Service: Online</span>
+           <span className="text-[10px] font-bold text-text2  tracking-wider">Service: Online</span>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export default function AIMonitoringPage() {
             <span className="chip chip-gg">Stable</span>
           </div>
           <div>
-            <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-1">Total Expenses</div>
+            <div className="text-xs font-semibold text-text3  tracking-wider mb-1">Total Expenses</div>
             <div className="text-3xl font-bold text-text tabular-nums tracking-tight">${stats.totalCost}</div>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function AIMonitoringPage() {
             </div>
           </div>
           <div>
-            <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-1">Total Tokens</div>
+            <div className="text-xs font-semibold text-text3  tracking-wider mb-1">Total Tokens</div>
             <div className="text-3xl font-bold text-text tabular-nums tracking-tight">{stats.totalTokens}</div>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function AIMonitoringPage() {
             </div>
           </div>
           <div>
-            <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-1">AI Requests</div>
+            <div className="text-xs font-semibold text-text3  tracking-wider mb-1">AI Requests</div>
             <div className="text-3xl font-bold text-text tabular-nums tracking-tight">{stats.totalRequests}</div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function AIMonitoringPage() {
             </div>
           </div>
           <div>
-            <div className="text-xs font-semibold text-text3 uppercase tracking-wider mb-1">Avg Cost/Req</div>
+            <div className="text-xs font-semibold text-text3  tracking-wider mb-1">Avg Cost/Req</div>
             <div className="text-3xl font-bold text-text tabular-nums tracking-tight">${stats.avgCost}</div>
           </div>
         </div>
@@ -109,12 +109,12 @@ export default function AIMonitoringPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-border-main bg-surface2/50">
-                <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Timestamp</th>
-                <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Client</th>
-                <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Model</th>
-                <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Tokens</th>
-                <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider">Cost</th>
-                <th className="py-3 px-6 text-[10px] font-black text-text4 uppercase tracking-wider text-right">Aksi</th>
+                <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Timestamp</th>
+                <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Client</th>
+                <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Model</th>
+                <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Tokens</th>
+                <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Cost</th>
+                <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface2">
@@ -168,7 +168,7 @@ export default function AIMonitoringPage() {
         
         {/* Footer */}
         <div className="px-6 py-4 border-t border-border-main bg-surface2/30 flex items-center justify-between">
-           <span className="text-[10px] font-black text-text4 uppercase tracking-[0.12em]">Showing {AI_LOGS.length} results</span>
+           <span className="text-[10px] font-black text-text4  tracking-[0.12em]">Showing {AI_LOGS.length} results</span>
            <div className="flex items-center gap-2">
               <button className="px-3 h-8 rounded-full text-xs font-bold bg-surface2 text-text3 opacity-50 cursor-not-allowed">Previous</button>
               <button className="px-3 h-8 rounded-full text-xs font-bold bg-surface2 text-text3 opacity-50 cursor-not-allowed">Next</button>

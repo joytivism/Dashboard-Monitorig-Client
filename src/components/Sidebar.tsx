@@ -23,7 +23,7 @@ function SidebarContent() {
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-surface border-r border-border-main flex flex-col z-40 uppercase"
+    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-surface border-r border-border-main flex flex-col z-40"
       style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
 
       {/* ── Logo ── */}

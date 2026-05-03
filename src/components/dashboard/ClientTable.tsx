@@ -164,7 +164,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                     <span className="text-sm font-bold text-text tabular-nums">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
                   </td>
                   <td className="py-3.5 pr-6 text-right">
-                    <span className="chip chip-nn uppercase tracking-wider">
+                    <span className="chip chip-nn  tracking-wider">
                        {cl.cg}
                     </span>
                   </td>

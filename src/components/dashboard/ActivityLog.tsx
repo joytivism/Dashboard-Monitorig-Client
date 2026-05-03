@@ -51,7 +51,7 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ activities }) => {
                  <button
                    key={tab.id}
                    onClick={() => setFilter(tab.id)}
-                   className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                   className={`px-4 py-1.5 rounded-lg text-[10px] font-bold  tracking-wider transition-all ${
                      filter === tab.id ? 'bg-text text-white shadow-md' : 'text-text3 hover:text-text hover:bg-surface2'
                    }`}
                  >
@@ -126,8 +126,8 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ activities }) => {
              <div className="w-16 h-16 rounded-[2rem] bg-surface2 flex items-center justify-center mb-4 border border-dashed border-border-main">
                 <Filter className="w-6 h-6 text-text4 opacity-40" />
              </div>
-             <p className="text-xs font-bold text-text3 uppercase tracking-widest">No matching activities</p>
-             <button onClick={() => {setFilter('all'); setSearch('');}} className="mt-4 text-[10px] font-bold text-accent uppercase tracking-widest hover:underline">Reset Filters</button>
+             <p className="text-xs font-bold text-text3  tracking-widest">No matching activities</p>
+             <button onClick={() => {setFilter('all'); setSearch('');}} className="mt-4 text-[10px] font-bold text-accent  tracking-widest hover:underline">Reset Filters</button>
           </div>
         )}
       </div>
