@@ -1,15 +1,20 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, Settings, Hexagon, ChevronRight, LogOut } from 'lucide-react';
+import { Hexagon, LayoutDashboard, Settings, LogOut } from 'lucide-react';
 import { logout } from '@/app/actions/auth';
+import NavRail from '@/components/layout/NavRail';
+import { useDashboardData } from '@/components/DataProvider';
 import { clientWorst } from '@/lib/utils';
-import { useDashboardData } from './DataProvider';
 
 const STATUS_COLOR: Record<string, string> = {
-  rr: '#DC2626', or: '#EA580C', yy: '#D97706', nn: '#9CA3AF', gg: '#059669', gd: '#0284C7',
+  rr: '#d14343',
+  or: '#d77a0d',
+  yy: '#b97316',
+  nn: '#7e7a74',
+  gg: '#1b8f5a',
+  gd: '#2f7fd8',
 };
 
 function SidebarContent() {
@@ -19,122 +24,85 @@ function SidebarContent() {
   const currentPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
   const queryString = searchParams.toString() ? `?${searchParams.toString()}` : '';
 
-  const isHome = pathname === '/';
-  const isAdmin = pathname.startsWith('/admin');
+  const sections = [
+    {
+      title: 'Workspace',
+      items: [
+        {
+          href: `/${queryString}`,
+          label: 'Portfolio Overview',
+          icon: LayoutDashboard,
+          active: pathname === '/',
+        },
+        {
+          href: '/admin',
+          label: 'Admin Hub',
+          icon: Settings,
+          active: pathname.startsWith('/admin'),
+        },
+      ],
+    },
+    {
+      title: 'Clients',
+      items: CLIENTS.map((client) => {
+        const status = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, client.key, currentPeriod);
+        return {
+          href: `/client/${client.key}${queryString}`,
+          label: client.name,
+          icon: LayoutDashboard,
+          active: pathname === `/client/${client.key}`,
+          prefix: (
+            <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface2 text-[10px] font-semibold text-text2">
+              {client.key.slice(0, 2).toUpperCase()}
+              <span
+                className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white"
+                style={{ background: STATUS_COLOR[status] || STATUS_COLOR.nn }}
+              />
+            </div>
+          ),
+        };
+      }),
+    },
+  ];
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-surface border-r border-border-main flex flex-col z-40"
-      style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
-
-      {/* ── Logo ── */}
-      <div className="h-[60px] flex items-center gap-3 px-6 border-b border-border-main shrink-0 bg-white">
-        <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/20 shrink-0">
-          <Hexagon className="w-4.5 h-4.5 text-white fill-white" />
-        </div>
-        <div className="min-w-0">
-          <div className="text-[11px] font-black text-text tracking-tight leading-none">Real Advertise</div>
-          <div className="text-[9px] font-bold text-text3 tracking-wider mt-0.5">Command Center</div>
-        </div>
-      </div>
-
-      {/* ── Nav ── */}
-      <div className="flex-1 overflow-y-auto no-scrollbar py-4 flex flex-col gap-6 px-3">
-
-        {/* Main Menu */}
-        <div>
-          <div className="text-[9px] font-black text-text4 tracking-[0.12em] mb-2 px-3">Main Menu</div>
-          <div className="flex flex-col gap-0.5">
-            <Link
-              href={`/${queryString}`}
-              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[11px] font-black transition-all duration-200 ${
-                isHome ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
-              }`}
-            >
-              <LayoutDashboard className={`w-4 h-4 shrink-0 ${isHome ? 'text-white' : 'text-text4 group-hover:text-accent'}`} />
-              <span className="flex-1 truncate tracking-wider">Dashboard</span>
-              {isHome && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
-            </Link>
-            <Link
-              href="/admin"
-              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[11px] font-black transition-all duration-200 ${
-                isAdmin ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
-              }`}
-            >
-              <Settings className={`w-4 h-4 shrink-0 ${isAdmin ? 'text-white' : 'text-text4 group-hover:text-accent'}`} />
-              <span className="flex-1 truncate tracking-wider">Admin Hub</span>
-              {isAdmin && <ChevronRight className="w-3.5 h-3.5 text-white/40" />}
-            </Link>
+    <NavRail
+      brand={(
+        <div className="flex items-center gap-3 rounded-[20px] px-3 py-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-text text-white">
+            <Hexagon className="h-5 w-5 fill-white" />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold tracking-[-0.02em] text-text">Real Advertise</div>
+            <div className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-text4">Monitoring Client</div>
           </div>
         </div>
-
-        {/* Clients Section */}
-        <div className="flex-1">
-          <div className="text-[9px] font-black text-text4 tracking-[0.12em] mb-2 px-3">Active Clients</div>
-          <div className="flex flex-col gap-0.5">
-            {CLIENTS.map((cl) => {
-              const isActive = pathname === `/client/${cl.key}`;
-              const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, currentPeriod);
-              const dotColor = STATUS_COLOR[wc] || STATUS_COLOR.nn;
-              return (
-                <Link
-                  key={cl.key}
-                  href={`/client/${cl.key}${queryString}`}
-                  className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-[11px] font-black transition-all duration-200 ${
-                    isActive ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:bg-surface2 hover:text-text'
-                  }`}
-                >
-                  {/* Avatar */}
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black shrink-0 transition-all duration-200 ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-surface3 text-text2 group-hover:bg-accent group-hover:text-white'
-                  }`}>
-                    {cl.key.slice(0, 2).toUpperCase()}
-                  </div>
-                  <span className="flex-1 truncate tracking-wider">{cl.name}</span>
-                  {/* Status dot */}
-                  <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0 transition-all shadow-sm"
-                    style={{ background: isActive ? 'rgba(255,255,255,0.8)' : dotColor }}
-                  />
-                </Link>
-              );
-            })}
+      )}
+      sections={sections}
+      footer={(
+        <div className="space-y-3 p-2">
+          <div className="rounded-[20px] border border-border-main bg-surface2 p-3">
+            <div className="text-sm font-semibold text-text">Real Advertise</div>
+            <div className="mt-1 text-xs text-text3">Unified portfolio and performance workspace.</div>
           </div>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-2 rounded-2xl px-3 py-3 text-sm font-medium text-rr-text transition-colors hover:bg-rr-bg"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </button>
+          </form>
         </div>
-      </div>
-
-      {/* ── Footer ── */}
-      <div className="p-4 border-t border-border-main bg-surface2/50 shrink-0">
-        <div className="bg-white rounded-2xl p-4 border border-border-main shadow-sm mb-3">
-           <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-[10px] font-black">
-                 RA
-              </div>
-              <div className="flex flex-col min-w-0">
-                 <span className="text-[10px] font-black text-text truncate leading-none">Real Advertise</span>
-                 <span className="text-[9px] font-bold text-text3 tracking-wider mt-1.5">Enterprise Hub</span>
-              </div>
-           </div>
-        </div>
-        
-        <form action={logout}>
-          <button 
-            type="submit"
-            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[10px] font-black text-rr tracking-wider hover:bg-rr-bg transition-all group"
-          >
-            <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Sign Out</span>
-          </button>
-        </form>
-      </div>
-    </aside>
+      )}
+    />
   );
 }
 
 export default function Sidebar() {
   return (
-    <Suspense fallback={
-      <aside className="fixed left-0 top-0 h-screen w-[248px] bg-white border-r border-border-main z-40" />
-    }>
+    <Suspense fallback={<aside className="fixed left-0 top-0 hidden h-screen w-[var(--sidebar-width)] border-r border-border-main bg-[#efede7] lg:block" />}>
       <SidebarContent />
     </Suspense>
   );

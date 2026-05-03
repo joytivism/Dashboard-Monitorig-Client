@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Clock, Zap, Target, MessageSquare, Rocket, ArrowRight, TrendingUp, TrendingDown, Search, Filter } from 'lucide-react';
+import { Zap, Target, MessageSquare, Rocket, ArrowRight, Search, Filter } from 'lucide-react';
 
 interface ActivityItem {
   d: string; // raw date

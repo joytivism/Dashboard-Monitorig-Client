@@ -56,6 +56,14 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const pTotalSp = pStats.bofu.sp + pStats.tofu.sp;
   const totalOrd = stats.bofu.ord + stats.mofu.ord;
   const pTotalOrd = pStats.bofu.ord + pStats.mofu.ord;
+  const statusBadgeClass: Record<string, string> = {
+    rr: 'chip chip-rr',
+    or: 'chip chip-or',
+    yy: 'chip chip-yy',
+    nn: 'chip chip-nn',
+    gg: 'chip chip-gg',
+    gd: 'chip chip-gd',
+  };
 
   return (
     <div className="space-y-12 max-w-7xl mx-auto pb-20">
@@ -77,7 +85,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
             <div>
               <h1 className="text-h1 flex items-center gap-4">
                 {cl.name}
-                <span className={`chip ${wc === 'nn' ? 'chip-nn' : `bg-${wc}-bg text-${wc}-text border border-${wc}-border/30`}`}>
+                <span className={statusBadgeClass[wc] || 'chip chip-nn'}>
                   {LM[wc]}
                 </span>
               </h1>
@@ -121,8 +129,10 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
             <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               {probs.map(ch => {
                 const c = gd(DATA, id, ch, curPeriod), p2 = gd(DATA, id, ch, prv);
-                const aware = isAware(CH_DEF, ch); const mk = aware ? 'reach' : 'rev';
-                const v = pct((c as any)?.[mk], (p2 as any)?.[mk]);
+                const aware = isAware(CH_DEF, ch);
+                const currentMetric = aware ? (c?.reach ?? c?.impr) : c?.rev;
+                const previousMetric = aware ? (p2?.reach ?? p2?.impr) : p2?.rev;
+                const v = pct(currentMetric, previousMetric);
                 return (
                   <div key={ch} className="text-sm text-rr-text/80 font-medium">
                     <strong className="text-rr-text">{CH_DEF[ch]?.l}</strong>: {aware ? 'Reach' : 'Revenue'} {v !== null ? (v >= 0 ? '+' : '') + Math.round(v) + '%' : '—'}

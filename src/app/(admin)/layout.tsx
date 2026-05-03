@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { Shield, Lock } from 'lucide-react';
 import AdminSidebar from '@/components/AdminSidebar';
 import AdminHeader from '@/components/AdminHeader';
+import AppShell from '@/components/layout/AppShell';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import InputField from '@/components/ui/InputField';
 
 export default function AdminGroupLayout({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState(false);
@@ -14,9 +18,13 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
   const [shake, setShake]           = useState(false);
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('ra_admin_auth') === 'true';
-    if (isAuth) setAuthorized(true);
-    setChecking(false);
+    const frame = window.requestAnimationFrame(() => {
+      const isAuth = localStorage.getItem('ra_admin_auth') === 'true';
+      if (isAuth) setAuthorized(true);
+      setChecking(false);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -41,69 +49,49 @@ export default function AdminGroupLayout({ children }: { children: React.ReactNo
   /* ── Login gate ── */
   if (!authorized) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center p-6 z-[9999] bg-bg">
-        <div
-          className={`relative bg-white rounded-2xl p-8 border border-border-main max-w-sm w-full text-center ${shake ? 'animate-[shake_0.3s_ease]' : ''}`}
-          style={{ boxShadow: '0 20px 60px -12px rgba(0,0,0,0.1)' }}
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-bg p-6">
+        <Card
+          className={`w-full max-w-md border-white/70 bg-white/90 p-8 text-center backdrop-blur ${shake ? 'animate-[shake_0.3s_ease]' : ''}`}
         >
-          <div className="w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <Shield className="w-7 h-7 text-accent" />
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[24px] bg-accent-light text-accent">
+            <Shield className="h-7 w-7" />
           </div>
-          <h1 className="text-xl font-bold text-text mb-1">Admin Access</h1>
-          <p className="text-sm text-text3 mb-7">Masukkan password untuk melanjutkan.</p>
-
+          <h1 className="text-h3 mb-1">Admin Access</h1>
+          <p className="mb-7 text-body">Masukkan password internal untuk melanjutkan ke admin console.</p>
           <form onSubmit={handleLogin} className="space-y-3">
-            <div className="relative">
-              <Lock className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? 'text-red-400' : 'text-text4'}`} />
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Password"
-                autoFocus
-                className={`w-full h-12 pl-11 pr-4 rounded-xl border text-sm font-semibold focus:outline-none transition-all text-center tracking-widest ${
-                  error
-                    ? 'border-red-300 bg-red-50 text-red-600 placeholder:text-red-300'
-                    : 'border-border-main bg-surface2 text-text focus:border-accent focus:ring-2 focus:ring-accent/10'
-                }`}
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full h-12 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all duration-200"
-            >
+            <InputField
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+              autoFocus
+              icon={Lock}
+              error={error ? 'Password salah. Coba lagi.' : null}
+              inputClassName="text-center tracking-[0.18em]"
+            />
+            <Button type="submit" variant="primary" size="lg" fullWidth>
               Masuk ke Admin
-            </button>
+            </Button>
           </form>
 
-          {error && (
-            <p className="text-red-500 text-xs font-semibold mt-4 animate-fade-in">✗ Password salah. Coba lagi.</p>
-          )}
-
-          <div className="mt-6 pt-5 border-t border-border-main">
-            <Link href="/" className="text-xs text-text3 hover:text-text transition-colors font-medium">
+          <div className="mt-6 border-t border-border-main pt-5">
+            <Link href="/" className="text-xs font-medium text-text3 transition-colors hover:text-text">
               ← Kembali ke Dashboard
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
 
-  /* ── Authorized Admin Shell: Sidebar + Header + Content ── */
   return (
-    <div className="flex w-full min-h-screen bg-bg">
-      {/* Sidebar - Fixed width */}
-      <AdminSidebar onLogout={handleLogout} />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col w-full min-w-0">
-        <AdminHeader />
-        
-        <main className="flex-1 px-6 py-8 md:py-10 w-full overflow-y-auto">
-          {children}
-        </main>
-      </div>
-    </div>
+    <AppShell
+      variant="admin"
+      sidebar={<AdminSidebar onLogout={handleLogout} />}
+      topbar={<AdminHeader />}
+      contentClassName="pb-20"
+    >
+      {children}
+    </AppShell>
   );
 }

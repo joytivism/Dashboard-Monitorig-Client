@@ -1,5 +1,7 @@
 import React from 'react';
-import { AlertTriangle, TrendingUp, ChevronRight } from 'lucide-react';
+import { AlertTriangle, ChevronRight, TrendingUp } from 'lucide-react';
+import Badge from '@/components/ui/Badge';
+import Card from '@/components/ui/Card';
 import { fRp } from '@/lib/utils';
 
 interface BannerItem {
@@ -14,116 +16,99 @@ interface StatusBannersProps {
   onClientClick: (key: string) => void;
 }
 
-export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportunities, onClientClick }) => {
+function InsightRow({
+  item,
+  tone,
+  onClick,
+}: {
+  item: BannerItem;
+  tone: 'danger' | 'success';
+  onClick: (key: string) => void;
+}) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Risk Column */}
-      <div className="bg-rr-bg border border-rr-border rounded-3xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-rr text-white flex items-center justify-center shadow-lg shadow-rr/20">
-               <AlertTriangle className="w-5 h-5" />
+    <button
+      onClick={() => onClick(item.key)}
+      className="flex w-full items-center justify-between rounded-[22px] border border-border-main bg-white px-4 py-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/20 hover:shadow-sm"
+    >
+      <div className="flex items-center gap-3">
+        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl text-[11px] font-semibold ${
+          tone === 'danger' ? 'bg-rr-bg text-rr-text' : 'bg-gg-bg text-gg-text'
+        }`}>
+          {item.key.slice(0, 2).toUpperCase()}
+        </div>
+        <div>
+          <div className="text-sm font-semibold text-text">{item.key}</div>
+          <div className="text-xs text-text3">{fRp(item.rev)}</div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {item.growth !== undefined && item.growth !== null ? (
+          <span className={`text-xs font-semibold ${tone === 'danger' ? 'text-rr-text' : 'text-gg-text'}`}>
+            {item.growth >= 0 ? '+' : '-'}
+            {Math.abs(item.growth).toFixed(1)}%
+          </span>
+        ) : null}
+        <ChevronRight className="h-4 w-4 text-text4" />
+      </div>
+    </button>
+  );
+}
+
+export default function StatusBanners({ risks, opportunities, onClientClick }: StatusBannersProps) {
+  return (
+    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+      <Card tone="danger" className="space-y-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rr text-white">
+              <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-               <h2 className="text-h4 !text-rr-text leading-none">Attention Needed</h2>
-               <p className="text-micro !text-rr-text opacity-60 mt-1">High Risk Portfolio</p>
+              <div className="ds-eyebrow text-rr-text">Attention</div>
+              <h2 className="mt-1 text-h4 text-rr-text">Clients needing review</h2>
+              <p className="mt-2 text-sm text-rr-text/80">Portofolio dengan tekanan performa paling tinggi di periode aktif.</p>
             </div>
           </div>
-          {risks.length > 0 && (
-            <span className="text-[10px] font-bold px-3 py-1 bg-rr/10 text-rr-text rounded-xl border border-rr-border/40  tracking-wider">
-              {risks.length} Klien
-            </span>
-          )}
+          <Badge tone="danger" style="soft">{risks.length} klien</Badge>
         </div>
 
         <div className="space-y-3">
           {risks.length > 0 ? (
-            risks.slice(0, 3).map(cl => (
-              <button
-                key={cl.key}
-                onClick={() => onClientClick(cl.key)}
-                className="w-full flex items-center justify-between bg-white/70 rounded-2xl px-5 py-4 hover:bg-white hover:shadow-md transition-all group border border-transparent hover:border-rr-border/30"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-rr/10 flex items-center justify-center text-rr text-[10px] font-bold">
-                    {cl.key.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="text-left">
-                    <div className="text-body font-bold !text-rr-text mb-1">{cl.key}</div>
-                    <div className="text-micro !text-rr-text opacity-60">{fRp(cl.rev)}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {cl.growth !== undefined && cl.growth !== null && (
-                    <span className="text-xs font-bold text-rr flex items-center gap-0.5">
-                      {cl.growth >= 0 ? '↑' : '↓'}{Math.abs(cl.growth).toFixed(1)}%
-                    </span>
-                  )}
-                  <ChevronRight className="w-4 h-4 text-rr-text/20 group-hover:text-rr transition-colors" />
-                </div>
-              </button>
-            ))
+            risks.slice(0, 3).map((item) => <InsightRow key={item.key} item={item} tone="danger" onClick={onClientClick} />)
           ) : (
-            <div className="py-12 text-center bg-white/40 rounded-2xl border border-dashed border-rr-border/40">
-               <p className="text-[10px] font-bold text-rr-text/40  tracking-wider">No critical alerts</p>
+            <div className="rounded-[22px] border border-dashed border-rr-border bg-white/60 px-5 py-12 text-center text-sm text-rr-text/75">
+              Tidak ada alert kritis pada periode ini.
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
-      {/* Opportunity Column */}
-      <div className="bg-gg-bg border border-gg-border rounded-3xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gg text-white flex items-center justify-center shadow-lg shadow-gg/20">
-               <TrendingUp className="w-5 h-5" />
+      <Card tone="success" className="space-y-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gg text-white">
+              <TrendingUp className="h-5 w-5" />
             </div>
             <div>
-               <h2 className="text-h4 !text-gg-text leading-none">Top Growth Clients</h2>
-               <p className="text-micro !text-gg-text opacity-60 mt-1">Opportunity Wins</p>
+              <div className="ds-eyebrow text-gg-text">Opportunity</div>
+              <h2 className="mt-1 text-h4 text-gg-text">Top growth clients</h2>
+              <p className="mt-2 text-sm text-gg-text/80">Akun dengan momentum pertumbuhan paling positif untuk ditindaklanjuti lebih agresif.</p>
             </div>
           </div>
-          {opportunities.length > 0 && (
-            <span className="text-[10px] font-bold px-3 py-1 bg-gg/10 text-gg-text rounded-xl border border-gg-border/40  tracking-wider">
-              Top {opportunities.length}
-            </span>
-          )}
+          <Badge tone="success" style="soft">Top {opportunities.length}</Badge>
         </div>
 
         <div className="space-y-3">
           {opportunities.length > 0 ? (
-            opportunities.map(cl => (
-              <button
-                key={cl.key}
-                onClick={() => onClientClick(cl.key)}
-                className="w-full flex items-center justify-between bg-white/70 rounded-2xl px-5 py-4 hover:bg-white hover:shadow-md transition-all group border border-transparent hover:border-gg-border/30"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-gg/10 flex items-center justify-center text-gg text-[10px] font-bold">
-                    {cl.key.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="text-left">
-                    <div className="text-body font-bold !text-gg-text mb-1">{cl.key}</div>
-                    <div className="text-micro !text-gg-text opacity-60">{fRp(cl.rev)}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-gg flex items-center gap-0.5">
-                    ↑{cl.growth?.toFixed(1)}%
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-gg-text/20 group-hover:text-gg transition-colors" />
-                </div>
-              </button>
-            ))
+            opportunities.map((item) => <InsightRow key={item.key} item={item} tone="success" onClick={onClientClick} />)
           ) : (
-            <div className="py-12 text-center bg-white/40 rounded-2xl border border-dashed border-gg-border/40">
-               <p className="text-[10px] font-bold text-gg-text/40  tracking-wider">Seeking opportunities</p>
+            <div className="rounded-[22px] border border-dashed border-gg-border bg-white/60 px-5 py-12 text-center text-sm text-gg-text/75">
+              Belum ada peluang pertumbuhan yang menonjol.
             </div>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
-};
-
-export default StatusBanners;
+}

@@ -1,5 +1,9 @@
 import { ORD, type DataEntry, type Client, type ChannelDef } from './data';
 
+export function cn(...values: Array<string | false | null | undefined>): string {
+  return values.filter(Boolean).join(' ');
+}
+
 export function gd(DATA: DataEntry[], c: string, ch: string, p: string): DataEntry | null { 
   return DATA.find(x => x.c === c && x.ch === ch && x.p === p) || null; 
 }

@@ -2,221 +2,229 @@
 
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-  ChevronRight, Bell, User, CheckCheck, 
-  AlertCircle, AlertTriangle, Info, Clock 
+import {
+  AlertCircle,
+  AlertTriangle,
+  Bell,
+  CheckCheck,
+  Clock,
+  Info,
+  User,
 } from 'lucide-react';
+import TopBar from '@/components/layout/TopBar';
 import { supabase } from '@/lib/supabase';
 import { useDashboardData } from '@/components/DataProvider';
 import { clientWorst } from '@/lib/utils';
 
 const NAV_ITEMS = [
-  { href: '/admin',          label: 'Admin Hub' },
-  { href: '/admin/data',     label: 'Input Data' },
+  { href: '/admin', label: 'Admin Hub' },
+  { href: '/admin/data', label: 'Input Data' },
   { href: '/admin/activity', label: 'Activity Log' },
-  { href: '/admin/clients',  label: 'Kelola Klien' },
-  { href: '/admin/settings', label: 'Pengaturan' },
+  { href: '/admin/clients', label: 'Client Management' },
+  { href: '/admin/settings', label: 'Settings' },
+  { href: '/admin/design-system', label: 'Design System' },
 ];
 
 export default function AdminHeader() {
   const pathname = usePathname();
   const router = useRouter();
-  const currentItem = NAV_ITEMS.find(item => 
-    item.href === pathname || (item.href !== '/admin' && pathname.startsWith(item.href))
-  );
+  const currentItem = NAV_ITEMS.find((item) => item.href === pathname || (item.href !== '/admin' && pathname.startsWith(item.href)));
 
   const [showNotifications, setShowNotifications] = React.useState(false);
   const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
   const [dbStatus, setDbStatus] = React.useState<'online' | 'checking' | 'error'>('checking');
   const [aiStatus, setAiStatus] = React.useState<'ready' | 'checking' | 'error'>('checking');
-  
-  const [readIds, setReadIds] = React.useState<string[]>([]);
-
-  React.useEffect(() => {
+  const [readIds, setReadIds] = React.useState<string[]>(() => {
+    if (typeof window === 'undefined') {
+      return [];
+    }
     const saved = localStorage.getItem('ra_read_notifications');
-    if (saved) setReadIds(JSON.parse(saved));
-  }, []);
+    return saved ? JSON.parse(saved) : [];
+  });
 
   React.useEffect(() => {
     async function checkHealth() {
       try {
         const { error } = await supabase.from('clients').select('count', { count: 'exact', head: true });
         setDbStatus(error ? 'error' : 'online');
-      } catch { setDbStatus('error'); }
+      } catch {
+        setDbStatus('error');
+      }
 
       try {
         const { data } = await supabase.from('system_settings').select('value').eq('key', 'openrouter_key').single();
         setAiStatus(data?.value ? 'ready' : 'error');
-      } catch { setAiStatus('error'); }
+      } catch {
+        setAiStatus('error');
+      }
     }
+
     checkHealth();
   }, []);
 
   const notifications = React.useMemo(() => {
     const curPeriod = PERIODS[PERIODS.length - 1];
-    const alerts: any[] = [];
+    const alerts: Array<{
+      id: string;
+      clientKey: string;
+      type: 'critical' | 'warning';
+      title: string;
+      desc: string;
+      time: string;
+      unread: boolean;
+    }> = [];
 
-    CLIENTS.forEach(cl => {
-      const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod);
-      if (wc === 'rr' || wc === 'or') {
-        const id = `${cl.key}-${curPeriod}-${wc}`;
+    CLIENTS.forEach((client) => {
+      const status = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, client.key, curPeriod);
+      if (status === 'rr' || status === 'or') {
+        const id = `${client.key}-${curPeriod}-${status}`;
         alerts.push({
           id,
-          clientKey: cl.key,
-          type: wc === 'rr' ? 'critical' : 'warning',
-          title: wc === 'rr' ? 'Critical Alert' : 'Performance Warning',
-          desc: `Klien ${cl.key} memerlukan evaluasi strategi segera.`,
+          clientKey: client.key,
+          type: status === 'rr' ? 'critical' : 'warning',
+          title: status === 'rr' ? 'Critical Alert' : 'Performance Warning',
+          desc: `Klien ${client.key} memerlukan evaluasi strategi segera.`,
           time: 'Just now',
-          unread: !readIds.includes(id)
+          unread: !readIds.includes(id),
         });
       }
     });
 
     return alerts;
-  }, [CLIENTS, DATA, PERIODS, readIds]);
+  }, [CH_DEF, CLIENTS, DATA, PERIODS, readIds]);
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = notifications.filter((notification) => notification.unread).length;
 
-  const handleMarkAllRead = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const allIds = notifications.map(n => n.id);
-    const newReadIds = Array.from(new Set([...readIds, ...allIds]));
-    setReadIds(newReadIds);
-    localStorage.setItem('ra_read_notifications', JSON.stringify(newReadIds));
+  const handleMarkAllRead = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    const allIds = notifications.map((notification) => notification.id);
+    const nextReadIds = Array.from(new Set([...readIds, ...allIds]));
+    setReadIds(nextReadIds);
+    localStorage.setItem('ra_read_notifications', JSON.stringify(nextReadIds));
   };
 
-  const handleNotificationClick = (n: any) => {
-    if (n.unread) {
-      const newReadIds = [...readIds, n.id];
-      setReadIds(newReadIds);
-      localStorage.setItem('ra_read_notifications', JSON.stringify(newReadIds));
+  const handleNotificationClick = (notification: (typeof notifications)[number]) => {
+    if (notification.unread) {
+      const nextReadIds = [...readIds, notification.id];
+      setReadIds(nextReadIds);
+      localStorage.setItem('ra_read_notifications', JSON.stringify(nextReadIds));
     }
     setShowNotifications(false);
-    router.push(`/client/${encodeURIComponent(n.clientKey)}`);
+    router.push(`/client/${encodeURIComponent(notification.clientKey)}`);
   };
 
+  const statusSlots = (
+    <>
+      <div className="rounded-full border border-border-main bg-white px-3 py-1 text-[11px] font-medium text-text3">
+        DB: <span className={dbStatus === 'online' ? 'text-gg-text' : dbStatus === 'error' ? 'text-rr-text' : 'text-yy-text'}>{dbStatus}</span>
+      </div>
+      <div className="rounded-full border border-border-main bg-white px-3 py-1 text-[11px] font-medium text-text3">
+        AI: <span className={aiStatus === 'ready' ? 'text-gd-text' : aiStatus === 'error' ? 'text-rr-text' : 'text-yy-text'}>{aiStatus}</span>
+      </div>
+    </>
+  );
+
   return (
-    <header 
-      className="h-[60px] w-full sticky top-0 z-50 flex items-center justify-between px-6 transition-all duration-300 border-b border-border-main"
-      style={{ 
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-      }}
-    >
-      {/* ── Breadcrumbs ── */}
-      <div className="flex items-center gap-2 text-xs font-medium">
-        <span className="text-text3">Admin CC</span>
-        <ChevronRight className="w-3 h-3 text-text4" />
-        <span className="text-text font-semibold">{currentItem?.label || 'Dashboard'}</span>
-      </div>
+    <>
+      <TopBar
+        title={currentItem?.label || 'Admin Hub'}
+        breadcrumbs={['Admin Console', currentItem?.label || 'Overview']}
+        statusSlots={statusSlots}
+        actions={(
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications((value) => !value)}
+                className={`relative flex h-11 w-11 items-center justify-center rounded-2xl border transition-all ${
+                  showNotifications
+                    ? 'border-accent bg-accent text-white'
+                    : 'border-border-main bg-white text-text3 hover:border-accent/30 hover:text-accent'
+                }`}
+              >
+                <Bell className="h-4 w-4" />
+                {unreadCount > 0 && !showNotifications ? (
+                  <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-rr ring-2 ring-white" />
+                ) : null}
+              </button>
 
-      {/* ── Center: System Health ── */}
-      <div className="hidden lg:flex items-center gap-6">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface2 border border-border-main/40">
-          <div className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'online' ? 'bg-green-500' : dbStatus === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'} shadow-[0_0_8px_rgba(34,197,94,0.4)]`} />
-          <span className="text-[9px] font-black text-text3  tracking-[0.1em]">DB: {dbStatus === 'online' ? 'Online' : dbStatus === 'checking' ? 'Wait' : 'Off'}</span>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-surface2 border border-border-main/40">
-          <div className={`w-1.5 h-1.5 rounded-full ${aiStatus === 'ready' ? 'bg-blue-500' : aiStatus === 'checking' ? 'bg-yellow-500 animate-pulse' : 'bg-red-500'} shadow-[0_0_8px_rgba(59,130,246,0.4)]`} />
-          <span className="text-[9px] font-black text-text3  tracking-[0.1em]">AI: {aiStatus === 'ready' ? 'Ready' : aiStatus === 'checking' ? 'Wait' : 'Off'}</span>
-        </div>
-      </div>
-
-      {/* ── Right Actions ── */}
-      <div className="flex items-center gap-4">
-        {/* Notifications Dropdown */}
-        <div className="relative">
-          <button 
-            onClick={() => setShowNotifications(!showNotifications)}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${showNotifications ? 'bg-accent text-white shadow-lg shadow-accent/20 scale-95' : 'hover:bg-surface2 text-text3 border border-border-main/50'}`}
-          >
-            <Bell className="w-4.5 h-4.5" />
-            {unreadCount > 0 && !showNotifications && (
-              <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-            )}
-          </button>
-
-          {showNotifications && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)} />
-              <div className="absolute right-0 mt-3 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-border-main overflow-hidden z-20 animate-fade-in origin-top-right">
-                <div className="px-5 py-4 border-b border-border-main/50 flex items-center justify-between bg-surface2/30">
-                   <div className="flex items-center gap-2">
-                      <Bell className="w-3.5 h-3.5 text-accent" />
-                      <h3 className="text-[10px] font-bold text-text tracking-wider">Alerts Center</h3>
-                   </div>
-                  {unreadCount > 0 && (
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-accent text-white shadow-sm">
-                       {unreadCount} New
-                    </span>
-                  )}
-                </div>
-
-                <div className="max-h-[380px] overflow-y-auto no-scrollbar">
-                  {notifications.length === 0 ? (
-                    <div className="px-10 py-14 text-center">
-                      <div className="w-12 h-12 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-4 border border-border-main/50">
-                        <Info className="w-6 h-6 text-text4 opacity-30" />
+              {showNotifications ? (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)} />
+                  <div className="absolute right-0 z-20 mt-3 w-[360px] overflow-hidden rounded-[28px] border border-border-main bg-white shadow-[var(--shadow-popover)]">
+                    <div className="flex items-center justify-between border-b border-border-main bg-surface2 px-5 py-4">
+                      <div>
+                        <div className="text-sm font-semibold text-text">Alerts Center</div>
+                        <div className="text-xs text-text3">System and portfolio notifications.</div>
                       </div>
-                      <p className="text-[10px] font-bold text-text4 tracking-wider">Everything is optimal</p>
+                      {unreadCount > 0 ? <span className="badge badge-accent">{unreadCount} new</span> : null}
                     </div>
-                  ) : (
-                    notifications.map((n, i) => (
-                      <div 
-                        key={i} 
-                        onClick={() => handleNotificationClick(n)}
-                        className={`px-5 py-4 border-b border-border-main/40 hover:bg-surface2/50 transition-all cursor-pointer group flex items-start gap-4 ${!n.unread ? 'opacity-40 grayscale-[0.8]' : ''}`}
-                      >
-                        <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center border ${
-                          n.type === 'critical' ? 'bg-red-50 border-red-100 text-red-500' : 'bg-orange-50 border-orange-100 text-orange-500'
-                        }`}>
-                          {n.type === 'critical' ? <AlertCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-xs font-bold text-text group-hover:text-accent transition-colors truncate pr-2">{n.title}</span>
-                            <div className="flex items-center gap-1 text-[9px] font-bold text-text4  shrink-0">
-                               <Clock className="w-2.5 h-2.5" /> {n.time}
+
+                    <div className="max-h-[380px] overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((notification) => (
+                          <button
+                            key={notification.id}
+                            onClick={() => handleNotificationClick(notification)}
+                            className={`flex w-full items-start gap-3 border-b border-border-main/70 px-5 py-4 text-left transition-colors hover:bg-surface2 ${
+                              !notification.unread ? 'opacity-45' : ''
+                            }`}
+                          >
+                            <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ${
+                              notification.type === 'critical' ? 'bg-rr-bg text-rr-text' : 'bg-or-bg text-or-text'
+                            }`}>
+                              {notification.type === 'critical' ? <AlertCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
                             </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="truncate text-sm font-semibold text-text">{notification.title}</div>
+                                <div className="flex shrink-0 items-center gap-1 text-[10px] text-text4">
+                                  <Clock className="h-3 w-3" />
+                                  {notification.time}
+                                </div>
+                              </div>
+                              <p className="mt-1 text-xs leading-relaxed text-text3">{notification.desc}</p>
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-8 py-14 text-center">
+                          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[20px] bg-surface2 text-text4">
+                            <Info className="h-6 w-6" />
                           </div>
-                          <p className="text-[10px] text-text3 leading-relaxed font-medium line-clamp-2">{n.desc}</p>
+                          <div className="mt-4 text-sm font-semibold text-text">Everything is stable</div>
+                          <div className="mt-1 text-xs text-text3">No new alerts for the current portfolio snapshot.</div>
                         </div>
-                        {n.unread && (
-                           <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0 mt-1.5 shadow-[0_0_8px_rgba(255,99,1,0.5)]" />
-                        )}
+                      )}
+                    </div>
+
+                    {notifications.length > 0 ? (
+                      <div className="border-t border-border-main bg-surface2 p-3">
+                        <button
+                          onClick={handleMarkAllRead}
+                          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border-main bg-white px-3 py-2.5 text-xs font-medium text-text2 transition-all hover:border-accent/30 hover:text-accent"
+                        >
+                          <CheckCheck className="h-4 w-4" />
+                          Mark all as read
+                        </button>
                       </div>
-                    ))
-                  )}
-                </div>
-
-                {notifications.length > 0 && (
-                  <div className="p-3 bg-surface2/20 border-t border-border-main/50">
-                    <button 
-                      onClick={handleMarkAllRead}
-                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border-main/60 bg-white text-[9px] font-bold text-text3 hover:text-accent hover:border-accent/30 hover:shadow-sm tracking-wider transition-all"
-                    >
-                      <CheckCheck className="w-3.5 h-3.5" /> Mark all as read
-                    </button>
+                    ) : null}
                   </div>
-                )}
+                </>
+              ) : null}
+            </div>
+
+            <div className="flex h-11 items-center gap-3 rounded-2xl border border-border-main bg-white px-3.5">
+              <div className="hidden text-right sm:block">
+                <div className="text-xs font-semibold text-text">Admin User</div>
+                <div className="text-[11px] text-text3">Superuser</div>
               </div>
-            </>
-          )}
-        </div>
-
-        <div className="h-5 w-px bg-border-main/50" />
-
-        <div className="flex items-center gap-3 pl-1">
-          <div className="text-right hidden sm:block">
-            <div className="text-xs font-bold text-text leading-none mb-1">Admin User</div>
-            <div className="text-[9px] font-bold text-accent  tracking-wider">Superuser</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-surface2 text-text2">
+                <User className="h-4 w-4" />
+              </div>
+            </div>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-[10px] font-black border border-border-main/50 shadow-sm group cursor-pointer hover:border-accent/40 transition-all">
-             <User className="w-5 h-5 opacity-30 group-hover:opacity-60 transition-opacity" />
-          </div>
-        </div>
-      </div>
-    </header>
+        )}
+      />
+    </>
   );
 }

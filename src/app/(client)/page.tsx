@@ -1,24 +1,23 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Calendar, CreditCard, DollarSign, TrendingUp, Users } from 'lucide-react';
 import { useDashboardData } from '@/components/DataProvider';
-import { totals, clientWorst, fRp, pct as getPct } from '@/lib/utils';
-import { 
-  Users, DollarSign, TrendingUp, CreditCard,
-  ChevronRight, Activity, Calendar 
-} from 'lucide-react';
-
-import MetricCard from '@/components/ui/MetricCard';
-import ClientTable from '@/components/dashboard/ClientTable';
 import StatusBanners from '@/components/dashboard/StatusBanners';
+import ClientTable from '@/components/dashboard/ClientTable';
+import PageIntro from '@/components/layout/PageIntro';
+import Badge from '@/components/ui/Badge';
+import MetricCard from '@/components/ui/MetricCard';
+import SelectField from '@/components/ui/SelectField';
+import { clientWorst, fRp, pct as getPct, totals } from '@/lib/utils';
 
 function OverviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
+  const { CLIENTS, DATA, PERIODS, CH_DEF, PL } = useDashboardData();
   const curPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
-  
+
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({ cg: '', ind: '', pic: '' });
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'status', direction: 'asc' });
@@ -26,71 +25,95 @@ function OverviewContent() {
   const prevIdx = PERIODS.indexOf(curPeriod) - 1;
   const prevPeriod = prevIdx >= 0 ? PERIODS[prevIdx] : '';
 
-  // Metadata for filters
-  const metadata = useMemo(() => ({
-    industries: Array.from(new Set(CLIENTS.map(c => c.ind))).filter(i => i !== '—').sort(),
-    pics: Array.from(new Set(CLIENTS.map(c => c.as))).filter(i => i !== '—').sort(),
-    channelGroups: Array.from(new Set(CLIENTS.map(c => c.cg))).filter(i => i && i !== '—').sort()
-  }), [CLIENTS]);
+  const metadata = useMemo(
+    () => ({
+      industries: Array.from(new Set(CLIENTS.map((client) => client.ind))).filter((item) => item !== '—').sort(),
+      pics: Array.from(new Set(CLIENTS.map((client) => client.as))).filter((item) => item !== '—').sort(),
+      channelGroups: Array.from(new Set(CLIENTS.map((client) => client.cg))).filter((item) => item && item !== '—').sort(),
+    }),
+    [CLIENTS]
+  );
 
-  // Global Metrics
   const { tRev, tSp, pRev, pSp } = useMemo(() => {
-    let tr = 0, ts = 0, pr = 0, ps = 0;
-    CLIENTS.forEach(cl => {
-      const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
-      const tp = totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod);
-      tr += t.rev; ts += t.sp; pr += tp.rev; ps += tp.sp;
+    let totalRevenue = 0;
+    let totalSpend = 0;
+    let previousRevenue = 0;
+    let previousSpend = 0;
+
+    CLIENTS.forEach((client) => {
+      const current = totals(CH_DEF, CLIENTS, DATA, client.key, curPeriod);
+      const previous = totals(CH_DEF, CLIENTS, DATA, client.key, prevPeriod);
+      totalRevenue += current.rev;
+      totalSpend += current.sp;
+      previousRevenue += previous.rev;
+      previousSpend += previous.sp;
     });
-    return { tRev: tr, tSp: ts, pRev: pr, pSp: ps };
-  }, [CLIENTS, DATA, curPeriod, prevPeriod, CH_DEF]);
+
+    return { tRev: totalRevenue, tSp: totalSpend, pRev: previousRevenue, pSp: previousSpend };
+  }, [CH_DEF, CLIENTS, DATA, curPeriod, prevPeriod]);
 
   const aRoas = tSp > 0 ? tRev / tSp : null;
   const paRoas = pSp > 0 ? pRev / pSp : null;
 
-  // Analysis Data for Banners
-  const risks = useMemo(() => 
-    CLIENTS.filter(cl => ['rr', 'or'].includes(clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, cl.key, curPeriod)))
-      .map(cl => ({
-        key: cl.key,
-        rev: totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod).rev,
-        growth: getPct(totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod).rev, totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod).rev)
-      })), [CLIENTS, DATA, PERIODS, curPeriod, prevPeriod, CH_DEF]);
+  const risks = useMemo(
+    () =>
+      CLIENTS.filter((client) => ['rr', 'or'].includes(clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, client.key, curPeriod))).map((client) => ({
+        key: client.key,
+        rev: totals(CH_DEF, CLIENTS, DATA, client.key, curPeriod).rev,
+        growth: getPct(
+          totals(CH_DEF, CLIENTS, DATA, client.key, curPeriod).rev,
+          totals(CH_DEF, CLIENTS, DATA, client.key, prevPeriod).rev
+        ),
+      })),
+    [CH_DEF, CLIENTS, DATA, PERIODS, curPeriod, prevPeriod]
+  );
 
-  const topGrowth = useMemo(() => 
-    CLIENTS.map(cl => {
-      const t = totals(CH_DEF, CLIENTS, DATA, cl.key, curPeriod);
-      const tp = totals(CH_DEF, CLIENTS, DATA, cl.key, prevPeriod);
-      return { key: cl.key, rev: t.rev, growth: getPct(t.rev, tp.rev) || 0 };
-    }).filter(cl => cl.growth > 0).sort((a, b) => b.growth - a.growth).slice(0, 3), [CLIENTS, DATA, curPeriod, prevPeriod, CH_DEF]);
+  const topGrowth = useMemo(
+    () =>
+      CLIENTS.map((client) => {
+        const current = totals(CH_DEF, CLIENTS, DATA, client.key, curPeriod);
+        const previous = totals(CH_DEF, CLIENTS, DATA, client.key, prevPeriod);
+        return { key: client.key, rev: current.rev, growth: getPct(current.rev, previous.rev) || 0 };
+      })
+        .filter((client) => client.growth > 0)
+        .sort((left, right) => right.growth - left.growth)
+        .slice(0, 3),
+    [CH_DEF, CLIENTS, DATA, curPeriod, prevPeriod]
+  );
 
   const filteredClients = useMemo(() => {
-    return [...CLIENTS].filter(cl => {
-      const matchesSearch = !search || cl.key.toLowerCase().includes(search.toLowerCase()) || cl.ind.toLowerCase().includes(search.toLowerCase());
-      const matchesInd = !filters.ind || cl.ind === filters.ind;
-      const matchesPIC = !filters.pic || cl.as === filters.pic;
-      const matchesCG = !filters.cg || cl.cg === filters.cg;
-      return matchesSearch && matchesInd && matchesPIC && matchesCG;
-    }).sort((a, b) => {
-      const { key, direction } = sortConfig;
-      let valA: any, valB: any;
-      if (key === 'status') {
-        const ORD = ['rr', 'or', 'yy', 'nn', 'gg', 'gd'];
-        valA = ORD.indexOf(clientWorst(CH_DEF, [a], DATA, PERIODS, a.key, curPeriod));
-        valB = ORD.indexOf(clientWorst(CH_DEF, [b], DATA, PERIODS, b.key, curPeriod));
-      } else if (key === 'rev' || key === 'sp' || key === 'roas') {
-        const tA = totals(CH_DEF, CLIENTS, DATA, a.key, curPeriod);
-        const tB = totals(CH_DEF, CLIENTS, DATA, b.key, curPeriod);
-        valA = tA[key as 'rev' | 'sp' | 'roas'] || 0;
-        valB = tB[key as 'rev' | 'sp' | 'roas'] || 0;
-      } else {
-        valA = (a as any)[key] || '';
-        valB = (b as any)[key] || '';
-      }
-      if (valA < valB) return direction === 'asc' ? -1 : 1;
-      if (valA > valB) return direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [CLIENTS, search, filters, sortConfig, DATA, curPeriod, PERIODS]);
+    return [...CLIENTS]
+      .filter((client) => {
+        const matchesSearch = !search || client.key.toLowerCase().includes(search.toLowerCase()) || client.ind.toLowerCase().includes(search.toLowerCase());
+        const matchesIndustry = !filters.ind || client.ind === filters.ind;
+        const matchesPIC = !filters.pic || client.as === filters.pic;
+        const matchesCG = !filters.cg || client.cg === filters.cg;
+        return matchesSearch && matchesIndustry && matchesPIC && matchesCG;
+      })
+      .sort((left, right) => {
+        const { key, direction } = sortConfig;
+        let valueA: string | number = '';
+        let valueB: string | number = '';
+
+        if (key === 'status') {
+          const order = ['rr', 'or', 'yy', 'nn', 'gg', 'gd'];
+          valueA = order.indexOf(clientWorst(CH_DEF, [left], DATA, PERIODS, left.key, curPeriod));
+          valueB = order.indexOf(clientWorst(CH_DEF, [right], DATA, PERIODS, right.key, curPeriod));
+        } else if (key === 'rev' || key === 'sp' || key === 'roas') {
+          const totalA = totals(CH_DEF, CLIENTS, DATA, left.key, curPeriod);
+          const totalB = totals(CH_DEF, CLIENTS, DATA, right.key, curPeriod);
+          valueA = totalA[key as 'rev' | 'sp' | 'roas'] || 0;
+          valueB = totalB[key as 'rev' | 'sp' | 'roas'] || 0;
+        } else {
+          valueA = (left as unknown as Record<string, string | number>)[key] || '';
+          valueB = (right as unknown as Record<string, string | number>)[key] || '';
+        }
+
+        if (valueA < valueB) return direction === 'asc' ? -1 : 1;
+        if (valueA > valueB) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+  }, [CH_DEF, CLIENTS, DATA, PERIODS, curPeriod, filters, search, sortConfig]);
 
   const onClientClick = (key: string) => {
     const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
@@ -98,52 +121,45 @@ function OverviewContent() {
   };
 
   return (
-    <div className="space-y-12 animate-fade-in max-w-7xl mx-auto pb-20">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-2.5">
-            <Activity className="w-4 h-4 text-accent" />
-            <span className="text-[10px] font-bold text-text3  tracking-wider">Overview Dashboard</span>
+    <div className="mx-auto max-w-7xl space-y-7 pb-20 animate-fade-in">
+      <PageIntro
+        eyebrow="Client Overview"
+        title="Performa portofolio"
+        description="Ringkasan performa seluruh klien aktif, lengkap dengan health signal, pertumbuhan, dan titik perhatian utama pada periode berjalan."
+        meta={(
+          <>
+            <Badge tone="success" style="soft">Live period</Badge>
+            <Badge tone="neutral" style="soft">{CLIENTS.length} active clients</Badge>
+            <Badge tone="warning" style="soft">{risks.length} need review</Badge>
+          </>
+        )}
+        actions={(
+          <div className="w-full min-w-[220px] sm:w-[220px]">
+            <SelectField
+              aria-label="Pilih periode"
+              icon={Calendar}
+              options={PERIODS.map((period) => ({ value: period, label: PL[period] || period }))}
+              value={curPeriod}
+              onChange={(event) => {
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('period', event.target.value);
+                router.push(`?${params.toString()}`);
+              }}
+            />
           </div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">Performa Portofolio</h1>
-          <p className="text-sm text-text3 mt-1.5 font-medium opacity-80">Ringkasan performa seluruh klien aktif periode ini.</p>
-        </div>
+        )}
+      />
 
-        <div className="relative">
-          <Calendar className="w-4 h-4 text-text4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <select
-            value={curPeriod}
-            onChange={(e) => {
-              const params = new URLSearchParams(searchParams.toString());
-              params.set('period', e.target.value);
-              router.push(`?${params.toString()}`);
-            }}
-            className="h-12 pl-11 pr-12 bg-white border border-border-main rounded-2xl text-sm font-bold text-text focus:outline-none focus:ring-4 focus:ring-accent/5 transition-all appearance-none cursor-pointer shadow-sm min-w-[200px]"
-          >
-            {PERIODS.map(p => {
-              const [y, m] = p.split('-');
-              const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-              return <option key={p} value={p}>{months[parseInt(m) - 1]} {y}</option>;
-            })}
-          </select>
-          <ChevronRight className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text4 rotate-90" />
-        </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard title="Total Klien" value={CLIENTS.length} icon={Users} caption={`Aktif: ${CLIENTS.length}`} />
+        <MetricCard title="Total Revenue" value={fRp(tRev)} icon={DollarSign} trend={getPct(tRev, pRev)} caption={`Lalu: ${fRp(pRev)}`} tone="accent" />
+        <MetricCard title="Blended ROAS" value={aRoas ? `${aRoas.toFixed(2)}x` : '—'} icon={TrendingUp} trend={paRoas && aRoas ? ((aRoas - paRoas) / paRoas) * 100 : null} caption={`Lalu: ${paRoas ? `${paRoas.toFixed(2)}x` : '—'}`} />
+        <MetricCard title="Total Ad Spend" value={fRp(tSp)} icon={CreditCard} trend={getPct(tSp, pSp)} caption={`Lalu: ${fRp(pSp)}`} />
       </div>
 
-      {/* Global Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard title="Total Klien" value={CLIENTS.length} icon={Users} growth={null} subtext={`Aktif: ${CLIENTS.length}`} />
-        <MetricCard title="Total Revenue" value={fRp(tRev)} icon={DollarSign} growth={getPct(tRev, pRev)} subtext={`Lalu: ${fRp(pRev)}`} />
-        <MetricCard title="Blended ROAS" value={aRoas ? aRoas.toFixed(2) + 'x' : '—'} icon={TrendingUp} growth={paRoas && aRoas ? ((aRoas - paRoas) / paRoas * 100) : null} subtext={`Lalu: ${paRoas ? paRoas.toFixed(2) + 'x' : '—'}`} />
-        <MetricCard title="Total Ad Spend" value={fRp(tSp)} icon={CreditCard} growth={getPct(tSp, pSp)} subtext={`Lalu: ${fRp(pSp)}`} />
-      </div>
-
-      {/* Risk & Opportunity Section */}
       <StatusBanners risks={risks} opportunities={topGrowth} onClientClick={onClientClick} />
 
-      {/* Main Client Table */}
-      <ClientTable 
+      <ClientTable
         clients={filteredClients}
         data={DATA}
         periods={PERIODS}
@@ -152,9 +168,14 @@ function OverviewContent() {
         search={search}
         setSearch={setSearch}
         filters={filters}
-        setFilter={(k, v) => setFilters(prev => ({ ...prev, [k]: v }))}
+        setFilter={(key, value) => setFilters((previous) => ({ ...previous, [key]: value }))}
         sortConfig={sortConfig}
-        onSort={(key) => setSortConfig(prev => ({ key, direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc' }))}
+        onSort={(key) =>
+          setSortConfig((previous) => ({
+            key,
+            direction: previous.key === key && previous.direction === 'asc' ? 'desc' : 'asc',
+          }))
+        }
         metadata={metadata}
       />
     </div>
@@ -163,7 +184,7 @@ function OverviewContent() {
 
 export default function OverviewPage() {
   return (
-    <React.Suspense fallback={<div className="p-8 text-text3 text-sm font-medium">Memuat data dashboard...</div>}>
+    <React.Suspense fallback={<div className="p-8 text-sm font-medium text-text3">Memuat data dashboard...</div>}>
       <OverviewContent />
     </React.Suspense>
   );

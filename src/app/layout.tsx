@@ -26,9 +26,9 @@ export default async function RootLayout({
   return (
     <html
       lang="id"
-      className={`${inter.variable} antialiased`}
+      className={inter.variable}
     >
-      <body className="bg-bg text-text min-h-screen flex">
+      <body className="min-h-screen bg-bg text-text">
         <DataProvider value={dashboardData}>
           {children}
         </DataProvider>
