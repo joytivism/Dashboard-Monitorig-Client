@@ -92,7 +92,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
           </div>
         </div>
         
-        <div className="text-[10px] font-black text-text4 uppercase tracking-wider bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
+        <div className="overline bg-surface2 px-3 py-1.5 rounded-lg border border-border-main/50">
           Total {clients.length} Klien
         </div>
       </div>
@@ -113,7 +113,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                 <th 
                    key={h.key} 
                    onClick={() => onSort(h.key)}
-                   className={`py-3 text-[10px] font-black uppercase tracking-wider cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : 'px-4'} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : 'text-text4'}`}
+                   className={`py-3 overline cursor-pointer hover:text-accent transition-colors ${i === 0 ? 'pl-6' : 'px-4'} ${i === 6 ? 'pr-6 text-right' : ''} ${sortConfig.key === h.key ? 'text-accent' : ''}`}
                 >
                   <div className={`flex items-center gap-1.5 ${i === 6 ? 'justify-end' : 'justify-start'}`}>
                     {h.label}
@@ -156,13 +156,13 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                     </span>
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="text-sm font-medium text-text">{fRp(t.rev)}</span>
+                    <span className="text-sm font-medium text-text tabular-nums">{fRp(t.rev)}</span>
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="text-sm font-medium text-text3">{fRp(t.sp)}</span>
+                    <span className="text-sm font-medium text-text3 tabular-nums">{fRp(t.sp)}</span>
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="text-sm font-bold text-text">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
+                    <span className="text-sm font-bold text-text tabular-nums">{t.roas ? t.roas.toFixed(2) + 'x' : '—'}</span>
                   </td>
                   <td className="py-3.5 pr-6 text-right">
                     <span className="chip chip-nn uppercase tracking-wider">
