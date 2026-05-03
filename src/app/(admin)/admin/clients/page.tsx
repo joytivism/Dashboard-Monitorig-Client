@@ -1,87 +1,193 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useDashboardData } from '@/components/DataProvider';
-import { supabase } from '@/lib/supabase';
-import { 
-  Users, Plus, Search, Edit2, Trash2, 
-  LayoutGrid, List, CheckCircle2, AlertCircle, 
-  Hash, User, Briefcase, Target, X, AlertTriangle
-} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  AlertCircle,
+  AlertTriangle,
+  Briefcase,
+  Edit2,
+  Grid2X2,
+  Hash,
+  LayoutList,
+  Plus,
+  Search,
+  Target,
+  Trash2,
+  User,
+  Users,
+  X,
+} from 'lucide-react';
+import { useDashboardData } from '@/components/DataProvider';
+import PageIntro from '@/components/layout/PageIntro';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import InputField from '@/components/ui/InputField';
+import SelectField from '@/components/ui/SelectField';
+import { supabase } from '@/lib/supabase';
+import type { Client } from '@/lib/data';
 
-function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
+type ViewMode = 'grid' | 'list';
+
+interface ClientFormState {
+  client_key: string;
+  name: string;
+  industry: string;
+  pic_name: string;
+  account_strategist: string;
+  brand_category: string;
+  chs: string[];
+  troas: Record<string, string>;
+}
+
+interface ToastState {
+  type: 'success' | 'error';
+  text: string;
+}
+
+const INITIAL_FORM: ClientFormState = {
+  client_key: '',
+  name: '',
+  industry: '',
+  pic_name: '',
+  account_strategist: '',
+  brand_category: '',
+  chs: [],
+  troas: {},
+};
+
+const FORM_FIELDS: Array<{
+  label: string;
+  key: keyof Omit<ClientFormState, 'chs' | 'troas'>;
+  placeholder: string;
+  icon: React.ComponentType<{ className?: string }>;
+  span?: boolean;
+  required?: boolean;
+}> = [
+  { label: 'Client Key (ID)', key: 'client_key', placeholder: 'NamaKlien', icon: Hash, span: true, required: true },
+  { label: 'Display Name', key: 'name', placeholder: 'Contoh: Nama Klien Resmi', icon: User, span: true, required: true },
+  { label: 'Industri', key: 'industry', placeholder: 'Fashion', icon: Briefcase },
+  { label: 'PIC Client', key: 'pic_name', placeholder: 'PIC', icon: User },
+  { label: 'Account Strategist', key: 'account_strategist', placeholder: 'AS', icon: Target },
+  { label: 'Channel Group', key: 'brand_category', placeholder: 'CG', icon: Briefcase },
+];
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'Terjadi kesalahan yang tidak diketahui.';
+}
+
+function Toast({ toast }: { toast: ToastState | null }) {
   if (!toast) return null;
+
   return (
-    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
-      toast.type === 'success' ? 'bg-white border-green-200 text-green-700' : 'bg-white border-red-200 text-red-600'
-    }`}>
-      {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+    <div
+      className={`fixed right-6 top-24 z-[10000] flex items-center gap-3 rounded-2xl border px-5 py-3.5 text-sm font-medium shadow-[var(--shadow-popover)] animate-fade-in ${
+        toast.type === 'success'
+          ? 'border-gg-border bg-white text-gg-text'
+          : 'border-rr-border bg-white text-rr-text'
+      }`}
+    >
+      {toast.type === 'success' ? <AlertCircle className="h-4 w-4 shrink-0" /> : <AlertTriangle className="h-4 w-4 shrink-0" />}
       {toast.text}
     </div>
   );
 }
 
+function ModalFrame({
+  title,
+  description,
+  onClose,
+  children,
+}: {
+  title: string;
+  description?: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <div className="fixed inset-0 z-[10001] bg-black/45 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-[10002] flex items-center justify-center p-4 md:p-6">
+        <Card className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden border-white/70 bg-white/96 p-0 backdrop-blur">
+          <div className="flex items-start justify-between gap-4 border-b border-border-main px-6 py-5">
+            <div>
+              <h3 className="text-h4">{title}</h3>
+              {description ? <p className="mt-2 text-sm text-text3">{description}</p> : null}
+            </div>
+            <button onClick={onClose} className="btn-icon shrink-0">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          {children}
+        </Card>
+      </div>
+    </>
+  );
+}
+
 export default function ClientsAdminPage() {
-  const { CLIENTS, DATA, PERIODS, CH_DEF } = useDashboardData();
-  const curPeriod = PERIODS[PERIODS.length - 1];
+  const { CLIENTS, CH_DEF } = useDashboardData();
   const router = useRouter();
-  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [view, setView] = useState<ViewMode>('grid');
   const [showModal, setShowModal] = useState(false);
   const [editKey, setEditKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  
+  const [toast, setToast] = useState<ToastState | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ key: string; name?: string } | null>(null);
-
   const [search, setSearch] = useState('');
-  
-  const [form, setForm] = useState({
-    client_key: '',
-    name: '',
-    industry: '',
-    pic_name: '',
-    account_strategist: '',
-    brand_category: '',
-    chs: [] as string[],
-    troas: {} as Record<string, string>
-  });
+  const [form, setForm] = useState<ClientFormState>(INITIAL_FORM);
 
   useEffect(() => {
-    if (toast) {
-      const t = setTimeout(() => setToast(null), 4000);
-      return () => clearTimeout(t);
-    }
+    if (!toast) return;
+    const timeout = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(timeout);
   }, [toast]);
 
-  const filtered = CLIENTS.filter(c => 
-    c.key.toLowerCase().includes(search.toLowerCase()) || 
-    c.ind.toLowerCase().includes(search.toLowerCase())
+  const channelOptions = useMemo(
+    () => Object.entries(CH_DEF).map(([key, value]) => ({ key, label: value.l })),
+    [CH_DEF]
+  );
+
+  const filteredClients = useMemo(
+    () =>
+      CLIENTS.filter(
+        (client) =>
+          client.key.toLowerCase().includes(search.toLowerCase()) ||
+          client.ind.toLowerCase().includes(search.toLowerCase()) ||
+          client.name.toLowerCase().includes(search.toLowerCase())
+      ),
+    [CLIENTS, search]
   );
 
   const openNew = () => {
     setEditKey(null);
-    setForm({ client_key: '', name: '', industry: '', pic_name: '', account_strategist: '', brand_category: '', chs: [], troas: {} });
+    setForm(INITIAL_FORM);
     setShowModal(true);
   };
 
-  const openEdit = (c: any) => {
-    setEditKey(c.key);
+  const openEdit = (client: Client) => {
+    setEditKey(client.key);
     setForm({
-      client_key: c.key,
-      name: c.name,
-      industry: c.ind,
-      pic_name: c.pic,
-      account_strategist: c.as,
-      brand_category: c.cg,
-      chs: [...c.chs],
-      troas: { ...c.troas }
+      client_key: client.key,
+      name: client.name,
+      industry: client.ind,
+      pic_name: client.pic,
+      account_strategist: client.as,
+      brand_category: client.cg,
+      chs: [...client.chs],
+      troas: Object.fromEntries(
+        Object.entries(client.troas).map(([key, value]) => [key, String(value)])
+      ),
     });
     setShowModal(true);
   };
 
-  const handleDelete = async (key: string, name?: string) => {
+  const handleDelete = (key: string, name?: string) => {
     setDeleteTarget({ key, name });
     setShowDeleteModal(true);
   };
@@ -96,16 +202,17 @@ export default function ClientsAdminPage() {
       setShowDeleteModal(false);
       setDeleteTarget(null);
       router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menghapus.' });
+    } catch (error) {
+      setToast({ type: 'error', text: getErrorMessage(error) });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
+
     try {
       const clientPayload = {
         client_key: form.client_key,
@@ -113,333 +220,325 @@ export default function ClientsAdminPage() {
         industry: form.industry,
         pic_name: form.pic_name,
         account_strategist: form.account_strategist,
-        brand_category: form.brand_category
+        brand_category: form.brand_category,
       };
 
-      const { error: clientError } = await supabase
-        .from('clients')
-        .upsert(clientPayload, { onConflict: 'client_key' });
-
+      const { error: clientError } = await supabase.from('clients').upsert(clientPayload, { onConflict: 'client_key' });
       if (clientError) throw clientError;
 
-      const { error: deleteError } = await supabase
-        .from('client_channels')
-        .delete()
-        .eq('client_key', form.client_key);
-      
+      const { error: deleteError } = await supabase.from('client_channels').delete().eq('client_key', form.client_key);
       if (deleteError) throw deleteError;
 
       if (form.chs.length > 0) {
-        const channelsPayload = form.chs.map(ch => ({
+        const channelsPayload = form.chs.map((channel) => ({
           client_key: form.client_key,
-          channel_key: ch,
-          target_roas: form.troas[ch] ? Number(form.troas[ch]) : null
+          channel_key: channel,
+          target_roas: form.troas[channel] ? Number(form.troas[channel]) : null,
         }));
 
-        const { error: chError } = await supabase
-          .from('client_channels')
-          .insert(channelsPayload);
-        
-        if (chError) throw chError;
+        const { error: channelError } = await supabase.from('client_channels').insert(channelsPayload);
+        if (channelError) throw channelError;
       }
-      
-      setToast({ type: 'success', text: `Klien ${form.client_key} berhasil disimpan!` });
+
+      setToast({ type: 'success', text: `Klien ${form.client_key} berhasil disimpan.` });
       setShowModal(false);
+      setForm(INITIAL_FORM);
       router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menyimpan klien.' });
+    } catch (error) {
+      setToast({ type: 'error', text: getErrorMessage(error) });
     } finally {
       setLoading(false);
     }
   };
 
-  const CHANNELS = ['FB', 'IG', 'TikTok', 'Google', 'Shopee', 'Tokopedia', 'Lazada', 'Website'];
-
-  const FORM_FIELDS = [
-    { label: 'Client Key (ID)', key: 'client_key', ph: 'NamaKlien', disabled: !!editKey, required: true, span: true, icon: Hash },
-    { label: 'Display Name', key: 'name', ph: 'Contoh: Nama Klien Resmi', required: true, span: true, icon: User },
-    { label: 'Industri', key: 'industry', ph: 'Fashion', icon: Briefcase },
-    { label: 'PIC', key: 'pic_name', ph: 'PIC', icon: User },
-    { label: 'AS', key: 'account_strategist', ph: 'AS', icon: Target },
-    { label: 'CG', key: 'brand_category', ph: 'CG', icon: Briefcase },
-  ];
+  const selectedChannels = form.chs.map((channel) => ({
+    key: channel,
+    label: CH_DEF[channel]?.l || channel,
+  }));
 
   return (
     <>
-      <div className="w-full space-y-10 animate-fade-in pb-20">
+      <div className="mx-auto max-w-7xl space-y-7 pb-20 animate-fade-in">
         <Toast toast={toast} />
 
-        {/* ── Header Area ── */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-          <div className="flex items-start gap-4">
-             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm shrink-0 mt-0.5">
-                <Users className="w-5 h-5" />
-             </div>
-             <div>
-                <h1 className="text-2xl font-bold text-text tracking-tight leading-tight">Manajemen Klien</h1>
-                <p className="text-sm font-medium text-text3 mt-0.5">Kelola ekosistem klien dan konfigurasi channel.</p>
-             </div>
-          </div>
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="flex bg-surface2 p-1 rounded-xl border border-border-main">
-              <button 
-                onClick={() => setView('grid')}
-                className={`p-1.5 rounded-lg transition-all ${view === 'grid' ? 'bg-white shadow-sm text-accent' : 'text-text3 hover:text-text'}`}
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={() => setView('list')}
-                className={`p-1.5 rounded-lg transition-all ${view === 'list' ? 'bg-white shadow-sm text-accent' : 'text-text3 hover:text-text'}`}
-              >
-                <List className="w-4 h-4" />
-              </button>
+        <PageIntro
+          eyebrow="Admin Console"
+          title="Client management"
+          description="Kelola identitas klien, ownership, dan channel aktif dari satu panel yang lebih rapi dan mudah dipindai."
+          meta={(
+            <>
+              <Badge tone="neutral" style="soft">{CLIENTS.length} klien aktif</Badge>
+              <Badge tone="accent" style="soft">{channelOptions.length} channel option</Badge>
+            </>
+          )}
+          actions={(
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex rounded-2xl border border-border-main bg-white p-1 shadow-sm">
+                <button
+                  onClick={() => setView('grid')}
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all ${view === 'grid' ? 'bg-text text-white' : 'text-text3 hover:bg-surface2 hover:text-text'}`}
+                >
+                  <Grid2X2 className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setView('list')}
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all ${view === 'list' ? 'bg-text text-white' : 'text-text3 hover:bg-surface2 hover:text-text'}`}
+                >
+                  <LayoutList className="h-4 w-4" />
+                </button>
+              </div>
+              <Button variant="primary" size="lg" leadingIcon={Plus} onClick={openNew}>
+                Tambah klien
+              </Button>
             </div>
-            <button
-              onClick={openNew}
-              className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all"
-            >
-              <Plus className="w-4 h-4" /> Tambah Klien
-            </button>
+          )}
+        />
+
+        <Card className="space-y-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <div className="ds-eyebrow">Directory</div>
+              <h2 className="mt-1 text-h4">Search and browse</h2>
+            </div>
+            <div className="w-full max-w-md">
+              <InputField
+                placeholder="Cari nama klien, brand, atau industri..."
+                icon={Search}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* ── Search Bar ── */}
-        <div className="relative max-w-md">
-           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
-           <input
-             type="text"
-             placeholder="Cari nama klien..."
-             value={search}
-             onChange={e => setSearch(e.target.value)}
-             className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text focus:outline-none focus:border-accent transition-all shadow-sm"
-           />
-        </div>
-
-        {/* ── Clients View ── */}
-        {view === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(cl => (
-               <div key={cl.key} className="bg-white rounded-2xl border border-border-main shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col h-full group">
-                  
-                  {/* Header: Identity & Actions */}
-                  <div className="flex items-start justify-between mb-6">
-                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-xs font-black group-hover:bg-accent group-hover:text-white transition-all duration-200 shrink-0">
-                           {cl.key.slice(0, 2).toUpperCase()}
+          {view === 'grid' ? (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {filteredClients.map((client) => (
+                <Card key={client.key} className="flex h-full flex-col justify-between p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-popover)]">
+                  <div className="space-y-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-light text-sm font-semibold text-accent">
+                          {client.key.slice(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                           <h3 className="text-sm font-bold text-text truncate leading-tight mb-1">{cl.name}</h3>
-                           <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-bold text-accent  tracking-wider">{cl.cg || 'N/A'}</span>
-                              <span className="text-[10px] font-bold text-text4  tracking-wider">• {cl.ind}</span>
-                           </div>
+                          <div className="truncate text-sm font-semibold text-text">{client.name}</div>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            <Badge tone="accent" style="soft">{client.cg || 'N/A'}</Badge>
+                            <Badge tone="neutral" style="soft">{client.ind || '—'}</Badge>
+                          </div>
                         </div>
-                     </div>
-                     
-                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button onClick={() => openEdit(cl)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface2 text-text3 transition-all">
-                           <Edit2 className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => openEdit(client)} className="btn-icon h-9 w-9">
+                          <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleDelete(cl.key)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface2 text-text3 hover:text-red-600 transition-all">
-                           <Trash2 className="w-3.5 h-3.5" />
+                        <button onClick={() => handleDelete(client.key, client.name)} className="btn-icon h-9 w-9 hover:border-rr-border hover:text-rr-text">
+                          <Trash2 className="h-4 w-4" />
                         </button>
-                     </div>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="rounded-[20px] border border-border-main bg-surface2 p-4">
+                        <div className="text-micro">Account strategist</div>
+                        <div className="mt-2 text-sm font-semibold text-text">{client.as || '—'}</div>
+                      </div>
+                      <div className="rounded-[20px] border border-border-main bg-surface2 p-4">
+                        <div className="text-micro">PIC client</div>
+                        <div className="mt-2 text-sm font-semibold text-text">{client.pic || '—'}</div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Body: Team Details */}
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                     <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text3  tracking-wider">Account Strategist</div>
-                        <div className="text-sm font-medium text-text truncate">{cl.as || '—'}</div>
-                     </div>
-                     <div className="space-y-1">
-                        <div className="text-[10px] font-bold text-text3  tracking-wider">PIC Client</div>
-                        <div className="text-sm font-medium text-text truncate">{cl.pic || '—'}</div>
-                     </div>
+                  <div className="mt-5 border-t border-border-main pt-4">
+                    <div className="text-micro mb-3">Assigned channels</div>
+                    <div className="flex flex-wrap gap-2">
+                      {client.chs.length > 0 ? (
+                        client.chs.map((channel) => (
+                          <Badge key={channel} tone="neutral" style="soft">
+                            {CH_DEF[channel]?.l || channel}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-xs italic text-text4">No channels assigned</span>
+                      )}
+                    </div>
                   </div>
-
-                  {/* Footer: Channels */}
-                  <div className="mt-auto pt-5 border-t border-border-main flex flex-wrap gap-1.5">
-                     {cl.chs.length > 0 ? cl.chs.map((ch: string) => (
-                        <span key={ch} className="chip chip-nn">
-                           {ch.replace('_', ' ')}
-                        </span>
-                     )) : (
-                        <span className="text-[10px] text-text4 italic font-medium">No channels assigned</span>
-                     )}
-                  </div>
-               </div>
-             ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden">
-             <table className="w-full text-left">
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-[24px] border border-border-main">
+              <table className="min-w-[860px] w-full border-collapse bg-white text-left">
                 <thead>
-                   <tr className="bg-surface2/50 border-b border-border-main">
-                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Klien</th>
-                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">Industri</th>
-                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider">AS / PIC</th>
-                      <th className="py-3 px-6 text-[10px] font-black text-text4  tracking-wider text-right">Aksi</th>
-                   </tr>
+                  <tr className="bg-surface2/70">
+                    <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Client</th>
+                    <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Industry</th>
+                    <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">AS / PIC</th>
+                    <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Channels</th>
+                    <th className="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Actions</th>
+                  </tr>
                 </thead>
-                <tbody className="divide-y divide-border-main">
-                   {filtered.map(c => (
-                      <tr key={c.key} className="group hover:bg-surface2 transition-colors">
-                         <td className="py-4 px-6">
-                            <div className="flex items-center gap-3">
-                               <div className="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-[10px] font-black group-hover:bg-accent group-hover:text-white transition-all">
-                                  {c.key.slice(0, 2).toUpperCase()}
-                               </div>
-                               <span className="text-sm font-bold text-text">{c.key}</span>
-                            </div>
-                         </td>
-                         <td className="py-4 px-6 text-xs font-medium text-text2">{c.ind}</td>
-                         <td className="py-4 px-6">
-                            <div className="text-xs font-bold text-text">{c.as || '—'}</div>
-                            <div className="text-[10px] font-bold text-text4">{c.pic || '—'}</div>
-                         </td>
-                         <td className="py-4 px-6 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                               <button onClick={() => openEdit(c)} className="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-text3 transition-colors">
-                                  <Edit2 className="w-3.5 h-3.5" />
-                               </button>
-                               <button onClick={() => handleDelete(c.key)} className="w-8 h-8 rounded-lg hover:bg-white flex items-center justify-center text-text3 transition-colors hover:text-red-600">
-                                  <Trash2 className="w-3.5 h-3.5" />
-                               </button>
-                            </div>
-                         </td>
-                      </tr>
-                   ))}
+                <tbody className="divide-y divide-border-main/60">
+                  {filteredClients.map((client) => (
+                    <tr key={client.key} className="transition-colors hover:bg-surface2/55">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-light text-xs font-semibold text-accent">
+                            {client.key.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-text">{client.name}</div>
+                            <div className="text-xs text-text3">{client.key}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-text2">{client.ind}</td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-semibold text-text">{client.as || '—'}</div>
+                        <div className="text-xs text-text3">{client.pic || '—'}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          {client.chs.slice(0, 3).map((channel) => (
+                            <Badge key={channel} tone="neutral" style="soft">
+                              {CH_DEF[channel]?.l || channel}
+                            </Badge>
+                          ))}
+                          {client.chs.length > 3 ? <Badge tone="neutral" style="soft">+{client.chs.length - 3}</Badge> : null}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => openEdit(client)} className="btn-icon h-9 w-9">
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button onClick={() => handleDelete(client.key, client.name)} className="btn-icon h-9 w-9 hover:border-rr-border hover:text-rr-text">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
-             </table>
-          </div>
-        )}
+              </table>
+            </div>
+          )}
+        </Card>
       </div>
 
-      {/* ── Modal Form ── */}
-      {showModal && (
-        <>
-          {/* Backdrop - Hitam transparan yang mencakup seluruh layar */}
-          <div 
-            className="fixed inset-0 bg-black/50 z-[10001]" 
-            onClick={() => setShowModal(false)} 
-          />
-          
-          {/* Modal Container */}
-          <div className="fixed inset-0 z-[10002] flex items-center justify-center p-6 pointer-events-none">
-            <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden flex flex-col max-h-[90vh] pointer-events-auto">
-              <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
-                 <h3 className="text-base font-bold text-text">{editKey ? 'Edit Klien' : 'Tambah Klien'}</h3>
-                 <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
-                    <X className="w-4 h-4" />
-                 </button>
+      {showModal ? (
+        <ModalFrame
+          title={editKey ? 'Edit klien' : 'Tambah klien'}
+          description="Atur identitas klien, ownership, dan channel aktif dari panel yang sama."
+          onClose={() => setShowModal(false)}
+        >
+          <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex-1 space-y-7 overflow-y-auto px-6 py-6">
+              <div className="grid gap-5 md:grid-cols-2">
+                {FORM_FIELDS.map((field) => (
+                  <InputField
+                    key={field.key}
+                    label={field.label}
+                    icon={field.icon}
+                    required={field.required}
+                    disabled={field.key === 'client_key' && !!editKey}
+                    placeholder={field.placeholder}
+                    className={field.span ? 'md:col-span-2' : ''}
+                    value={form[field.key]}
+                    onChange={(event) => setForm((current) => ({ ...current, [field.key]: event.target.value }))}
+                  />
+                ))}
               </div>
 
-              <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {FORM_FIELDS.map(f => (
-                    <div key={f.key} className={f.span ? 'md:col-span-2' : ''}>
-                      <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">{f.label}</label>
-                      <input
-                        type="text"
-                        value={(form as any)[f.key]}
-                        onChange={e => setForm({ ...form, [f.key]: e.target.value })}
-                        placeholder={f.ph}
-                        disabled={f.disabled}
-                        required={f.required}
-                        className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all disabled:opacity-50"
+              <div className="space-y-4">
+                <div>
+                  <div className="ds-eyebrow">Channels & targets</div>
+                  <h4 className="mt-1 text-sm font-semibold text-text">Assign active channels</h4>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  {channelOptions.map((channel) => {
+                    const active = form.chs.includes(channel.key);
+                    return (
+                      <button
+                        key={channel.key}
+                        type="button"
+                        onClick={() =>
+                          setForm((current) => ({
+                            ...current,
+                            chs: active
+                              ? current.chs.filter((value) => value !== channel.key)
+                              : [...current.chs, channel.key],
+                          }))
+                        }
+                        className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition-all ${
+                          active
+                            ? 'border-accent bg-accent text-white shadow-sm'
+                            : 'border-border-main bg-surface2 text-text2 hover:bg-white hover:border-accent/20'
+                        }`}
+                      >
+                        {channel.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {selectedChannels.length > 0 ? (
+                  <div className="grid gap-4 rounded-[24px] border border-border-main bg-surface2 p-5 md:grid-cols-2">
+                    {selectedChannels.map((channel) => (
+                      <InputField
+                        key={channel.key}
+                        label={`${channel.label} Target (x)`}
+                        type="number"
+                        step="0.1"
+                        placeholder="5.0"
+                        value={form.troas[channel.key] || ''}
+                        onChange={(event) =>
+                          setForm((current) => ({
+                            ...current,
+                            troas: { ...current.troas, [channel.key]: event.target.value },
+                          }))
+                        }
                       />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="space-y-4">
-                  <label className="text-xs font-semibold text-text3  tracking-wider block px-1">Channels & Targets</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                     {CHANNELS.map(ch => {
-                       const active = form.chs.includes(ch);
-                       return (
-                         <button
-                           key={ch}
-                           type="button"
-                           onClick={() => {
-                             const nextChs = active ? form.chs.filter(c => c !== ch) : [...form.chs, ch];
-                             setForm({ ...form, chs: nextChs });
-                           }}
-                           className={`h-10 rounded-xl border text-xs font-bold transition-all ${
-                             active ? 'bg-accent text-white border-accent' : 'bg-surface2 border-border-main text-text3'
-                           }`}
-                         >
-                           {ch}
-                         </button>
-                       );
-                     })}
+                    ))}
                   </div>
-
-                  {form.chs.length > 0 && (
-                     <div className="bg-surface2 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {form.chs.map(ch => (
-                          <div key={ch} className="space-y-1.5">
-                             <label className="text-[10px] font-bold text-text3 ">{ch} Target (x)</label>
-                             <input
-                               type="number"
-                               step="0.1"
-                               value={form.troas[ch] || ''}
-                               onChange={e => setForm({ ...form, troas: { ...form.troas, [ch]: e.target.value } })}
-                               placeholder="5.0"
-                               className="w-full h-9 px-3 rounded-lg border border-border-main bg-white text-xs font-bold text-text"
-                             />
-                          </div>
-                        ))}
-                     </div>
-                  )}
-                </div>
-              </form>
-
-              <div className="p-6 border-t border-border-main bg-surface2/50 flex gap-3">
-                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 h-11 rounded-xl bg-white border border-border-main text-text2 font-bold text-sm">Batal</button>
-                 <button onClick={handleSubmit} disabled={loading} className="flex-1 h-11 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent disabled:opacity-50">Simpan</button>
+                ) : null}
               </div>
             </div>
-          </div>
-        </>
-      )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-[11000] flex items-center justify-center p-6 animate-fade-in">
-           <div className="absolute inset-0 bg-text/40 backdrop-blur-md" onClick={() => !loading && setShowDeleteModal(false)} />
-           <div className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl relative z-10 overflow-hidden animate-scale-up border border-border-main">
-              <div className="p-10 text-center">
-                 <div className="w-20 h-20 rounded-3xl bg-rr/10 text-rr flex items-center justify-center mx-auto mb-6">
-                    <AlertTriangle className="w-10 h-10" />
-                 </div>
-                 <h3 className="text-xl font-bold text-text mb-3">Hapus Data Klien?</h3>
-                 <p className="text-sm text-text3 leading-relaxed mb-8">
-                    Aksi ini akan menghapus semua konfigurasi untuk klien <span className="font-bold text-text">"{deleteTarget?.name || deleteTarget?.key}"</span> secara permanen.
-                 </p>
-                 
-                 <div className="flex flex-col gap-3">
-                    <button
-                      onClick={confirmDelete}
-                      disabled={loading}
-                      className="h-12 w-full bg-rr text-white rounded-xl font-bold text-sm hover:bg-rr/90 transition-all shadow-lg shadow-rr/20 flex items-center justify-center gap-2"
-                    >
-                      {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Ya, Hapus Permanen'}
-                    </button>
-                    <button
-                      onClick={() => setShowDeleteModal(false)}
-                      disabled={loading}
-                      className="h-12 w-full bg-surface2 text-text font-bold text-sm rounded-xl hover:bg-surface3 transition-all"
-                    >
-                      Batalkan
-                    </button>
-                 </div>
-              </div>
-           </div>
-        </div>
-      )}
+            <div className="flex flex-col gap-3 border-t border-border-main bg-surface2/70 px-6 py-5 sm:flex-row">
+              <Button type="button" variant="secondary" size="lg" fullWidth onClick={() => setShowModal(false)}>
+                Batal
+              </Button>
+              <Button type="submit" variant="primary" size="lg" fullWidth loading={loading}>
+                Simpan klien
+              </Button>
+            </div>
+          </form>
+        </ModalFrame>
+      ) : null}
+
+      {showDeleteModal ? (
+        <ModalFrame
+          title="Hapus data klien?"
+          description={`Aksi ini akan menghapus konfigurasi untuk ${deleteTarget?.name || deleteTarget?.key} secara permanen.`}
+          onClose={() => !loading && setShowDeleteModal(false)}
+        >
+          <div className="space-y-6 px-6 py-6">
+            <div className="rounded-[24px] border border-rr-border bg-rr-bg/70 p-5 text-sm text-rr-text">
+              Pastikan tidak ada workflow operasional yang masih memakai data klien ini sebelum menghapusnya.
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button type="button" variant="secondary" size="lg" fullWidth onClick={() => setShowDeleteModal(false)} disabled={loading}>
+                Batalkan
+              </Button>
+              <Button type="button" variant="danger" size="lg" fullWidth onClick={confirmDelete} loading={loading}>
+                Ya, hapus permanen
+              </Button>
+            </div>
+          </div>
+        </ModalFrame>
+      ) : null}
     </>
   );
 }

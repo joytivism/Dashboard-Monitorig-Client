@@ -2,254 +2,334 @@
 
 import React, { use } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useDashboardData } from '@/components/DataProvider';
-import { LM } from '@/lib/data';
-import { gd, prev, pct, fRp, fK, clientWorst, chWorstKey, isAware } from '@/lib/utils';
-import { calculateFunnelMetrics, calculateEfficiency } from '@/lib/logic/calculations';
-
-import TrendChart from '@/components/TrendChart';
-import AISummary from '@/components/AISummary';
-import MetricCard from '@/components/ui/MetricCard';
-import ActivityLog from '@/components/dashboard/ActivityLog';
-import FunnelAnalysis from '@/components/dashboard/FunnelAnalysis';
-import ChannelPerformance from '@/components/dashboard/ChannelPerformance';
-
-import { 
-  ChevronLeft,
-  ChevronRight,
-  DollarSign,
-  CreditCard,
-  TrendingUp,
-  ShoppingCart,
-  AlertCircle,
+import {
   Activity,
+  AlertCircle,
+  Calendar,
+  ChevronLeft,
+  CreditCard,
+  DollarSign,
   Filter,
   Layers,
+  ShoppingCart,
   Sparkles,
-  Calendar
+  TrendingUp,
 } from 'lucide-react';
+import { useDashboardData } from '@/components/DataProvider';
+import ActivityLog from '@/components/dashboard/ActivityLog';
+import ChannelPerformance from '@/components/dashboard/ChannelPerformance';
+import FunnelAnalysis from '@/components/dashboard/FunnelAnalysis';
+import PageIntro from '@/components/layout/PageIntro';
+import AISummary from '@/components/AISummary';
+import TrendChart from '@/components/TrendChart';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import MetricCard from '@/components/ui/MetricCard';
+import SelectField from '@/components/ui/SelectField';
+import { LM } from '@/lib/data';
+import { calculateEfficiency, calculateFunnelMetrics } from '@/lib/logic/calculations';
+import { chWorstKey, clientWorst, fK, fRp, gd, isAware, pct, prev } from '@/lib/utils';
+
+function SectionHeader({
+  icon: Icon,
+  title,
+  description,
+  tone = 'neutral',
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description?: string;
+  tone?: 'neutral' | 'accent' | 'success';
+}) {
+  const toneClass =
+    tone === 'accent'
+      ? 'bg-accent-light text-accent'
+      : tone === 'success'
+        ? 'bg-gg-bg text-gg-text'
+        : 'bg-surface2 text-text2';
+
+  return (
+    <div className="flex items-start gap-4">
+      <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${toneClass}`}>
+        <Icon className="h-5 w-5" />
+      </div>
+      <div>
+        <h2 className="text-h4">{title}</h2>
+        {description ? <p className="mt-2 text-sm text-text3">{description}</p> : null}
+      </div>
+    </div>
+  );
+}
 
 function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = use(params);
   const id = decodeURIComponent(rawId);
   const searchParams = useSearchParams();
-  const { CLIENTS, DATA, ACTIVITY, PERIODS, CH_DEF } = useDashboardData();
+  const { CLIENTS, DATA, ACTIVITY, PERIODS, CH_DEF, PL } = useDashboardData();
   const curPeriod = searchParams.get('period') || PERIODS[PERIODS.length - 1] || '2026-03';
   const router = useRouter();
 
-  const cl = CLIENTS.find(x => x.key === id);
-  if (!cl) return <div className="p-20 text-center font-bold text-text3">Klien tidak ditemukan.</div>;
+  const client = CLIENTS.find((item) => item.key === id);
+  if (!client) {
+    return <div className="p-20 text-center font-bold text-text3">Klien tidak ditemukan.</div>;
+  }
 
-  const prv = prev(PERIODS, curPeriod) || '';
-  const wc = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, id, curPeriod);
-  const probs = cl.chs.filter(ch => ['rr', 'or'].includes(chWorstKey(CH_DEF, DATA, PERIODS, id, ch, curPeriod)));
+  const previousPeriod = prev(PERIODS, curPeriod) || '';
+  const worstClass = clientWorst(CH_DEF, CLIENTS, DATA, PERIODS, id, curPeriod);
+  const problemChannels = client.chs.filter((channel) => ['rr', 'or'].includes(chWorstKey(CH_DEF, DATA, PERIODS, id, channel, curPeriod)));
 
-  // Centralized Logic
-  const stats = calculateFunnelMetrics(CH_DEF, DATA, id, cl.chs, curPeriod);
-  const pStats = calculateFunnelMetrics(CH_DEF, DATA, id, cl.chs, prv);
-  const eff = calculateEfficiency(stats);
-  const pEff = calculateEfficiency(pStats);
+  const stats = calculateFunnelMetrics(CH_DEF, DATA, id, client.chs, curPeriod);
+  const previousStats = calculateFunnelMetrics(CH_DEF, DATA, id, client.chs, previousPeriod);
+  const efficiency = calculateEfficiency(stats);
+  const previousEfficiency = calculateEfficiency(previousStats);
 
-  const totalRev = stats.bofu.rev + stats.mofu.rev;
-  const pTotalRev = pStats.bofu.rev + pStats.mofu.rev;
-  const totalSp = stats.bofu.sp + stats.tofu.sp;
-  const pTotalSp = pStats.bofu.sp + pStats.tofu.sp;
-  const totalOrd = stats.bofu.ord + stats.mofu.ord;
-  const pTotalOrd = pStats.bofu.ord + pStats.mofu.ord;
-  const statusBadgeClass: Record<string, string> = {
-    rr: 'chip chip-rr',
-    or: 'chip chip-or',
-    yy: 'chip chip-yy',
-    nn: 'chip chip-nn',
-    gg: 'chip chip-gg',
-    gd: 'chip chip-gd',
-  };
+  const totalRevenue = stats.bofu.rev + stats.mofu.rev;
+  const previousRevenue = previousStats.bofu.rev + previousStats.mofu.rev;
+  const totalSpend = stats.bofu.sp + stats.tofu.sp;
+  const previousSpend = previousStats.bofu.sp + previousStats.tofu.sp;
+  const totalOrders = stats.bofu.ord + stats.mofu.ord;
+  const previousOrders = previousStats.bofu.ord + previousStats.mofu.ord;
+
+  const efficiencyBlocks = [
+    {
+      label: 'Ad ROAS',
+      value: efficiency.bRoas ? `${efficiency.bRoas.toFixed(2)}x` : '—',
+      caption: 'Revenue / Spend',
+      growth: pct(efficiency.bRoas || 0, previousEfficiency.bRoas || 0),
+      positiveDirection: 'up' as const,
+    },
+    {
+      label: 'CIR Index',
+      value: efficiency.blCir ? `${efficiency.blCir.toFixed(1)}%` : '—',
+      caption: 'Spend / Revenue',
+      growth: pct(efficiency.blCir || 0, previousEfficiency.blCir || 0),
+      positiveDirection: 'down' as const,
+    },
+    {
+      label: 'CPO Target',
+      value: efficiency.blCpo ? fRp(efficiency.blCpo) : '—',
+      caption: 'Spend / Order',
+      growth: pct(efficiency.blCpo || 0, previousEfficiency.blCpo || 0),
+      positiveDirection: 'down' as const,
+    },
+    {
+      label: 'Conversion Rate',
+      value: efficiency.blCr ? `${efficiency.blCr.toFixed(2)}%` : '—',
+      caption: 'Order / Visitor',
+      growth: pct(efficiency.blCr || 0, previousEfficiency.blCr || 0),
+      positiveDirection: 'up' as const,
+    },
+    {
+      label: 'Average Order',
+      value: efficiency.blAov ? fRp(efficiency.blAov) : '—',
+      caption: 'Revenue / Order',
+      growth: pct(efficiency.blAov || 0, previousEfficiency.blAov || 0),
+      positiveDirection: 'up' as const,
+    },
+  ];
 
   return (
-    <div className="space-y-12 max-w-7xl mx-auto pb-20">
-      {/* Navigation & Header */}
-      <div className="space-y-6">
-        <button 
-          onClick={() => router.push(`/${searchParams.toString() ? '?' + searchParams.toString() : ''}`)}
-          className="inline-flex items-center gap-2 text-label !text-text3 hover:!text-accent transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Kembali ke dashboard
-        </button>
+    <div className="mx-auto max-w-7xl space-y-7 pb-20 animate-fade-in">
+      <PageIntro
+        eyebrow="Client Portfolio"
+        title={client.name}
+        description="Ringkasan menyeluruh untuk membaca sinyal performa, funnel, AI insight, dan aktivitas terbaru dari akun klien ini."
+        meta={(
+          <>
+            <Badge tone="neutral" style="soft">{client.cg}</Badge>
+            <Badge tone="accent" style="soft">{client.ind}</Badge>
+            <Badge tone={worstClass === 'rr' || worstClass === 'or' ? 'warning' : 'success'} style="soft">
+              {LM[worstClass]}
+            </Badge>
+          </>
+        )}
+        actions={(
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+            <Button
+              variant="secondary"
+              leadingIcon={ChevronLeft}
+              onClick={() => router.push(`/${searchParams.toString() ? `?${searchParams.toString()}` : ''}`)}
+            >
+              Kembali ke overview
+            </Button>
+            <div className="min-w-[220px]">
+              <SelectField
+                aria-label="Pilih periode"
+                icon={Calendar}
+                value={curPeriod}
+                onChange={(event) => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  params.set('period', event.target.value);
+                  router.push(`?${params.toString()}`);
+                }}
+                options={PERIODS.map((period) => ({ value: period, label: PL[period] || period }))}
+              />
+            </div>
+          </div>
+        )}
+      />
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 rounded-3xl bg-accent/10 flex items-center justify-center text-accent text-xl font-bold border border-accent/10 shadow-sm">
-              {cl.name.slice(0, 2).toUpperCase()}
+      <Card className="space-y-5">
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-[24px] border border-border-main bg-surface2 p-5">
+            <div className="text-micro">Channel group</div>
+            <div className="mt-2 text-lg font-semibold text-text">{client.cg || '—'}</div>
+            <div className="mt-2 text-xs text-text3">Cluster yang menangani portfolio ini.</div>
+          </div>
+          <div className="rounded-[24px] border border-border-main bg-surface2 p-5">
+            <div className="text-micro">Account strategist</div>
+            <div className="mt-2 text-lg font-semibold text-text">{client.as || '—'}</div>
+            <div className="mt-2 text-xs text-text3">Pemilik strategi harian untuk account ini.</div>
+          </div>
+          <div className="rounded-[24px] border border-border-main bg-surface2 p-5">
+            <div className="text-micro">PIC client</div>
+            <div className="mt-2 text-lg font-semibold text-text">{client.pic || '—'}</div>
+            <div className="mt-2 text-xs text-text3">Kontak utama operasional dari sisi klien.</div>
+          </div>
+        </div>
+      </Card>
+
+      {problemChannels.length > 0 ? (
+        <Card tone="danger" className="space-y-4">
+          <div className="flex items-start gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rr text-white">
+              <AlertCircle className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-h1 flex items-center gap-4">
-                {cl.name}
-                <span className={statusBadgeClass[wc] || 'chip chip-nn'}>
-                  {LM[wc]}
-                </span>
-              </h1>
-              <div className="flex items-center gap-6 text-label mt-2">
-                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-text4/30" /> CG: <strong className="text-text2">{cl.cg}</strong></span>
-                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-text4/30" /> TikTok: <strong className="text-text2">{cl.at}</strong></span>
-                <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-text4/30" /> Shopee: <strong className="text-text2">{cl.as}</strong></span>
-              </div>
+              <h3 className="text-h4 text-rr-text">{problemChannels.length} channel butuh perhatian strategis</h3>
+              <p className="mt-2 text-sm text-rr-text/80">
+                Signal di bawah ini menunjukkan pressure point utama yang sebaiknya dievaluasi lebih dulu pada periode aktif.
+              </p>
             </div>
           </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {problemChannels.map((channel) => {
+              const current = gd(DATA, id, channel, curPeriod);
+              const previous = gd(DATA, id, channel, previousPeriod);
+              const aware = isAware(CH_DEF, channel);
+              const currentMetric = aware ? (current?.reach ?? current?.impr) : current?.rev;
+              const previousMetric = aware ? (previous?.reach ?? previous?.impr) : previous?.rev;
+              const growth = pct(currentMetric, previousMetric);
 
-          <div className="relative">
-            <Calendar className="w-4 h-4 text-text4 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <select
-              value={curPeriod}
-              onChange={(e) => {
-                const params = new URLSearchParams(searchParams.toString());
-                params.set('period', e.target.value);
-                router.push(`?${params.toString()}`);
-              }}
-              className="h-12 pl-11 pr-12 bg-white border border-border-main rounded-2xl text-sm font-bold text-text focus:outline-none focus:ring-4 focus:ring-accent/5 transition-all appearance-none cursor-pointer shadow-sm min-w-[200px]"
-            >
-              {PERIODS.map(p => {
-                const [y, m] = p.split('-');
-                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                return <option key={p} value={p}>{months[parseInt(m) - 1]} {y}</option>;
-              })}
-            </select>
-            <ChevronRight className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text4 rotate-90" />
-          </div>
-        </div>
-      </div>
-
-      {probs.length > 0 && (
-        <div className="bg-rr-bg/30 rounded-3xl p-6 flex gap-4 items-start border border-rr-border/20">
-          <div className="w-10 h-10 rounded-2xl bg-rr text-white flex items-center justify-center shadow-lg shadow-rr/20 shrink-0">
-            <AlertCircle className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-h4 !text-rr-text">{probs.length} Channel butuh perhatian strategis</h4>
-            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-              {probs.map(ch => {
-                const c = gd(DATA, id, ch, curPeriod), p2 = gd(DATA, id, ch, prv);
-                const aware = isAware(CH_DEF, ch);
-                const currentMetric = aware ? (c?.reach ?? c?.impr) : c?.rev;
-                const previousMetric = aware ? (p2?.reach ?? p2?.impr) : p2?.rev;
-                const v = pct(currentMetric, previousMetric);
-                return (
-                  <div key={ch} className="text-sm text-rr-text/80 font-medium">
-                    <strong className="text-rr-text">{CH_DEF[ch]?.l}</strong>: {aware ? 'Reach' : 'Revenue'} {v !== null ? (v >= 0 ? '+' : '') + Math.round(v) + '%' : '—'}
+              return (
+                <div key={channel} className="rounded-[22px] border border-rr-border bg-white/70 p-4">
+                  <div className="text-sm font-semibold text-rr-text">{CH_DEF[channel]?.l}</div>
+                  <div className="mt-2 text-xs text-rr-text/75">
+                    {aware ? 'Reach / awareness signal' : 'Revenue / conversion signal'}
                   </div>
-                );
-              })}
-            </div>
+                  <div className="mt-3 text-sm font-medium text-rr-text">
+                    {growth !== null ? `${growth >= 0 ? '+' : ''}${Math.round(growth)}%` : '—'} vs periode lalu
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
-      )}
+        </Card>
+      ) : null}
 
-      {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard title="Total Revenue" value={fRp(totalRev)} icon={DollarSign} growth={pct(totalRev, pTotalRev)} subtext={`Lalu: ${fRp(pTotalRev)}`} />
-        <MetricCard title="Total Spend" value={fRp(totalSp)} icon={CreditCard} growth={pct(totalSp, pTotalSp)} subtext={`Lalu: ${fRp(pTotalSp)}`} />
-        <MetricCard title="Ad ROAS (Bofu)" value={eff.bRoas ? eff.bRoas.toFixed(2) + 'x' : '—'} icon={TrendingUp} growth={pct(eff.bRoas || 0, pEff.bRoas || 0)} subtext={`Lalu: ${pEff.bRoas ? pEff.bRoas.toFixed(2) + 'x' : '—'}`} />
-        <MetricCard title="Total Orders" value={totalOrd.toLocaleString('id-ID')} icon={ShoppingCart} growth={pct(totalOrd, pTotalOrd)} subtext={`Lalu: ${pTotalOrd.toLocaleString('id-ID')}`} />
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard title="Total Revenue" value={fRp(totalRevenue)} icon={DollarSign} trend={pct(totalRevenue, previousRevenue)} caption={`Lalu: ${fRp(previousRevenue)}`} tone="accent" />
+        <MetricCard title="Total Spend" value={fRp(totalSpend)} icon={CreditCard} trend={pct(totalSpend, previousSpend)} caption={`Lalu: ${fRp(previousSpend)}`} />
+        <MetricCard title="Ad ROAS (BOFU)" value={efficiency.bRoas ? `${efficiency.bRoas.toFixed(2)}x` : '—'} icon={TrendingUp} trend={pct(efficiency.bRoas || 0, previousEfficiency.bRoas || 0)} caption={`Lalu: ${previousEfficiency.bRoas ? `${previousEfficiency.bRoas.toFixed(2)}x` : '—'}`} />
+        <MetricCard title="Total Orders" value={totalOrders.toLocaleString('id-ID')} icon={ShoppingCart} trend={pct(totalOrders, previousOrders)} caption={`Lalu: ${previousOrders.toLocaleString('id-ID')}`} />
       </div>
 
-      {/* Strategy Insights Section */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20">
-            <Sparkles className="w-6 h-6 fill-white/20" />
-          </div>
-          <h2 className="text-h3">Strategi & Analisis Insight</h2>
-        </div>
-        <AISummary 
-          clientName={cl.key}
+      <div className="space-y-5">
+        <SectionHeader
+          icon={Sparkles}
+          title="Strategi dan AI insight"
+          description="Ringkasan performa dan rekomendasi tindakan yang disusun untuk membantu pengambilan keputusan lebih cepat."
+          tone="accent"
+        />
+        <AISummary
+          clientName={client.key}
           metrics={{
             reach: fK(stats.tofu.reach),
-            spend: fRp(totalSp),
-            revenue: fRp(totalRev),
-            roas: eff.bRoas ? eff.bRoas.toFixed(2) : '0',
-            cvr: eff.blCr ? eff.blCr.toFixed(2) : '0',
+            spend: fRp(totalSpend),
+            revenue: fRp(totalRevenue),
+            roas: efficiency.bRoas ? efficiency.bRoas.toFixed(2) : '0',
+            cvr: efficiency.blCr ? efficiency.blCr.toFixed(2) : '0',
             chk: stats.mofu.vis > 0 ? ((stats.bofu.ord / (stats.mofu.vis || 1)) * 100).toFixed(2) : '0',
-            growth: pct(eff.bRoas || 0, pEff.bRoas || 0) || 0
+            growth: pct(efficiency.bRoas || 0, previousEfficiency.bRoas || 0) || 0,
           }}
         />
       </div>
 
-      {/* Performance & Trend Section */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gg text-white flex items-center justify-center shadow-lg shadow-gg/20">
-            <Activity className="w-6 h-6 fill-white/20" />
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <Card className="p-0 overflow-hidden">
+          <div className="border-b border-border-main px-6 py-5">
+            <SectionHeader
+              icon={Activity}
+              title="Trend performa"
+              description="Grafik dan rasio inti untuk membaca efisiensi account pada periode aktif dan perubahan dibanding periode sebelumnya."
+              tone="success"
+            />
           </div>
-          <h2 className="text-h3">Tren Performa & Efisiensi</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-6">
-          <div className="bg-white rounded-3xl p-8 border border-border-main shadow-sm">
+          <div className="p-6">
             <TrendChart clientKey={id} />
           </div>
+        </Card>
 
-          <div className="bg-white rounded-3xl border border-border-main p-8 shadow-sm">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
-              {[
-                { l: 'Ad ROAS', v: eff.bRoas ? eff.bRoas.toFixed(2) + 'x' : '—', sub: 'Revenue / Spend', c: eff.bRoas, p: pEff.bRoas },
-                { l: 'CIR Index', v: eff.blCir ? eff.blCir.toFixed(1) + '%' : '—', sub: 'Spend / Revenue', c: eff.blCir, p: pEff.blCir },
-                { l: 'CPO Target', v: eff.blCpo ? fRp(eff.blCpo) : '—', sub: 'Spend / Order', c: eff.blCpo, p: pEff.blCpo },
-                { l: 'Conversion Rate', v: eff.blCr ? eff.blCr.toFixed(2) + '%' : '—', sub: 'Order / Visitor', c: eff.blCr, p: pEff.blCr },
-                { l: 'Average Order', v: eff.blAov ? fRp(eff.blAov) : '—', sub: 'Revenue / Order', c: eff.blAov, p: pEff.blAov },
-              ].map((m, i) => {
-                const g = m.c && m.p ? ((m.c - m.p) / m.p * 100) : null;
-                const isGood = m.l.includes('CIR') || m.l.includes('CPO') ? (g !== null && g < 0) : (g !== null && g > 0);
-                return (
-                  <div key={i}>
-                    <div className="text-label !text-text3 mb-3">{m.l}</div>
-                    <div className="text-h2 mb-2">{m.v}</div>
-                    <div className="flex items-center gap-2">
-                      {g !== null && (
-                        <span className={`text-xs font-bold ${isGood ? 'text-gg' : 'text-rr'}`}>
-                          {g > 0 ? '+' : ''}{g.toFixed(1)}%
-                        </span>
-                      )}
-                      <span className="text-xs font-medium text-text4/60">{m.sub}</span>
-                    </div>
+        <Card className="space-y-4">
+          <div>
+            <div className="ds-eyebrow">Efficiency breakdown</div>
+            <h2 className="mt-1 text-h4">KPI snapshot</h2>
+          </div>
+          <div className="grid gap-3">
+            {efficiencyBlocks.map((metric) => {
+              const positive =
+                metric.growth === null
+                  ? null
+                  : metric.positiveDirection === 'up'
+                    ? metric.growth > 0
+                    : metric.growth < 0;
+
+              return (
+                <div key={metric.label} className="rounded-[22px] border border-border-main bg-surface2 p-4">
+                  <div className="text-micro">{metric.label}</div>
+                  <div className="mt-2 flex items-end justify-between gap-3">
+                    <div className="text-xl font-semibold tracking-[-0.03em] text-text">{metric.value}</div>
+                    {metric.growth !== null ? (
+                      <span className={`text-xs font-semibold ${positive ? 'text-gg-text' : 'text-rr-text'}`}>
+                        {metric.growth > 0 ? '+' : ''}
+                        {metric.growth.toFixed(1)}%
+                      </span>
+                    ) : null}
                   </div>
-                );
-              })}
-            </div>
+                  <div className="mt-2 text-xs text-text3">{metric.caption}</div>
+                </div>
+              );
+            })}
           </div>
-        </div>
+        </Card>
       </div>
 
-      {/* Funnel Performance Section */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center border border-border-main shadow-sm">
-            <Filter className="w-6 h-6" />
-          </div>
-          <h2 className="text-h3">Analisis Corong Pemasaran</h2>
-        </div>
-        <FunnelAnalysis stats={stats} roas={eff.bRoas} />
+      <div className="space-y-5">
+        <SectionHeader
+          icon={Filter}
+          title="Analisis funnel"
+          description="Pembacaan funnel awareness, consideration, dan conversion untuk melihat bottleneck paling relevan."
+        />
+        <FunnelAnalysis stats={stats} roas={efficiency.bRoas} />
       </div>
 
-      {/* Channel Performance Section */}
-      <div className="space-y-8">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center border border-border-main shadow-sm">
-            <Layers className="w-6 h-6" />
-          </div>
-          <h2 className="text-h3">Performa Channel Detail</h2>
-        </div>
-        <ChannelPerformance clientId={id} channels={cl.chs} data={DATA} periods={PERIODS} currentPeriod={curPeriod} />
+      <div className="space-y-5">
+        <SectionHeader
+          icon={Layers}
+          title="Performa per channel"
+          description="Detail channel aktif dan sinyal performa granular untuk memahami kontributor utama account."
+        />
+        <ChannelPerformance clientId={id} channels={client.chs} data={DATA} periods={PERIODS} currentPeriod={curPeriod} />
       </div>
 
-      {/* Activity Log Section */}
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center border border-border-main shadow-sm">
-            <Calendar className="w-6 h-6" />
-          </div>
-          <h2 className="text-h3">Log Aktivitas & Event</h2>
-        </div>
-        <ActivityLog activities={ACTIVITY.filter(a => a.c === id)} />
+      <div className="space-y-5">
+        <SectionHeader
+          icon={Calendar}
+          title="Activity log"
+          description="Catatan promo, event, content, dan launching yang memengaruhi ritme performa account."
+        />
+        <ActivityLog activities={ACTIVITY.filter((activityItem) => activityItem.c === id)} />
       </div>
     </div>
   );

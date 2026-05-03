@@ -1,30 +1,108 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useDashboardData } from '@/components/DataProvider';
-import { supabase } from '@/lib/supabase';
-import { 
-  Activity, Plus, Search, Calendar, ChevronRight, 
-  Trash2, X, Filter, CheckCircle2, AlertCircle
-} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  Filter,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { useDashboardData } from '@/components/DataProvider';
+import PageIntro from '@/components/layout/PageIntro';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import InputField from '@/components/ui/InputField';
+import SelectField from '@/components/ui/SelectField';
+import { supabase } from '@/lib/supabase';
 
-const TYPE_MAP: Record<string, { l: string; class: string; dot: string }> = {
-  p: { l: 'Promo',     class: 'chip chip-gg', dot: 'bg-gg' },
-  e: { l: 'Event',     class: 'chip chip-gd', dot: 'bg-gd' },
-  c: { l: 'Content',   class: 'chip chip-or', dot: 'bg-or' },
-  l: { l: 'Launching', class: 'chip chip-rr', dot: 'bg-rr' },
+type ActivityType = 'p' | 'e' | 'c' | 'l';
+
+interface ToastState {
+  type: 'success' | 'error';
+  text: string;
+}
+
+interface ActivityFormState {
+  client_key: string;
+  type: ActivityType;
+  name: string;
+  date: string;
+}
+
+const TYPE_MAP: Record<ActivityType, { label: string; badgeTone: 'success' | 'info' | 'warning' | 'danger'; dotClass: string }> = {
+  p: { label: 'Promo', badgeTone: 'success', dotClass: 'bg-gg' },
+  e: { label: 'Event', badgeTone: 'info', dotClass: 'bg-gd' },
+  c: { label: 'Content', badgeTone: 'warning', dotClass: 'bg-or' },
+  l: { label: 'Launching', badgeTone: 'danger', dotClass: 'bg-rr' },
 };
 
-function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
+const INITIAL_FORM: ActivityFormState = {
+  client_key: '',
+  type: 'e',
+  name: '',
+  date: new Date().toISOString().split('T')[0],
+};
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'Terjadi kesalahan yang tidak diketahui.';
+}
+
+function Toast({ toast }: { toast: ToastState | null }) {
   if (!toast) return null;
   return (
-    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
-      toast.type === 'success' ? 'bg-white border-green-200 text-green-700' : 'bg-white border-red-200 text-red-600'
-    }`}>
-      {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+    <div
+      className={`fixed right-6 top-24 z-[10000] flex items-center gap-3 rounded-2xl border px-5 py-3.5 text-sm font-medium shadow-[var(--shadow-popover)] animate-fade-in ${
+        toast.type === 'success'
+          ? 'border-gg-border bg-white text-gg-text'
+          : 'border-rr-border bg-white text-rr-text'
+      }`}
+    >
+      {toast.type === 'success' ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertCircle className="h-4 w-4 shrink-0" />}
       {toast.text}
     </div>
+  );
+}
+
+function ModalFrame({
+  title,
+  description,
+  onClose,
+  children,
+}: {
+  title: string;
+  description?: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      <div className="fixed inset-0 z-[10001] bg-black/45 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-[10002] flex items-center justify-center p-4 md:p-6">
+        <Card className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden border-white/70 bg-white/96 p-0 backdrop-blur">
+          <div className="flex items-start justify-between gap-4 border-b border-border-main px-6 py-5">
+            <div>
+              <h3 className="text-h4">{title}</h3>
+              {description ? <p className="mt-2 text-sm text-text3">{description}</p> : null}
+            </div>
+            <button onClick={onClose} className="btn-icon shrink-0">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          {children}
+        </Card>
+      </div>
+    </>
   );
 }
 
@@ -32,263 +110,255 @@ export default function ActivityPage() {
   const { CLIENTS, ACTIVITY } = useDashboardData();
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  
+  const [toast, setToast] = useState<ToastState | null>(null);
   const [search, setSearch] = useState('');
   const [selectedClient, setSelectedClient] = useState('all');
-
-  const [form, setForm] = useState({
-    client_key: '',
-    type: 'e',
-    name: '',
-    date: new Date().toISOString().split('T')[0]
-  });
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string | number; title: string } | null>(null);
+  const [form, setForm] = useState<ActivityFormState>(INITIAL_FORM);
 
   useEffect(() => {
-    if (toast) {
-      const t = setTimeout(() => setToast(null), 4000);
-      return () => clearTimeout(t);
-    }
+    if (!toast) return;
+    const timeout = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(timeout);
   }, [toast]);
 
-  const filtered = ACTIVITY.filter(a => {
-    const mSearch = !search || a.n.toLowerCase().includes(search.toLowerCase()) || a.c.toLowerCase().includes(search.toLowerCase());
-    const mClient = selectedClient === 'all' || a.c === selectedClient;
-    return mSearch && mClient;
-  });
+  const filtered = useMemo(
+    () =>
+      ACTIVITY.filter((item) => {
+        const matchesSearch =
+          !search ||
+          item.n.toLowerCase().includes(search.toLowerCase()) ||
+          item.c.toLowerCase().includes(search.toLowerCase());
+        const matchesClient = selectedClient === 'all' || item.c === selectedClient;
+        return matchesSearch && matchesClient;
+      }),
+    [ACTIVITY, search, selectedClient]
+  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const clientOptions = [
+    { label: 'Semua klien', value: 'all' },
+    ...CLIENTS.map((client) => ({ label: client.key, value: client.key })),
+  ];
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     if (!form.client_key || !form.name || !form.date) return;
     setLoading(true);
+
     try {
       const { error } = await supabase.from('activity_logs').insert({
         client_key: form.client_key,
         log_type: form.type,
         note: form.name,
-        log_date: form.date
+        log_date: form.date,
       });
       if (error) throw error;
-      setToast({ type: 'success', text: 'Activity berhasil ditambahkan!' });
+      setToast({ type: 'success', text: 'Activity berhasil ditambahkan.' });
       setShowModal(false);
-      setForm({ client_key: '', type: 'e', name: '', date: new Date().toISOString().split('T')[0] });
+      setForm(INITIAL_FORM);
       router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menambahkan activity.' });
+    } catch (error) {
+      setToast({ type: 'error', text: getErrorMessage(error) });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string | number | undefined) => {
+  const requestDelete = (id: string | number | undefined, title: string) => {
     if (!id) return;
-    if (!confirm('Hapus activity ini?')) return;
+    setDeleteTarget({ id, title });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setLoading(true);
     try {
-      const { error } = await supabase.from('activity_logs').delete().eq('id', id);
+      const { error } = await supabase.from('activity_logs').delete().eq('id', deleteTarget.id);
       if (error) throw error;
       setToast({ type: 'success', text: 'Activity berhasil dihapus.' });
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
       router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menghapus.' });
+    } catch (error) {
+      setToast({ type: 'error', text: getErrorMessage(error) });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="w-full space-y-10 animate-fade-in pb-20">
+      <div className="mx-auto max-w-7xl space-y-7 pb-20 animate-fade-in">
         <Toast toast={toast} />
 
-        {/* ── Header Area ── */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-          <div className="flex items-start gap-4">
-             <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm shrink-0 mt-0.5">
-                <Activity className="w-5 h-5" />
-             </div>
-             <div>
-                <h1 className="text-2xl font-bold text-text tracking-tight leading-tight">Activity Log</h1>
-                <p className="text-sm font-medium text-text3 mt-0.5">Manajemen catatan promo, event, content, dan launching klien.</p>
-             </div>
-          </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center justify-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4" /> TAMBAH ACTIVITY
-          </button>
-        </div>
+        <PageIntro
+          eyebrow="Admin Console"
+          title="Activity log"
+          description="Kelola catatan promo, event, content, dan launching dari seluruh klien dalam satu feed yang lebih mudah dipindai."
+          meta={(
+            <>
+              <Badge tone="neutral" style="soft">{ACTIVITY.length} total activities</Badge>
+              <Badge tone="accent" style="soft">{CLIENTS.length} client sources</Badge>
+            </>
+          )}
+          actions={(
+            <Button variant="primary" size="lg" leadingIcon={Plus} onClick={() => setShowModal(true)}>
+              Tambah activity
+            </Button>
+          )}
+        />
 
-        {/* ── Filters Bar ── */}
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
-            <input
-              type="text"
+        <Card className="space-y-5">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+            <InputField
               placeholder="Cari aktivitas atau klien..."
+              icon={Search}
               value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full h-11 pl-11 pr-4 rounded-xl border border-border-main bg-white text-sm font-medium text-text focus:outline-none focus:border-accent transition-all shadow-sm"
+              onChange={(event) => setSearch(event.target.value)}
+            />
+            <SelectField
+              icon={Filter}
+              value={selectedClient}
+              onChange={(event) => setSelectedClient(event.target.value)}
+              options={clientOptions}
             />
           </div>
-          <div className="relative w-full md:w-64">
-             <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4" />
-             <select
-               value={selectedClient}
-               onChange={e => setSelectedClient(e.target.value)}
-               className="w-full h-11 pl-11 pr-10 rounded-xl border border-border-main bg-white text-sm font-medium text-text appearance-none focus:outline-none focus:border-accent transition-all shadow-sm"
-             >
-               <option value="all">Semua Klien</option>
-               {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
-             </select>
-             <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
-          </div>
-        </div>
 
-        {/* ── Activity Feed ── */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          {filtered.length === 0 ? (
-            <div className="py-24 text-center">
-              <h3 className="text-base font-bold text-text mb-2">Tidak ada aktivitas ditemukan</h3>
-              <p className="text-sm text-text3 max-w-xs mx-auto">Coba ubah filter atau tambahkan activity baru.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-border-main">
-              {filtered.map((a, i) => {
-                const type = TYPE_MAP[a.t] || TYPE_MAP.e;
-                const isLast = i === filtered.length - 1;
-                return (
-                  <div key={a.id} className="group flex items-start gap-4 px-6 py-5 hover:bg-surface2 transition-colors">
-                    <div className="flex flex-col items-center shrink-0 mt-1">
-                      <div className={`w-2 h-2 rounded-full ${type.dot}`} />
-                      {!isLast && <div className="w-px flex-1 bg-border-main mt-1 min-h-[32px]" />}
-                    </div>
+          <div className="overflow-hidden rounded-[24px] border border-border-main bg-white">
+            {filtered.length === 0 ? (
+              <div className="px-6 py-20 text-center">
+                <div className="text-h4">Tidak ada aktivitas ditemukan</div>
+                <p className="mt-3 text-body max-w-md mx-auto">Coba ubah filter atau tambahkan activity baru untuk mengisi feed operasional.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border-main/60">
+                {filtered.map((item, index) => {
+                  const type = TYPE_MAP[item.t as ActivityType] || TYPE_MAP.e;
+                  const isLast = index === filtered.length - 1;
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
-                         <span className={type.class}>{type.l}</span>
-                         <span className="text-xs font-bold text-accent">{a.c}</span>
-                         <span className="ml-auto text-[10px] font-bold text-text4 font-mono">{a.d}</span>
+                  return (
+                    <div key={`${item.id ?? `${item.c}-${item.d}-${index}`}`} className="group flex gap-4 px-6 py-5 transition-colors hover:bg-surface2/55">
+                      <div className="flex shrink-0 flex-col items-center pt-1">
+                        <div className={`h-2.5 w-2.5 rounded-full ${type.dotClass}`} />
+                        {!isLast ? <div className="mt-2 w-px flex-1 bg-border-main" /> : null}
                       </div>
-                      <p className="text-sm font-medium text-text leading-relaxed">{a.n}</p>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge tone={type.badgeTone} style="soft">{type.label}</Badge>
+                          <Badge tone="accent" style="soft">{item.c}</Badge>
+                          <span className="ml-auto text-[11px] font-medium uppercase tracking-[0.1em] text-text4">{item.d}</span>
+                        </div>
+                        <p className="mt-3 text-sm leading-relaxed text-text">{item.n}</p>
+                      </div>
+
+                      <button
+                        onClick={() => requestDelete(item.id, item.n)}
+                        disabled={!item.id}
+                        className="btn-icon h-9 w-9 shrink-0 opacity-0 transition-all group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-30 hover:border-rr-border hover:text-rr-text"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
-                    
-                    <button
-                      onClick={() => handleDelete(a.id)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-text4 hover:bg-red-50 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100 shrink-0"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
 
-      {/* ── Modal Form ── */}
-      {showModal && (
-        <>
-          {/* Backdrop - Hitam transparan yang mencakup seluruh layar */}
-          <div 
-            className="fixed inset-0 bg-black/50 z-[10001]" 
-            onClick={() => setShowModal(false)} 
-          />
-          
-          {/* Modal Container */}
-          <div className="fixed inset-0 z-[10002] flex items-center justify-center p-6 pointer-events-none">
-            <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-border-main overflow-hidden pointer-events-auto">
-              <div className="flex items-center justify-between p-5 border-b border-border-main bg-surface2/50">
-                 <h3 className="text-base font-bold text-text">Tambah Activity</h3>
-                 <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-lg hover:bg-surface2 flex items-center justify-center text-text3 transition-colors">
-                    <X className="w-4 h-4" />
-                 </button>
+      {showModal ? (
+        <ModalFrame
+          title="Tambah activity"
+          description="Buat catatan operasional baru untuk promo, event, content, atau launching."
+          onClose={() => setShowModal(false)}
+        >
+          <form onSubmit={handleSubmit} className="flex flex-col">
+            <div className="space-y-5 px-6 py-6">
+              <SelectField
+                label="Klien"
+                value={form.client_key}
+                onChange={(event) => setForm((current) => ({ ...current, client_key: event.target.value }))}
+                options={[
+                  { label: 'Pilih klien', value: '' },
+                  ...CLIENTS.map((client) => ({ label: client.key, value: client.key })),
+                ]}
+              />
+
+              <div className="space-y-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Tipe aktivitas</div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {Object.entries(TYPE_MAP).map(([key, value]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setForm((current) => ({ ...current, type: key as ActivityType }))}
+                      className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition-all ${
+                        form.type === key
+                          ? 'border-accent bg-accent text-white shadow-sm'
+                          : 'border-border-main bg-surface2 text-text2 hover:bg-white hover:border-accent/20'
+                      }`}
+                    >
+                      {value.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Klien</label>
-                    <div className="relative">
-                       <select
-                         value={form.client_key}
-                         onChange={e => setForm({ ...form, client_key: e.target.value })}
-                         className="w-full h-11 px-4 pr-10 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
-                         required
-                       >
-                         <option value="">— Pilih Klien —</option>
-                         {CLIENTS.map(cl => <option key={cl.key} value={cl.key}>{cl.key}</option>)}
-                       </select>
-                       <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 rotate-90 pointer-events-none" />
-                    </div>
-                  </div>
+              <InputField
+                label="Nama aktivitas / catatan"
+                value={form.name}
+                onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+                placeholder="Contoh: Launching promo buy 1 get 1"
+                icon={Activity}
+              />
 
-                  <div>
-                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Tipe Aktivitas</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(TYPE_MAP).map(([k, v]) => (
-                        <button
-                          key={k}
-                          type="button"
-                          onClick={() => setForm({ ...form, type: k })}
-                          className={`h-11 rounded-xl border text-xs font-bold transition-all ${
-                            form.type === k 
-                            ? 'bg-accent text-white border-accent shadow-sm' 
-                            : 'bg-surface2 border-border-main text-text3 hover:bg-gray-200'
-                          }`}
-                        >
-                          {v.l}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              <InputField
+                label="Tanggal"
+                type="date"
+                value={form.date}
+                onChange={(event) => setForm((current) => ({ ...current, date: event.target.value }))}
+                icon={Calendar}
+              />
+            </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Nama Aktivitas / Catatan</label>
-                    <input
-                      type="text"
-                      value={form.name}
-                      onChange={e => setForm({ ...form, name: e.target.value })}
-                      placeholder="Contoh: Launching Promo Buy 1 Get 1"
-                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
-                      required
-                    />
-                  </div>
+            <div className="flex flex-col gap-3 border-t border-border-main bg-surface2/70 px-6 py-5 sm:flex-row">
+              <Button type="button" variant="secondary" size="lg" fullWidth onClick={() => setShowModal(false)}>
+                Batal
+              </Button>
+              <Button type="submit" variant="primary" size="lg" fullWidth loading={loading}>
+                Simpan activity
+              </Button>
+            </div>
+          </form>
+        </ModalFrame>
+      ) : null}
 
-                  <div>
-                    <label className="text-xs font-semibold text-text3  tracking-wider block mb-2 px-1">Tanggal</label>
-                    <input
-                      type="date"
-                      value={form.date}
-                      onChange={e => setForm({ ...form, date: e.target.value })}
-                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                   <button
-                     type="button"
-                     onClick={() => setShowModal(false)}
-                     className="flex-1 h-11 rounded-xl bg-surface2 text-text2 font-bold text-sm hover:bg-gray-200 transition-all"
-                   >
-                     Batal
-                   </button>
-                   <button
-                     type="submit"
-                     disabled={loading}
-                     className="flex-1 h-11 rounded-xl bg-text text-white font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                   >
-                     {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Plus className="w-4 h-4" />}
-                     Simpan
-                   </button>
-                </div>
-              </form>
+      {showDeleteModal ? (
+        <ModalFrame
+          title="Hapus activity?"
+          description={`Catatan "${deleteTarget?.title}" akan dihapus secara permanen dari activity feed.`}
+          onClose={() => !loading && setShowDeleteModal(false)}
+        >
+          <div className="space-y-6 px-6 py-6">
+            <div className="rounded-[24px] border border-rr-border bg-rr-bg/70 p-5 text-sm text-rr-text">
+              Activity yang sudah dihapus tidak bisa dipulihkan. Pastikan catatan ini memang tidak lagi dibutuhkan tim.
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button type="button" variant="secondary" size="lg" fullWidth onClick={() => setShowDeleteModal(false)} disabled={loading}>
+                Batalkan
+              </Button>
+              <Button type="button" variant="danger" size="lg" fullWidth onClick={confirmDelete} loading={loading}>
+                Ya, hapus
+              </Button>
             </div>
           </div>
-        </>
-      )}
+        </ModalFrame>
+      ) : null}
     </>
   );
 }
