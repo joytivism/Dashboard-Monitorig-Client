@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react';
 import { login } from '@/app/actions/auth';
-import { Hexagon, Loader2, AlertCircle, Eye, EyeOff, ShieldCheck, Sparkles } from 'lucide-react';
+import { 
+  Hexagon, Loader2, AlertCircle, Eye, EyeOff, 
+  Mail, Lock, Chrome, Facebook, Smartphone, Globe, BarChart2
+} from 'lucide-react';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -24,134 +27,172 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#0F172A] relative overflow-hidden font-sans">
+    <div className="min-h-screen w-full flex bg-white font-sans overflow-hidden">
       
-      {/* ── Dynamic Animated Background ── */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#0284C7]/20 rounded-full blur-[120px] animate-pulse-soft" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#0284C7]/10 rounded-full blur-[120px] animate-pulse-soft" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-white/5 rounded-full blur-[100px] animate-pulse-soft" style={{ animationDelay: '2s' }} />
+      {/* ── LEFT SIDE: LOGIN FORM ── */}
+      <div className="w-full lg:w-[45%] flex flex-col items-center justify-center p-8 lg:p-20 relative animate-fade-in">
         
-        {/* Decorative Grid */}
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] mix-blend-overlay" />
+        {/* Logo (Top Left Mobile) */}
+        <div className="absolute top-8 left-8 flex items-center gap-2 lg:hidden">
+           <Hexagon className="w-6 h-6 text-accent fill-accent/10" />
+           <span className="font-black text-text text-sm tracking-tighter">REAL ADVERTISE</span>
+        </div>
+
+        <div className="w-full max-w-[400px]">
+          {/* Header */}
+          <div className="mb-10 text-center lg:text-left flex flex-col items-center lg:items-start">
+            <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 shadow-sm border border-accent/20">
+               <Hexagon className="w-8 h-8 text-accent fill-accent" />
+            </div>
+            <h1 className="text-3xl font-black text-text tracking-tight mb-2">Login to your account!</h1>
+            <p className="text-sm text-text3 font-medium">Enter your credentials to access the command center.</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="flex items-center gap-3 p-4 rounded-2xl bg-rr-bg/10 border border-rr-border/20 text-rr text-xs font-bold animate-shake">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {error}
+              </div>
+            )}
+
+            {/* Identifier Input */}
+            <div className="space-y-2">
+              <label className="type-overline ml-1 text-text2">Username or Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 group-focus-within:text-accent transition-colors" />
+                <input
+                  name="email"
+                  type="text"
+                  required
+                  placeholder="eg. admin_joy"
+                  className="w-full h-13 pl-11 pr-5 rounded-2xl bg-surface2 border border-border-main text-sm font-medium focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all placeholder:text-text4"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <label className="type-overline text-text2">Password</label>
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text4 group-focus-within:text-accent transition-colors" />
+                <input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  placeholder="••••••••••••"
+                  className="w-full h-13 pl-11 pr-12 rounded-2xl bg-surface2 border border-border-main text-sm font-medium focus:outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all placeholder:text-text4"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-text4 hover:text-text3 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between px-1">
+               <label className="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" className="w-4 h-4 rounded border-border-main text-accent focus:ring-accent/20" />
+                  <span className="text-xs font-semibold text-text3 group-hover:text-text transition-colors">Remember me</span>
+               </label>
+               <button type="button" className="text-xs font-bold text-accent hover:underline">Forgot Password?</button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-13 bg-accent hover:bg-accent-hover text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-accent/20 flex items-center justify-center gap-3 disabled:opacity-70 mt-2"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                "LOGIN"
+              )}
+            </button>
+          </form>
+
+          {/* Social Login */}
+          <div className="mt-10">
+             <div className="relative flex items-center justify-center mb-8">
+                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border-main"></div></div>
+                <span className="relative px-4 bg-white text-[10px] font-bold text-text4 uppercase tracking-widest">Or login with</span>
+             </div>
+             
+             <div className="grid grid-cols-3 gap-4">
+                {[Chrome, Facebook, Smartphone].map((Icon, i) => (
+                   <button key={i} type="button" className="flex items-center justify-center h-12 rounded-2xl border border-border-main hover:bg-surface2 hover:border-text4 transition-all group">
+                      <Icon className="w-5 h-5 text-text2 group-hover:scale-110 transition-transform" />
+                   </button>
+                ))}
+             </div>
+          </div>
+        </div>
       </div>
 
-      <div className="w-full max-w-[440px] px-6 relative z-10">
-        
-        {/* ── Logo Area ── */}
-        <div className="flex flex-col items-center mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-accent to-blue-400 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            <div className="relative w-16 h-16 rounded-2xl bg-[#1E293B] border border-white/10 flex items-center justify-center shadow-2xl shrink-0">
-              <Hexagon className="w-9 h-9 text-white fill-white/10 group-hover:scale-110 transition-transform duration-500" />
-            </div>
-          </div>
-          <h1 className="text-3xl font-black text-white tracking-tighter mt-6">REAL ADVERTISE</h1>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            <p className="type-overline !text-text4 tracking-[0.3em]">Command Center</p>
-          </div>
-        </div>
-
-        {/* ── Main Login Card ── */}
-        <div className="relative group animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          {/* Card Glow Effect */}
-          <div className="absolute -inset-0.5 bg-gradient-to-b from-white/10 to-transparent rounded-[36px] blur-[1px] opacity-100"></div>
+      {/* ── RIGHT SIDE: VISUAL SECTION ── */}
+      <div className="hidden lg:flex flex-1 p-10 items-center justify-center">
+        <div className="w-full h-full bg-accent/5 rounded-[48px] border border-accent/10 relative overflow-hidden flex flex-col items-center justify-center">
           
-          <div className="relative bg-[#1E293B]/60 backdrop-blur-3xl rounded-[32px] p-10 border border-white/10 shadow-2xl shadow-black/50 overflow-hidden">
-            
-            {/* Header Text */}
-            <div className="mb-10 text-center sm:text-left">
-              <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Intelligence Access</h2>
-              <p className="text-sm text-text4 font-medium opacity-70">Enter your credentials to enter the hub.</p>
-            </div>
+          {/* Background Patterns */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(2,132,199,0.08)_0%,transparent_70%)]" />
+          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-rr-bg/10 border border-rr-border/20 text-rr text-xs font-bold animate-shake">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  {error}
+          {/* Content */}
+          <div className="relative z-10 text-center px-20">
+             <h2 className="text-4xl font-black text-text tracking-tighter mb-4 leading-tight">
+                Monitor Better <br />
+                <span className="text-accent">Everywhere</span>
+             </h2>
+             <p className="text-base text-text3 font-medium max-w-sm mx-auto mb-20 leading-relaxed">
+                Comprehensive data monitoring for all your digital marketing channels in one unified platform.
+             </p>
+
+             {/* Orbit Animation */}
+             <div className="relative w-80 h-80 mx-auto">
+                {/* Center Logo */}
+                <div className="absolute inset-0 flex items-center justify-center z-20">
+                   <div className="w-24 h-24 rounded-3xl bg-accent shadow-2xl shadow-accent/40 flex items-center justify-center animate-bounce-slow">
+                      <Hexagon className="w-12 h-12 text-white fill-white" />
+                   </div>
                 </div>
-              )}
 
-              {/* Username Input */}
-              <div className="space-y-2.5">
-                <label className="type-overline !text-text4 ml-1 flex items-center gap-2">
-                  <ShieldCheck className="w-3 h-3 text-accent" />
-                  Authorized Identifier
-                </label>
-                <div className="relative group/input">
-                  <input
-                    name="email"
-                    type="text"
-                    required
-                    placeholder="Username or Email"
-                    className="w-full h-14 px-6 rounded-2xl bg-white/5 border border-white/10 text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text4/30"
-                  />
+                {/* Orbit Rings */}
+                <div className="absolute inset-0 border border-accent/10 rounded-full animate-spin-slow"></div>
+                <div className="absolute inset-[-40px] border border-accent/5 rounded-full animate-reverse-spin"></div>
+
+                {/* Orbit Icons */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-1">
+                   <Chrome className="w-6 h-6 text-[#4285F4]" />
                 </div>
-              </div>
-
-              {/* Password Input */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between px-1">
-                  <label className="type-overline !text-text4 flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-accent" />
-                    Security Key
-                  </label>
-                  <button type="button" className="text-[10px] font-bold text-accent/60 hover:text-accent transition-colors">Recover Access?</button>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-2">
+                   <Facebook className="w-6 h-6 text-[#1877F2]" />
                 </div>
-                <div className="relative group/input">
-                  <input
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    placeholder="••••••••"
-                    className="w-full h-14 px-6 rounded-2xl bg-white/5 border border-white/10 text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 transition-all placeholder:text-text4/30"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 p-1 text-text4/50 hover:text-white transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-3">
+                   <Globe className="w-6 h-6 text-[#00a1a6]" />
                 </div>
-              </div>
-
-              {/* Login Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-14 bg-accent hover:bg-accent-hover text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-accent/20 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed group mt-4 overflow-hidden relative"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <span className="relative z-10">AUTHENTICATE ACCESS</span>
-                    <Sparkles className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-300 relative z-10" />
-                    {/* Hover Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shine" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* AI Badge Overlay */}
-            <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-center">
-               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                  <div className="w-1.5 h-1.5 rounded-full bg-gg animate-pulse" />
-                  <span className="text-[10px] font-bold text-text4 uppercase tracking-widest opacity-60">System Ready: Secure Node</span>
-               </div>
-            </div>
+                <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-4">
+                   <BarChart2 className="w-6 h-6 text-[#ff6301]" />
+                </div>
+             </div>
           </div>
-        </div>
 
-        {/* ── Final Footer ── */}
-        <div className="text-center mt-10 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <p className="text-[10px] text-text4/40 font-bold uppercase tracking-[0.4em]">
-            © 2026 Joytivism Network · Global HQ
-          </p>
+          {/* Footer Desc */}
+          <div className="absolute bottom-12 text-center">
+             <p className="text-xs font-bold text-text3 max-w-xs mx-auto opacity-60 italic">
+                Compatible with Google Ads, Meta, TikTok, and most web analytics for a smooth monitoring experience.
+             </p>
+             {/* Pagination Dots */}
+             <div className="flex items-center justify-center gap-2 mt-6">
+                <div className="w-8 h-1.5 rounded-full bg-accent"></div>
+                <div className="w-2 h-1.5 rounded-full bg-accent/20"></div>
+                <div className="w-2 h-1.5 rounded-full bg-accent/20"></div>
+             </div>
+          </div>
         </div>
       </div>
     </div>
