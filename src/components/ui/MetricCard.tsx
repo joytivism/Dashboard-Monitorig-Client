@@ -38,9 +38,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       </div>
       
       <div className="flex items-center gap-3 mb-2">
-        <div className="text-3xl font-bold text-text tracking-tight tabular-nums">{value}</div>
+        <div className="text-h1 tabular-nums">{value}</div>
         {growth !== undefined && growth !== null && (
-          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${isUp ? 'bg-gg-bg text-gg' : 'bg-rr-bg text-rr'} border border-current/10 shadow-sm animate-fade-in`}>
+          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-micro font-bold ${isUp ? 'bg-gg-bg text-gg' : 'bg-rr-bg text-rr'} border border-current/10 shadow-sm animate-fade-in`}>
             {isUp ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
             <span className="tabular-nums">{Math.abs(growth).toFixed(1)}%</span>
           </div>
@@ -48,7 +48,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       </div>
       
       {subtext && (
-        <div className="text-xs text-text3 mt-4">
+        <div className="text-label mt-4">
           {subtext}
         </div>
       )}

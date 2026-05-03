@@ -25,8 +25,8 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-               <h2 className="text-sm font-bold text-rr-text">Attention Needed</h2>
-               <p className="text-xs text-rr-text/60 font-medium tracking-tight">High Risk Portfolio</p>
+               <h2 className="text-h4 !text-rr-text leading-none">Attention Needed</h2>
+               <p className="text-micro !text-rr-text opacity-60 mt-1">High Risk Portfolio</p>
             </div>
           </div>
           {risks.length > 0 && (
@@ -49,8 +49,8 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-bold text-rr-text leading-none mb-1.5">{cl.key}</div>
-                    <div className="text-xs text-rr-text/60 font-medium">{fRp(cl.rev)}</div>
+                    <div className="text-body font-bold !text-rr-text mb-1">{cl.key}</div>
+                    <div className="text-micro !text-rr-text opacity-60">{fRp(cl.rev)}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -79,8 +79,8 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                <TrendingUp className="w-5 h-5" />
             </div>
             <div>
-               <h2 className="text-sm font-bold text-gg-text">Top Growth Clients</h2>
-               <p className="text-xs text-gg-text/60 font-medium tracking-tight">Opportunity Wins</p>
+               <h2 className="text-h4 !text-gg-text leading-none">Top Growth Clients</h2>
+               <p className="text-micro !text-gg-text opacity-60 mt-1">Opportunity Wins</p>
             </div>
           </div>
           {opportunities.length > 0 && (
@@ -103,8 +103,8 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
                     {cl.key.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-bold text-gg-text leading-none mb-1.5">{cl.key}</div>
-                    <div className="text-xs text-gg-text/60 font-medium">{fRp(cl.rev)}</div>
+                    <div className="text-body font-bold !text-gg-text mb-1">{cl.key}</div>
+                    <div className="text-micro !text-gg-text opacity-60">{fRp(cl.rev)}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

@@ -88,10 +88,10 @@ export default function AdminHubPage() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-2xl font-bold text-text tracking-tight">Command Center</h1>
+              <h1 className="text-h2">Command Center</h1>
               <span className="badge badge-gg">Active Hub</span>
             </div>
-            <p className="text-sm font-medium text-text3 max-w-md">Sistem pemantauan pusat untuk manajemen portofolio dan operasional AI Real Advertise.</p>
+            <p className="text-body max-w-md">Sistem pemantauan pusat untuk manajemen portofolio dan operasional AI Real Advertise.</p>
           </div>
         </div>
 
@@ -126,8 +126,8 @@ export default function AdminHubPage() {
                     <Activity className="w-5 h-5" />
                  </div>
                  <div>
-                    <h2 className="text-sm font-bold text-text">Client Health Leaderboard</h2>
-                    <p className="text-xs text-text3">Monitoring performa & budget pacing aktif</p>
+                    <h2 className="text-h4">Client Health Leaderboard</h2>
+                    <p className="text-micro">Monitoring performa & budget pacing aktif</p>
                  </div>
               </div>
               <Link href="/admin/clients" className="btn-icon">
@@ -154,14 +154,14 @@ export default function AdminHubPage() {
                                 <div className="w-9 h-9 rounded-xl bg-gg/10 text-gg flex items-center justify-center text-[10px] font-black group-hover/item:bg-gg group-hover/item:text-white transition-all">
                                    {cl.key.slice(0, 2).toUpperCase()}
                                 </div>
-                                <div>
-                                   <div className="text-sm font-semibold text-text">{cl.name}</div>
-                                   <div className="text-xs text-text3">{cl.ind}</div>
-                                </div>
+                                 <div>
+                                    <div className="text-body font-bold !text-text">{cl.name}</div>
+                                    <div className="text-micro">{cl.ind}</div>
+                                 </div>
                              </div>
                               <div className="text-right">
-                                <div className="text-base font-bold text-gg tabular-nums tracking-tight">{t.roas?.toFixed(2) || '0.00'}x</div>
-                                <div className="type-overline !text-[10px]">ROAS</div>
+                                <div className="text-xl font-black text-gg tabular-nums tracking-tighter">{t.roas?.toFixed(2) || '0.00'}x</div>
+                                <div className="type-overline !text-[9px]">ROAS</div>
                              </div>
                           </div>
                        );
@@ -233,8 +233,8 @@ export default function AdminHubPage() {
               </div>
               
               <div className="relative z-10">
-                 <div className="text-3xl font-bold text-white tracking-tight mb-1">
-                    {stats.totalRoas.toFixed(2)}x
+                 <div className="text-display !text-white mb-1">
+                    {stats.totalRoas.toFixed(2)}<span className="text-xl font-medium opacity-50 ml-1">x</span>
                  </div>
                  <h3 className="type-overline !text-white/50">Average ROAS</h3>
               </div>
@@ -264,10 +264,10 @@ export default function AdminHubPage() {
                 <div className={`w-12 h-12 rounded-xl ${action.bg} ${action.color} flex items-center justify-center transition-transform group-hover:scale-105`}>
                    <action.icon className="w-6 h-6" />
                 </div>
-                <div>
-                   <div className="text-sm font-bold text-text tracking-tight">{action.title}</div>
-                   <div className="type-overline !text-[10px] mt-0.5">{action.badge}</div>
-                </div>
+                 <div>
+                    <div className="text-h4 tracking-tight">{action.title}</div>
+                    <div className="type-overline !text-[9px] mt-1 opacity-60">{action.badge}</div>
+                 </div>
                 <ChevronRight className="ml-auto w-4 h-4 text-text4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
              </Link>
            ))}

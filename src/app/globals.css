@@ -116,11 +116,17 @@
     @apply bg-bg text-text antialiased;
     font-family: var(--font-sans);
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01", "tnum";
+    letter-spacing: -0.011em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-text tracking-tight;
+    line-height: 1.2;
   }
 
   ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -179,8 +185,18 @@
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ── Typography Utilities ── */
+.text-display { @apply text-4xl sm:text-5xl font-black text-text tracking-tighter leading-[1.1]; }
+.text-h1      { @apply text-3xl font-bold text-text tracking-tight leading-tight; }
+.text-h2      { @apply text-2xl font-bold text-text tracking-tight leading-snug; }
+.text-h3      { @apply text-xl font-bold text-text tracking-tight; }
+.text-h4      { @apply text-lg font-bold text-text tracking-tight; }
+
+.text-body    { @apply text-sm font-medium text-text2 leading-relaxed; }
+.text-label   { @apply text-xs font-semibold text-text3 tracking-wide; }
+.text-micro   { @apply text-[10px] font-bold text-text4 tracking-wider; }
+
 .type-overline {
-  @apply text-[11px] font-bold text-text3 tracking-[0.15em];
+  @apply text-[11px] font-bold text-text3 tracking-[0.15em] leading-none;
 }
 
 .tabular-nums {
@@ -188,7 +204,7 @@
 }
 
 .label-premium {
-  @apply text-[10px] font-black text-text3 tracking-[0.12em];
+  @apply text-[10px] font-black text-text3 tracking-[0.12em] leading-none;
 }
 
 @keyframes move-stripe {

@@ -63,7 +63,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
       <div className="space-y-6">
         <button 
           onClick={() => router.push(`/${searchParams.toString() ? '?' + searchParams.toString() : ''}`)}
-          className="inline-flex items-center gap-2 text-sm text-text3 hover:text-accent font-medium transition-colors"
+          className="inline-flex items-center gap-2 text-label !text-text3 hover:!text-accent transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           Kembali ke dashboard
@@ -75,13 +75,13 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
               {cl.name.slice(0, 2).toUpperCase()}
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-text flex items-center gap-4">
+              <h1 className="text-h1 flex items-center gap-4">
                 {cl.name}
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-${wc}-bg text-${wc}-text border border-${wc}-border/30`}>
+                <span className={`chip ${wc === 'nn' ? 'chip-nn' : `bg-${wc}-bg text-${wc}-text border border-${wc}-border/30`}`}>
                   {LM[wc]}
                 </span>
               </h1>
-              <div className="flex items-center gap-6 text-sm text-text3 mt-1.5 font-medium">
+              <div className="flex items-center gap-6 text-label mt-2">
                 <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-text4/30" /> CG: <strong className="text-text2">{cl.cg}</strong></span>
                 <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-text4/30" /> TikTok: <strong className="text-text2">{cl.at}</strong></span>
                 <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-text4/30" /> Shopee: <strong className="text-text2">{cl.as}</strong></span>
@@ -117,7 +117,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
             <AlertCircle className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-rr-text text-base">{probs.length} Channel butuh perhatian strategis</h4>
+            <h4 className="text-h4 !text-rr-text">{probs.length} Channel butuh perhatian strategis</h4>
             <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               {probs.map(ch => {
                 const c = gd(DATA, id, ch, curPeriod), p2 = gd(DATA, id, ch, prv);
@@ -148,7 +148,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="w-12 h-12 rounded-2xl bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20">
             <Sparkles className="w-6 h-6 fill-white/20" />
           </div>
-          <h2 className="text-xl font-bold text-text tracking-tight">Strategi & Analisis Insight</h2>
+          <h2 className="text-h3">Strategi & Analisis Insight</h2>
         </div>
         <AISummary 
           clientName={cl.key}
@@ -170,7 +170,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="w-12 h-12 rounded-2xl bg-gg text-white flex items-center justify-center shadow-lg shadow-gg/20">
             <Activity className="w-6 h-6 fill-white/20" />
           </div>
-          <h2 className="text-xl font-bold text-text tracking-tight">Tren Performa & Efisiensi</h2>
+          <h2 className="text-h3">Tren Performa & Efisiensi</h2>
         </div>
         
         <div className="grid grid-cols-1 gap-6">
@@ -191,8 +191,8 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                 const isGood = m.l.includes('CIR') || m.l.includes('CPO') ? (g !== null && g < 0) : (g !== null && g > 0);
                 return (
                   <div key={i}>
-                    <div className="text-xs font-bold text-text3 mb-2">{m.l}</div>
-                    <div className="text-2xl font-bold text-text tracking-tight mb-2">{m.v}</div>
+                    <div className="text-label !text-text3 mb-3">{m.l}</div>
+                    <div className="text-h2 mb-2">{m.v}</div>
                     <div className="flex items-center gap-2">
                       {g !== null && (
                         <span className={`text-xs font-bold ${isGood ? 'text-gg' : 'text-rr'}`}>
@@ -215,7 +215,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center border border-border-main shadow-sm">
             <Filter className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-text tracking-tight">Analisis Corong Pemasaran</h2>
+          <h2 className="text-h3">Analisis Corong Pemasaran</h2>
         </div>
         <FunnelAnalysis stats={stats} roas={eff.bRoas} />
       </div>
@@ -226,7 +226,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center border border-border-main shadow-sm">
             <Layers className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-text tracking-tight">Performa Channel Detail</h2>
+          <h2 className="text-h3">Performa Channel Detail</h2>
         </div>
         <ChannelPerformance clientId={id} channels={cl.chs} data={DATA} periods={PERIODS} currentPeriod={curPeriod} />
       </div>
@@ -237,7 +237,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
           <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center border border-border-main shadow-sm">
             <Calendar className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-text tracking-tight">Log Aktivitas & Event</h2>
+          <h2 className="text-h3">Log Aktivitas & Event</h2>
         </div>
         <ActivityLog activities={ACTIVITY.filter(a => a.c === id)} />
       </div>

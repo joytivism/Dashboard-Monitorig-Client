@@ -65,8 +65,8 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
                       </div>
                       
                       <div>
-                        <div className="type-overline mb-1">{aware ? 'Reach' : 'ROAS'}</div>
-                        <div className="text-2xl font-bold text-text tracking-tight tabular-nums">
+                        <div className="type-overline mb-1.5">{aware ? 'Reach' : 'ROAS'}</div>
+                        <div className="text-h2 tabular-nums">
                           {aware ? (c?.reach ? fK(c.reach) : '—') : (roas(c) ? roas(c)?.toFixed(2) + 'x' : '—')}
                         </div>
                       </div>

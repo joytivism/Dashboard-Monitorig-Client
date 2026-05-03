@@ -86,16 +86,17 @@ text-rr                                     ← icon stroke color
 
 **Font Stack:** `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
 
-| Role | Size | Weight | Tailwind |
-|---|---|---|---|
-| Page title (H1) | `24px` | 700 | `text-2xl font-bold text-text tracking-tight` |
-| Section heading | `14px` | 700 | `text-sm font-bold text-text` |
-| Card label / metric title | `12px` | 600 | `text-xs font-semibold text-text3 tracking-wider` |
-| Metric number (big) | `30px` | 700 | `text-3xl font-bold text-text tracking-tight` |
-| Body / table row | `14px` | 500 | `text-sm font-medium text-text` |
-| Caption / sub | `12px` | 400 | `text-xs text-text3` |
-| Micro label | `10px` | 700 | `text-[10px] font-bold tracking-wider` |
-| Section group label (sidebar) | `9px` | 900 | `text-[9px] font-black text-text4 tracking-[0.12em]` |
+| Role | Size | Weight | Tracking | Utility Class |
+|---|---|---|---|---|
+| **Display** | `48px` | 900 | `-0.05em` | `.text-display` |
+| **Page Title (H1)** | `30px` | 700 | `-0.025em` | `.text-h1` |
+| **Section Head (H2)** | `24px` | 700 | `-0.02em` | `.text-h2` |
+| **Card Title (H3)** | `20px` | 700 | `-0.01em` | `.text-h3` |
+| **Body Text** | `14px` | 500 | `-0.011em` | `.text-body` |
+| **Label / Caption** | `12px` | 600 | `0.025em` | `.text-label` |
+| **Micro / Status** | `10px` | 700 | `0.05em` | `.text-micro` |
+| **Overline Label** | `11px` | 700 | `0.15em` | `.type-overline` |
+| **Section Label** | `10px` | 900 | `0.12em` | `.label-premium` |
 
 ---
 
