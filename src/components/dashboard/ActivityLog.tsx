@@ -103,9 +103,9 @@ export const ActivityLog: React.FC<ActivityLogProps> = ({ activities }) => {
                   <div className="flex-1 min-w-0 flex flex-col gap-2">
                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                           <span className="text-[10px] font-bold text-text4 uppercase tracking-wider">{a.dLabel || a.d}</span>
+                           <span className="type-overline !text-text4">{a.dLabel || a.d}</span>
                            <span className="w-1 h-1 rounded-full bg-border-main" />
-                           <span className={`text-[9px] font-bold uppercase tracking-wider ${config.text}`}>{config.label}</span>
+                           <span className={`type-overline ${config.text}`}>{config.label}</span>
                         </div>
                         <ArrowRight className="w-4 h-4 text-text4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                      </div>

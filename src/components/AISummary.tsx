@@ -103,7 +103,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
             </div>
             <div>
               <h3 className="text-sm font-bold text-text tracking-tight">AI Strategy Insights</h3>
-              <p className="text-[10px] font-bold text-text4 uppercase tracking-wider">Powered by Advanced Analytics</p>
+              <p className="type-overline !text-text4">Powered by Advanced Analytics</p>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
           <div className="space-y-8 animate-fade-in">
             <div className="relative">
               <div className="absolute -left-4 top-0 bottom-0 w-1 bg-accent/10 rounded-full"></div>
-              <p className="text-[15px] leading-relaxed text-text font-medium px-2">
+              <p className="text-base leading-relaxed text-text font-medium px-2">
                 {data.summary}
               </p>
             </div>
@@ -160,7 +160,7 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
                     <Zap className="w-4 h-4 text-accent group-hover:text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-bold text-text4 uppercase tracking-wider mb-1.5 opacity-80">
+                    <div className="type-overline mb-1.5 opacity-80">
                       Action Recommendation
                     </div>
                     <p className="text-sm text-text font-medium leading-snug">

@@ -33,8 +33,8 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
             <Hexagon className="w-5 h-5 text-white fill-white" />
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-bold text-text leading-tight uppercase">Real Advertise</div>
-            <div className="text-[10px] font-semibold text-text3 uppercase tracking-widest">Command Center</div>
+            <div className="type-overline !text-text leading-tight !tracking-tight">Real Advertise</div>
+            <div className="type-overline !text-[10px] !text-text3">Command Center</div>
           </div>
         </Link>
       </div>
@@ -42,7 +42,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
       {/* ── Navigation ── */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-1 no-scrollbar">
         <div className="px-3 py-2 mb-1">
-           <span className="text-[9px] font-black text-text4 uppercase tracking-[0.12em]">Main Navigation</span>
+           <span className="type-overline !text-[9px]">Main Navigation</span>
         </div>
         
         {NAV_ITEMS.map((item) => {
@@ -77,7 +77,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
               </div>
               <div className="flex flex-col min-w-0">
                  <span className="text-xs font-bold text-text truncate leading-none">Admin</span>
-                 <span className="text-[10px] font-medium text-text3 truncate mt-1">Superuser Access</span>
+                 <span className="type-overline !text-[10px] truncate mt-1">Superuser Access</span>
               </div>
            </div>
            
@@ -92,7 +92,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
 
         <button
           onClick={onLogout}
-          className="flex items-center gap-3 w-full px-3.5 py-2 rounded-xl text-xs font-semibold text-text3 hover:bg-red-50 hover:text-red-600 transition-all group"
+          className="flex items-center gap-3 w-full px-3.5 py-2 rounded-xl type-overline text-text3 hover:bg-rr-bg hover:text-rr transition-all group"
         >
           <LogOut className="w-3.5 h-3.5 text-text4 group-hover:text-red-500" />
           <span>Sign Out</span>

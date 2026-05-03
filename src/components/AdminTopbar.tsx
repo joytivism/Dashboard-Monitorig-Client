@@ -30,11 +30,7 @@ export default function AdminTopbar({ onLogout }: AdminTopbarProps) {
 
   return (
     <header 
-      className="sticky top-0 w-full h-[60px] z-50 flex items-center justify-between px-6 transition-all duration-300"
-      style={{ 
-        background: 'rgb(255,255,255)',
-        borderBottom: '1px solid rgba(229,231,235,0.8)'
-      }}
+      className="sticky top-0 w-full h-[60px] z-50 flex items-center justify-between px-6 bg-surface/95 backdrop-blur-md border-b border-border-main transition-all duration-300"
     >
       {/* ── Left: Logo & Breadcrumb ── */}
       <div className="flex items-center gap-4">
@@ -47,8 +43,8 @@ export default function AdminTopbar({ onLogout }: AdminTopbarProps) {
         
         <div className="h-4 w-px bg-border-main hidden md:block" />
         
-        <nav className="flex items-center gap-2 text-xs hidden md:flex">
-          <span className="text-text3">Admin</span>
+        <nav className="flex items-center gap-2 hidden md:flex">
+          <span className="type-overline">Admin</span>
           <ChevronRight className="w-3 h-3 text-text4" />
           <span className="font-semibold text-text">{currentItem?.label || 'Command Center'}</span>
         </nav>
@@ -63,7 +59,7 @@ export default function AdminTopbar({ onLogout }: AdminTopbarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl type-overline transition-all duration-200 ${
                 isActive 
                   ? 'bg-accent text-white shadow-sm' 
                   : 'text-text2 hover:text-text hover:bg-white/50'
@@ -80,7 +76,7 @@ export default function AdminTopbar({ onLogout }: AdminTopbarProps) {
       <div className="flex items-center gap-2">
         <Link 
           href="/" 
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold text-text2 hover:bg-surface2 hover:text-text transition-all"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl type-overline text-text2 hover:bg-surface3 hover:text-text transition-all"
         >
           <ExternalLink className="w-3.5 h-3.5" />
           <span className="hidden sm:block">Dashboard</span>
@@ -90,7 +86,7 @@ export default function AdminTopbar({ onLogout }: AdminTopbarProps) {
         
         <button
           onClick={onLogout}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold text-text3 hover:bg-rr-bg hover:text-rr-text transition-all"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl type-overline text-text3 hover:bg-rr-bg hover:text-rr transition-all"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span className="hidden sm:block">Logout</span>

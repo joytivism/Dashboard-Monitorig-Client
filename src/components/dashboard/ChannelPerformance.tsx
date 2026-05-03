@@ -29,7 +29,7 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
         return (
           <div key={stage} className="space-y-6">
             <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-text3 px-4 py-1.5 rounded-xl bg-surface2 border border-border-main/50">
+              <span className="type-overline px-4 py-1.5 rounded-xl bg-surface2 border border-border-main/50">
                 {STAGE_LABEL[stage as keyof typeof STAGE_LABEL]}
               </span>
               <div className="h-px bg-border-main flex-1 opacity-50" />
@@ -47,7 +47,7 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
                 else if (ch.includes('fb') || ch.includes('meta')) ChIcon = Activity;
 
                 return (
-                  <div key={ch} className="bg-white rounded-3xl p-6 border border-border-main shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group">
+                  <div key={ch} className="bg-white rounded-2xl p-6 border border-border-main shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow group">
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -65,15 +65,15 @@ export const ChannelPerformance: React.FC<ChannelPerformanceProps> = ({
                       </div>
                       
                       <div>
-                        <div className="text-xs font-bold text-text4/60 mb-1">{aware ? 'Reach' : 'ROAS'}</div>
-                        <div className="text-2xl font-bold text-text tracking-tight">
+                        <div className="type-overline mb-1">{aware ? 'Reach' : 'ROAS'}</div>
+                        <div className="text-2xl font-bold text-text tracking-tight tabular-nums">
                           {aware ? (c?.reach ? fK(c.reach) : '—') : (roas(c) ? roas(c)?.toFixed(2) + 'x' : '—')}
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 bg-surface2 rounded-2xl p-4 border border-border-main/20">
-                        <div><span className="text-xs font-bold text-text4/40 block mb-0.5">Spend</span><span className="font-bold text-sm text-text">{c?.sp ? fRp(c.sp) : '—'}</span></div>
-                        <div><span className="text-xs font-bold text-text4/40 block mb-0.5">{aware ? 'Impresi' : 'Revenue'}</span><span className="font-bold text-sm text-text">{aware ? (c?.impr ? fK(c.impr) : '—') : (c?.rev ? fRp(c.rev) : '—')}</span></div>
+                        <div><span className="type-overline block mb-0.5">Spend</span><span className="font-bold text-sm text-text tabular-nums">{c?.sp ? fRp(c.sp) : '—'}</span></div>
+                        <div><span className="type-overline block mb-0.5">{aware ? 'Impresi' : 'Revenue'}</span><span className="font-bold text-sm text-text tabular-nums">{aware ? (c?.impr ? fK(c.impr) : '—') : (c?.rev ? fRp(c.rev) : '—')}</span></div>
                       </div>
                     </div>
                   </div>

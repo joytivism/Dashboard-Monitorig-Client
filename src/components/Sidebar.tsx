@@ -22,8 +22,8 @@ function SidebarContent() {
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-white flex flex-col z-40"
-      style={{ borderRight: '1px solid #E5E7EB', boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
+    <aside className="fixed left-0 top-0 h-screen w-[248px] bg-surface border-r border-border-main flex flex-col z-40"
+      style={{ boxShadow: '2px 0 16px -4px rgba(0,0,0,0.06)' }}>
 
       {/* ── Logo ── */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-border-main shrink-0">
@@ -31,8 +31,8 @@ function SidebarContent() {
           <Hexagon className="w-5 h-5 text-white fill-white" />
         </div>
         <div className="min-w-0">
-          <div className="text-sm font-bold text-text leading-tight">Real Advertise</div>
-          <div className="text-[10px] font-semibold text-text3 uppercase tracking-widest">Command Center</div>
+          <div className="type-overline !text-text leading-tight !tracking-tight">Real Advertise</div>
+          <div className="type-overline !text-[10px] !text-text3">Command Center</div>
         </div>
       </div>
 
@@ -41,7 +41,7 @@ function SidebarContent() {
 
         {/* Main Menu */}
         <div>
-          <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-2 px-2">Menu</div>
+          <div className="type-overline !text-[9px] mb-2 px-2">Menu</div>
           <div className="flex flex-col gap-0.5">
             <Link
               href={`/${queryString}`}
@@ -68,7 +68,7 @@ function SidebarContent() {
 
         {/* Clients Section */}
         <div className="flex-1">
-          <div className="text-[9px] font-black text-text4 uppercase tracking-[0.12em] mb-2 px-2">Klien Aktif</div>
+          <div className="type-overline !text-[9px] mb-2 px-2">Klien Aktif</div>
           <div className="flex flex-col gap-0.5">
             {CLIENTS.map((cl) => {
               const isActive = pathname === `/client/${cl.key}`;
@@ -108,8 +108,8 @@ function SidebarContent() {
             <span className="text-accent text-[10px] font-black">RA</span>
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-bold text-text leading-tight truncate">Real Advertise</div>
-            <div className="text-[10px] text-text3">Admin Dashboard</div>
+            <div className="type-overline !text-text leading-tight truncate !tracking-tight">Real Advertise</div>
+            <div className="type-overline !text-[10px] !text-text3">Admin Dashboard</div>
           </div>
         </div>
       </div>

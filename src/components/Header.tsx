@@ -59,8 +59,8 @@ function HeaderContent() {
 
   return (
     <>
-      <header className="h-[68px] px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30 bg-bg/90"
-        style={{ borderBottom: '1px solid rgba(229,231,235,0.8)' }}>
+      <header className="h-[68px] px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-border-main"
+      >
 
         {/* Search trigger */}
         <div className="flex-1 flex justify-center max-w-lg mx-auto">
@@ -95,8 +95,8 @@ function HeaderContent() {
           {/* Profile */}
           <div className="flex items-center gap-2.5">
             <div className="hidden sm:block text-right">
-              <div className="text-xs font-bold text-text leading-tight">Real Advertise</div>
-              <div className="text-[10px] text-text3 leading-tight">Admin</div>
+              <div className="type-overline !text-text leading-none mb-1">Real Advertise</div>
+              <div className="type-overline !text-[10px] leading-none">Admin</div>
             </div>
             <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm shrink-0">
               <User className="w-4 h-4 text-white" />
