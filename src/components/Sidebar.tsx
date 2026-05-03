@@ -3,7 +3,8 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, Settings, Hexagon, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Settings, Hexagon, ChevronRight, LogOut } from 'lucide-react';
+import { logout } from '@/app/actions/auth';
 import { clientWorst } from '@/lib/utils';
 import { useDashboardData } from './DataProvider';
 
@@ -102,7 +103,7 @@ function SidebarContent() {
       </div>
 
       {/* ── Footer ── */}
-      <div className="px-5 py-4 border-t border-border-main shrink-0">
+      <div className="px-5 py-4 border-t border-border-main shrink-0 space-y-3">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
             <span className="text-accent text-[10px] font-black">RA</span>
@@ -112,6 +113,16 @@ function SidebarContent() {
             <div className="type-overline !text-[10px] !text-text3">Admin Dashboard</div>
           </div>
         </div>
+        
+        <form action={logout}>
+          <button 
+            type="submit"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rr hover:bg-rr-bg transition-colors group"
+          >
+            <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            Sign Out
+          </button>
+        </form>
       </div>
     </aside>
   );

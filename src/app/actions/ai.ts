@@ -1,7 +1,8 @@
 'use server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/server';
 
 export async function generateAISummary(clientName: string, metrics: any) {
+  const supabase = await createClient();
   // Fetch settings from DB
   const { data: dbSettings } = await supabase.from('system_settings').select('*');
   const settings = (dbSettings || []).reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as any);

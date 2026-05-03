@@ -4,13 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  LayoutDashboard, Database, Activity, 
-  Users, Settings, LogOut, Hexagon, 
-  ChevronRight, ExternalLink, ShieldCheck
+  Database, Activity, Users, LayoutDashboard, Settings2, Hexagon, LogOut, ChevronRight, ExternalLink
 } from 'lucide-react';
+import { logout } from '@/app/actions/auth';
 
 interface AdminSidebarProps {
-  onLogout: () => void;
+  onLogout?: () => void;
 }
 
 const NAV_ITEMS = [
@@ -18,7 +17,7 @@ const NAV_ITEMS = [
   { href: '/admin/data',     icon: Database,        label: 'Input Data' },
   { href: '/admin/activity', icon: Activity,        label: 'Activity Log' },
   { href: '/admin/clients',  icon: Users,           label: 'Kelola Klien' },
-  { href: '/admin/settings', icon: Settings,        label: 'Pengaturan' },
+  { href: '/admin/settings', icon: Settings2,       label: 'Pengaturan' },
 ];
 
 export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
@@ -70,7 +69,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
 
       {/* ── Footer / User Section ── */}
       <div className="p-4 border-t border-border-main bg-surface2/30">
-        <div className="bg-surface rounded-2xl p-4 border border-border-main shadow-sm mb-4">
+        <div className="bg-surface rounded-2xl p-4 border border-border-main shadow-sm mb-3">
            <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-xl bg-surface3 flex items-center justify-center text-text2 text-xs font-black">
                  AD
@@ -90,13 +89,15 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
            </Link>
         </div>
 
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-3 w-full px-3.5 py-2 rounded-xl type-overline text-text3 hover:bg-rr-bg hover:text-rr transition-all group"
-        >
-          <LogOut className="w-3.5 h-3.5 text-text4 group-hover:text-red-500" />
-          <span>Sign Out</span>
-        </button>
+        <form action={logout}>
+          <button 
+            type="submit"
+            className="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl type-overline text-rr hover:bg-rr-bg transition-all group"
+          >
+            <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Sign Out</span>
+          </button>
+        </form>
       </div>
     </aside>
   );
