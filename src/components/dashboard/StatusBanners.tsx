@@ -31,7 +31,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
           </div>
           {risks.length > 0 && (
             <span className="text-[10px] font-bold px-3 py-1 bg-rr/10 text-rr-text rounded-xl border border-rr-border/40  tracking-wider">
-              {risks.length} KLIEN
+              {risks.length} Klien
             </span>
           )}
         </div>
@@ -85,7 +85,7 @@ export const StatusBanners: React.FC<StatusBannersProps> = ({ risks, opportuniti
           </div>
           {opportunities.length > 0 && (
             <span className="text-[10px] font-bold px-3 py-1 bg-gg/10 text-gg-text rounded-xl border border-gg-border/40  tracking-wider">
-              TOP {opportunities.length}
+              Top {opportunities.length}
             </span>
           )}
         </div>

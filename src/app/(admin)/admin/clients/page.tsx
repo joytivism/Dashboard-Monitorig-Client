@@ -199,7 +199,7 @@ export default function ClientsAdminPage() {
               onClick={openNew}
               className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl font-bold text-sm hover:bg-accent-hover transition-all"
             >
-              <Plus className="w-4 h-4" /> TAMBAH KLIEN
+              <Plus className="w-4 h-4" /> Tambah Klien
             </button>
           </div>
         </div>
@@ -426,14 +426,14 @@ export default function ClientsAdminPage() {
                       disabled={loading}
                       className="h-12 w-full bg-rr text-white rounded-xl font-bold text-sm hover:bg-rr/90 transition-all shadow-lg shadow-rr/20 flex items-center justify-center gap-2"
                     >
-                      {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'YA, HAPUS PERMANEN'}
+                      {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Ya, Hapus Permanen'}
                     </button>
                     <button
                       onClick={() => setShowDeleteModal(false)}
                       disabled={loading}
                       className="h-12 w-full bg-surface2 text-text font-bold text-sm rounded-xl hover:bg-surface3 transition-all"
                     >
-                      BATALKAN
+                      Batalkan
                     </button>
                  </div>
               </div>

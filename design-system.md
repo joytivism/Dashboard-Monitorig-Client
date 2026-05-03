@@ -90,12 +90,12 @@ text-rr                                     ← icon stroke color
 |---|---|---|---|
 | Page title (H1) | `24px` | 700 | `text-2xl font-bold text-text tracking-tight` |
 | Section heading | `14px` | 700 | `text-sm font-bold text-text` |
-| Card label / metric title | `12px` | 600 | `text-xs font-semibold text-text3 uppercase tracking-wider` |
+| Card label / metric title | `12px` | 600 | `text-xs font-semibold text-text3 tracking-wider` |
 | Metric number (big) | `30px` | 700 | `text-3xl font-bold text-text tracking-tight` |
 | Body / table row | `14px` | 500 | `text-sm font-medium text-text` |
 | Caption / sub | `12px` | 400 | `text-xs text-text3` |
-| Micro label | `10px` | 700 | `text-[10px] font-bold uppercase tracking-wider` |
-| Section group label (sidebar) | `9px` | 900 | `text-[9px] font-black text-text4 uppercase tracking-[0.12em]` |
+| Micro label | `10px` | 700 | `text-[10px] font-bold tracking-wider` |
+| Section group label (sidebar) | `9px` | 900 | `text-[9px] font-black text-text4 tracking-[0.12em]` |
 
 ---
 
@@ -294,7 +294,7 @@ className="text-text2 hover:bg-surface2 hover:text-text rounded-xl px-3 py-2.5 t
 ```tsx
 // Header
 <tr className="border-b border-border-main bg-surface2/50">
-  <th className="py-3 text-[10px] font-black text-text4 uppercase tracking-wider pl-6">Col</th>
+  <th className="py-3 text-[10px] font-black text-text4 tracking-wider pl-6">Col</th>
 </tr>
 
 // Body rows with divider

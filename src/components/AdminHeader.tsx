@@ -148,7 +148,7 @@ export default function AdminHeader() {
                    </div>
                   {unreadCount > 0 && (
                     <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-accent text-white shadow-sm">
-                       {unreadCount} NEW
+                       {unreadCount} New
                     </span>
                   )}
                 </div>

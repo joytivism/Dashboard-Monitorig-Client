@@ -9,7 +9,7 @@ export const CH_DEF: Record<string, { l: string; stage: 'tofu' | 'mofu' | 'bofu'
 };
 
 export const STAGE_COLOR = { tofu: '#2563EB', mofu: '#D97706', bofu: '#059669' };
-export const STAGE_LABEL = { tofu: 'TOFU · Awareness', mofu: 'MOFU · Consideration', bofu: 'BOFU · Conversion' };
+export const STAGE_LABEL = { tofu: 'Tofu · Awareness', mofu: 'Mofu · Consideration', bofu: 'Bofu · Conversion' };
 
 export interface Client {
   key: string;

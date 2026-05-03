@@ -308,7 +308,7 @@ export default function DataInputPage() {
               className="flex items-center justify-center gap-2 px-10 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 min-w-[240px]"
             >
               {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-              SIMPAN SEMUA DATA
+              Simpan Semua Data
             </button>
           </div>
         </div>
