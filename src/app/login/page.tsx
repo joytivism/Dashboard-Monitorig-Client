@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { login } from '@/app/actions/auth';
 import { 
   Hexagon, Loader2, AlertCircle, Eye, EyeOff, 
-  Mail, Lock, Chrome, Facebook, Smartphone, Globe, BarChart2
+  Mail, Lock, Compass, Share2, Smartphone, Globe, BarChart2
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -124,7 +124,7 @@ export default function LoginPage() {
              </div>
              
              <div className="grid grid-cols-3 gap-4">
-                {[Chrome, Facebook, Smartphone].map((Icon, i) => (
+                {[Compass, Share2, Smartphone].map((Icon, i) => (
                    <button key={i} type="button" className="flex items-center justify-center h-12 rounded-2xl border border-border-main hover:bg-surface2 hover:border-text4 transition-all group">
                       <Icon className="w-5 h-5 text-text2 group-hover:scale-110 transition-transform" />
                    </button>
@@ -167,10 +167,10 @@ export default function LoginPage() {
 
                 {/* Orbit Icons */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-1">
-                   <Chrome className="w-6 h-6 text-[#4285F4]" />
+                   <Compass className="w-6 h-6 text-[#4285F4]" />
                 </div>
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-2">
-                   <Facebook className="w-6 h-6 text-[#1877F2]" />
+                   <Share2 className="w-6 h-6 text-[#1877F2]" />
                 </div>
                 <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-white shadow-xl border border-border-main flex items-center justify-center animate-orbit-3">
                    <Globe className="w-6 h-6 text-[#00a1a6]" />
