@@ -110,46 +110,49 @@ export default function AdminHubPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-20 animate-fade-in">
+    <div className="mx-auto flex max-w-7xl flex-col gap-10 pb-20 animate-fade-in pt-4">
       <PageIntro
+        isCard
         eyebrow="Admin Console"
-        title="Command center"
-        description="Pusat operasi untuk memantau kesehatan portofolio, progres data, dan layer AI secara terpadu."
+        title="Management Control Center"
+        description="Global operations hub for monitoring portfolio health, data ingestion progress, and AI utilization metrics."
         meta={(
-          <>
-            <Badge tone="success" style="soft">Period {curPeriod}</Badge>
-            <Badge tone="neutral" style="soft">{stats.updatedCount}/{CLIENTS.length} updated clients</Badge>
-            <Badge tone={stats.attentionClients.length > 0 ? 'warning' : 'success'} style="soft">
-              {stats.attentionClients.length} attention needed
-            </Badge>
-          </>
+          <div className="flex items-center gap-2">
+            <Badge tone="info" style="soft" className="px-3 py-1 text-[11px] font-bold">Admin Active</Badge>
+            <span className="text-[11px] font-bold text-text-quaternary uppercase tracking-widest ml-2">Session: Stable</span>
+          </div>
         )}
         actions={(
-          <div className="grid w-full gap-3 sm:min-w-[280px] sm:grid-cols-2 lg:w-auto">
-            <Card tone="muted" padding="sm" className="space-y-3">
-              <div className="ds-eyebrow">Data coverage</div>
-              <div className="flex items-end justify-between gap-3">
-                <div className="text-2xl font-semibold text-text">{stats.progress.toFixed(0)}%</div>
-                <div className="text-xs text-text3">{stats.updatedCount} klien aktif</div>
+          <div className="grid w-full gap-4 sm:min-w-[320px] sm:grid-cols-2 lg:w-auto">
+            <div className="rounded-xl border border-white/20 bg-white/10 backdrop-blur-md p-4 shadow-sm">
+              <div className="text-[10px] font-bold text-text-quaternary uppercase tracking-widest mb-2">Data Coverage</div>
+              <div className="flex items-end justify-between gap-3 mb-2">
+                <div className="text-2xl font-bold text-text-primary">{stats.progress.toFixed(0)}%</div>
+                <div className="text-[11px] font-bold text-text-tertiary">{stats.updatedCount} Clients</div>
               </div>
-              <div className="h-2 rounded-full bg-white">
-                <div className="h-full rounded-full bg-accent" style={{ width: `${stats.progress}%` }} />
+              <div className="h-1.5 w-full rounded-full bg-panel-subtle overflow-hidden">
+                <div className="h-full rounded-full bg-accent transition-all duration-1000" style={{ width: `${stats.progress}%` }} />
               </div>
-            </Card>
-            <Card tone="muted" padding="sm" className="space-y-2">
-              <div className="ds-eyebrow">AI traffic</div>
-              <div className="text-2xl font-semibold text-text">{stats.aiRequestsToday}</div>
-              <div className="text-xs text-text3">request hari ini dari total {stats.aiRequestsTotal}</div>
-            </Card>
+            </div>
+            <div className="rounded-xl border border-white/20 bg-white/10 backdrop-blur-md p-4 shadow-sm">
+              <div className="text-[10px] font-bold text-text-quaternary uppercase tracking-widest mb-2">AI Utilization</div>
+              <div className="text-2xl font-bold text-text-primary">{stats.aiRequestsToday}</div>
+              <div className="text-[11px] font-bold text-text-tertiary">Requests today</div>
+            </div>
           </div>
         )}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard title="Total Revenue" value={`Rp ${(stats.totalRev / 1e9).toFixed(1)}M`} icon={TrendingUp} trend={stats.growth} caption="Performa semua klien" tone="accent" />
-        <MetricCard title="Blended ROAS" value={`${stats.totalRoas.toFixed(2)}x`} icon={LayoutDashboard} caption="Gabungan revenue / spend" />
-        <MetricCard title="Critical Clients" value={stats.attentionClients.length} icon={AlertCircle} caption="Butuh tindakan strategis" tone={stats.attentionClients.length > 0 ? 'danger' : 'success'} />
-        <MetricCard title="AI Tokens" value={stats.aiTokens.toLocaleString('id-ID')} icon={Zap} caption="Akumulasi token seluruh request" />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[13px] font-bold text-text-tertiary uppercase tracking-widest">Administrative Metrics</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <MetricCard title="Portfolio Revenue" value={`Rp ${(stats.totalRev / 1e9).toFixed(1)}M`} icon={TrendingUp} trend={stats.growth} caption="Aggregated performance" tone="accent" />
+          <MetricCard title="System Efficiency" value={`${stats.totalRoas.toFixed(2)}x`} icon={LayoutDashboard} caption="Blended ROAS" tone="success" />
+          <MetricCard title="Critical Alerts" value={stats.attentionClients.length} icon={AlertCircle} caption="Requires intervention" tone={stats.attentionClients.length > 0 ? 'danger' : 'default'} />
+          <MetricCard title="Token Usage" value={stats.aiTokens.toLocaleString('id-ID')} icon={Zap} caption="AI Resource consumption" />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">

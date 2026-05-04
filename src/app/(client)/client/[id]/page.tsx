@@ -100,30 +100,30 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
   ];
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-20 animate-fade-in">
+    <div className="mx-auto flex max-w-7xl flex-col gap-10 pb-20 animate-fade-in pt-4">
       <PageIntro
-        eyebrow="Client Portfolio"
+        isCard
+        eyebrow={`Client Portfolio • ${client.cg}`}
         title={client.name}
-        description="Ringkasan menyeluruh untuk membaca sinyal performa, funnel, AI insight, dan aktivitas terbaru dari akun klien ini."
+        description={`Comprehensive performance deep-dive for ${client.name}. Analyzed across awareness, conversion, and strategic AI layers.`}
         meta={(
-          <>
-            <Badge tone="neutral" style="soft">{client.cg}</Badge>
-            <Badge tone="accent" style="soft">{client.ind}</Badge>
-            <Badge tone={worstClass === 'rr' || worstClass === 'or' ? 'warning' : 'success'} style="soft">
+          <div className="flex items-center gap-2">
+            <Badge tone="accent" style="soft" className="px-3 py-1 text-[11px] font-bold">{client.ind}</Badge>
+            <Badge tone={worstClass === 'rr' || worstClass === 'or' ? 'warning' : 'success'} style="soft" className="px-3 py-1 text-[11px] font-bold uppercase">
               {LM[worstClass]}
             </Badge>
-          </>
+          </div>
         )}
         actions={(
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-            <Button
-              variant="secondary"
-              leadingIcon={ChevronLeft}
+          <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
+            <button
               onClick={() => router.push(`/${searchParams.toString() ? `?${searchParams.toString()}` : ''}`)}
+              className="inline-flex items-center gap-2 rounded-lg border border-border-main bg-white/50 backdrop-blur-sm px-4 py-2.5 text-[13px] font-bold text-text-secondary hover:text-text-primary hover:border-border-alt transition-all shadow-sm"
             >
-              Kembali ke overview
-            </Button>
-            <div className="w-full sm:w-[220px]">
+              <ChevronLeft className="h-4 w-4" />
+              Back to Overview
+            </button>
+            <div className="w-full sm:w-[240px]">
               <SelectField
                 aria-label="Pilih periode"
                 icon={Calendar}
@@ -134,6 +134,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                   router.push(`?${params.toString()}`);
                 }}
                 options={PERIODS.map((period) => ({ value: period, label: PL[period] || period }))}
+                className="bg-white/50 backdrop-blur-sm shadow-sm"
               />
             </div>
           </div>
@@ -252,7 +253,7 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
             title="KPI snapshot"
             description="Snapshot rasio utama untuk melihat kualitas monetisasi dan efisiensi spend."
           />
-          <div className="grid gap-3">
+          <div className="grid gap-4">
             {efficiencyBlocks.map((metric) => {
               const positive =
                 metric.growth === null
@@ -262,20 +263,21 @@ function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
                     : metric.growth < 0;
 
               return (
-                <div key={metric.label} className="rounded-[var(--radius-md)] border border-border-main bg-surface2/70 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-micro">{metric.label}</div>
-                      <div className="mt-2 text-xl font-semibold text-text">{metric.value}</div>
-                    </div>
-                    {metric.growth !== null ? (
-                      <Badge tone={positive ? 'success' : 'danger'} style="soft">
-                        {metric.growth > 0 ? '+' : ''}
-                        {metric.growth.toFixed(1)}%
-                      </Badge>
-                    ) : null}
+                <div key={metric.label} className="group flex items-center justify-between rounded-xl border border-border-main bg-white p-5 transition-all hover:border-border-alt hover:shadow-sm">
+                  <div className="space-y-1.5">
+                    <div className="text-[10px] font-bold text-text-quaternary uppercase tracking-widest">{metric.label}</div>
+                    <div className="text-[1.25rem] font-bold text-text-primary tabular-nums group-hover:text-accent transition-colors">{metric.value}</div>
+                    <div className="text-[11px] font-medium text-text-tertiary">{metric.caption}</div>
                   </div>
-                  <div className="mt-2 text-xs text-text3">{metric.caption}</div>
+                  {metric.growth !== null ? (
+                    <div className={cn(
+                      "flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-bold tabular-nums",
+                      positive ? "bg-success-soft text-success" : "bg-danger-soft text-danger"
+                    )}>
+                      {metric.growth > 0 ? '↑' : '↓'}
+                      {Math.abs(metric.growth).toFixed(1)}%
+                    </div>
+                  ) : null}
                 </div>
               );
             })}

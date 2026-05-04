@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowDownRight, ArrowUpRight, type LucideIcon } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, ChevronRight, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MetricCardProps {
@@ -68,38 +68,54 @@ export default function MetricCard({
   const content = (
     <div
       className={cn(
-        'group flex h-full flex-col justify-between rounded-[var(--radius-lg)] border p-5 transition-colors duration-200',
-        toneClasses[resolvedTone],
-        hoverClasses[resolvedTone],
+        'group flex h-full flex-col justify-between rounded-[var(--radius-lg)] border bg-white p-5 transition-all duration-200 hover:shadow-md',
         className
       )}
     >
-      <div className="mb-6 flex items-start justify-between gap-3">
-        <div className="space-y-2">
-          <div className="ds-eyebrow">{title}</div>
-        </div>
-        <div className={cn('flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)]', iconToneClasses[resolvedTone])}>
-          <Icon className="h-5 w-5" />
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="truncate text-[13px] font-medium text-text-secondary group-hover:text-text-primary transition-colors">
+            {title}
+          </span>
+          <ChevronRight className="h-3 w-3 text-text-quaternary group-hover:text-text-secondary transition-colors" />
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="ds-kpi">{value}</div>
+      <div className="flex-1 space-y-4">
+        <div className="text-[2rem] font-semibold tracking-tight text-text-primary tabular-nums">
+          {value}
+        </div>
+        
+        {/* Decorative Status Line */}
+        <div className="relative h-1 w-full rounded-full bg-panel-subtle overflow-hidden">
+          <div 
+            className={cn(
+              "absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out",
+              resolvedTone === 'accent' ? "bg-accent w-2/3" : 
+              resolvedTone === 'success' ? "bg-success w-full" :
+              resolvedTone === 'danger' ? "bg-danger w-1/3" : "bg-text-quaternary w-1/2"
+            )}
+          />
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          {resolvedCaption ? (
+            <div className="text-[11px] font-medium text-text-tertiary truncate">
+              {resolvedCaption}
+            </div>
+          ) : <div />}
+          
           {resolvedTrend !== null ? (
             <div
               className={cn(
-                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold',
-                isUp ? 'border-gd-border/70 bg-gd-bg text-gd-text' : 'border-rr-border/70 bg-rr-bg text-rr-text'
+                'flex items-center gap-0.5 text-[11px] font-bold tabular-nums',
+                isUp ? 'text-success' : 'text-danger'
               )}
             >
-              {isUp ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
-              <span className="tabular-nums">{Math.abs(resolvedTrend).toFixed(1)}%</span>
+              {isUp ? '+' : '-'}{Math.abs(resolvedTrend).toFixed(1)}%
             </div>
           ) : null}
         </div>
-
-        {resolvedCaption ? <div className="text-label">{resolvedCaption}</div> : null}
       </div>
     </div>
   );

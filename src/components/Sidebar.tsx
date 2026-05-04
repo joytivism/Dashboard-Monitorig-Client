@@ -69,30 +69,29 @@ function SidebarContent() {
   ];
 
   const brand = (
-    <div className="flex items-center gap-3 rounded-[14px] px-3 py-2.5">
-      <div className="flex h-9 w-9 items-center justify-center rounded-[14px] bg-text text-white">
-        <Hexagon className="h-5 w-5 fill-white" />
+    <div className="flex items-center gap-3 px-1 py-1">
+      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-text text-white">
+        <Hexagon className="h-4 w-4 fill-white" />
       </div>
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold text-text">Real Advertise</div>
-        <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-text4">Monitoring Client</div>
+        <div className="truncate text-[15px] font-bold tracking-tight text-text">Joytivism</div>
       </div>
     </div>
   );
 
   const footer = (
-    <div className="space-y-3 p-2">
-      <div className="rounded-[14px] border border-border-main bg-surface2 p-3">
-        <div className="text-sm font-semibold text-text">Real Advertise</div>
-        <div className="mt-1 text-xs text-text3">Unified portfolio and performance workspace.</div>
+    <div className="space-y-2 p-1">
+      <div className="rounded-lg border border-border-main bg-surface bg-white p-3 shadow-sm">
+        <div className="text-[13px] font-semibold text-text">Real Advertise</div>
+        <div className="mt-0.5 text-[11px] text-text3 leading-normal">Unified portfolio and performance workspace.</div>
       </div>
       <form action={logout}>
         <button
           type="submit"
           onClick={closeMobileNav}
-          className="flex w-full items-center gap-2 rounded-[14px] px-3 py-2.5 text-sm font-medium text-rr-text transition-colors hover:bg-rr-bg"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium text-text3 transition-colors hover:bg-danger-soft hover:text-danger"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-3.5 w-3.5" />
           Sign out
         </button>
       </form>

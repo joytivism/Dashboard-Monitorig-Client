@@ -59,56 +59,60 @@ export default function ClientTable({
 
   return (
     <TableShell
-      eyebrow="Client table"
-      title="Semua klien"
-      description="Cari, filter, dan bandingkan performa portofolio aktif pada satu tabel yang ringkas."
-      action={<Badge tone="neutral" style="soft">Total {clients.length} klien</Badge>}
+      eyebrow="Portfolio Data"
+      title="Client Performance"
+      description="Detailed performance metrics and health status for all active clients in your portfolio."
+      action={<div className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest">Total {clients.length} Records</div>}
       toolbar={(
-        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.7fr)_180px_220px_220px]">
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
           <InputField
             aria-label="Cari klien"
-            placeholder="Cari klien atau industri..."
+            placeholder="Search by client or industry..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             icon={Search}
+            className="h-10 text-[13px]"
           />
           <SelectField
             aria-label="Filter channel group"
             value={filters.cg}
             onChange={(event) => setFilter('cg', event.target.value)}
             options={[
-              { label: 'Semua CG', value: '' },
+              { label: 'All Channels', value: '' },
               ...metadata.channelGroups.map((cg) => ({ label: cg, value: cg })),
             ]}
+            className="h-10 text-[13px]"
           />
           <SelectField
             aria-label="Filter industri"
             value={filters.ind}
             onChange={(event) => setFilter('ind', event.target.value)}
             options={[
-              { label: 'Semua industri', value: '' },
+              { label: 'All Industries', value: '' },
               ...metadata.industries.map((industry) => ({ label: industry, value: industry })),
             ]}
+            className="h-10 text-[13px]"
           />
           <SelectField
             aria-label="Filter PIC"
             value={filters.pic}
             onChange={(event) => setFilter('pic', event.target.value)}
             options={[
-              { label: 'Semua PIC', value: '' },
+              { label: 'All PICs', value: '' },
               ...metadata.pics.map((pic) => ({ label: pic, value: pic })),
             ]}
+            className="h-10 text-[13px]"
           />
         </div>
       )}
-      bodyClassName="overflow-x-auto"
+      bodyClassName="overflow-x-auto no-scrollbar"
     >
         <table className="min-w-[1000px] w-full border-collapse text-left">
           <thead>
-            <tr className="bg-surface2/70">
+            <tr className="border-b border-border-main bg-panel-muted/50">
               {[
-                { label: 'Klien', key: 'key' },
-                { label: 'Industri', key: 'ind' },
+                { label: 'Client', key: 'key' },
+                { label: 'Industry', key: 'ind' },
                 { label: 'Status', key: 'status' },
                 { label: 'Revenue', key: 'rev' },
                 { label: 'Spend', key: 'sp' },
@@ -119,23 +123,23 @@ export default function ClientTable({
                   key={header.key}
                   onClick={() => onSort(header.key)}
                   className={cn(
-                    'cursor-pointer px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-text3 transition-colors hover:text-accent',
+                    'cursor-pointer px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-text-tertiary transition-colors hover:text-text-primary',
                     index === 0 && 'pl-6',
                     index === 6 && 'pr-6 text-right',
-                    sortConfig.key === header.key && 'text-accent'
+                    sortConfig.key === header.key && 'text-text-primary'
                   )}
                 >
                   <div className={cn('flex items-center gap-1.5', index === 6 ? 'justify-end' : 'justify-start')}>
                     {header.label}
                     {sortConfig.key === header.key ? (
-                      <span className="text-[10px]">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>
+                      <span className="text-[10px]">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                     ) : null}
                   </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-main/60">
+          <tbody className="divide-y divide-border-main/40">
             {clients.length > 0 ? (
               clients.map((client) => {
                 const total = totals(CH_DEF, clients, data, client.key, currentPeriod);
@@ -146,33 +150,42 @@ export default function ClientTable({
                   <tr
                     key={client.key}
                     onClick={() => onClientClick(client.key)}
-                    className="cursor-pointer bg-white transition-colors hover:bg-surface2/55"
+                    className="group cursor-pointer bg-white transition-all hover:bg-panel-subtle/40"
                   >
-                    <td className="py-4 pl-6 pr-4">
+                    <td className="py-3 pl-6 pr-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border border-border-main bg-surface2 text-xs font-semibold text-text2">
-                          {client.name.slice(0, 2).toUpperCase()}
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-main bg-panel-muted text-[10px] font-bold text-text-tertiary group-hover:border-accent group-hover:text-accent transition-colors">
+                          {client.key.slice(0, 2).toUpperCase()}
                         </div>
                         <div>
-                          <div className="text-sm font-semibold text-text">{client.name}</div>
-                          <div className="text-xs text-text3">PIC {client.as}</div>
+                          <div className="text-[13px] font-semibold text-text-primary group-hover:text-accent transition-colors">{client.name}</div>
+                          <div className="text-[11px] font-medium text-text-quaternary uppercase tracking-tight">PIC: {client.as}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-sm text-text2">{client.ind}</td>
-                    <td className="px-4 py-4">
-                      <Badge tone={statusToneMap[status] || 'neutral'} style="soft">
-                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: dotColor }} />
-                        {STATUS_LABEL[status]}
-                      </Badge>
+                    <td className="px-4 py-3">
+                      <span className="text-[13px] font-medium text-text-secondary">{client.ind}</span>
                     </td>
-                    <td className="px-4 py-4 text-sm font-medium text-text tabular-nums">{fRp(total.rev)}</td>
-                    <td className="px-4 py-4 text-sm font-medium text-text3 tabular-nums">{fRp(total.sp)}</td>
-                    <td className="px-4 py-4 text-sm font-semibold text-text tabular-nums">{total.roas ? `${total.roas.toFixed(2)}x` : '—'}</td>
-                    <td className="py-4 pl-4 pr-6 text-right">
-                      <Badge tone="neutral" style="soft">
+                    <td className="px-4 py-3">
+                      <div className="inline-flex items-center gap-2 rounded-md border border-border-main bg-white px-2 py-1 shadow-sm">
+                        <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
+                        <span className="text-[11px] font-bold text-text-secondary uppercase tracking-tight">{STATUS_LABEL[status]}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[13px] font-bold text-text-primary tabular-nums">{fRp(total.rev)}</td>
+                    <td className="px-4 py-3 text-[13px] font-medium text-text-tertiary tabular-nums">{fRp(total.sp)}</td>
+                    <td className="px-4 py-3">
+                      <div className={cn(
+                        "text-[13px] font-bold tabular-nums",
+                        total.roas && total.roas > 2 ? "text-success" : total.roas && total.roas < 1 ? "text-danger" : "text-text-primary"
+                      )}>
+                        {total.roas ? `${total.roas.toFixed(2)}x` : '—'}
+                      </div>
+                    </td>
+                    <td className="py-3 pl-4 pr-6 text-right">
+                      <span className="inline-flex rounded-md bg-panel-subtle px-2 py-1 text-[11px] font-bold text-text-tertiary uppercase">
                         {client.cg}
-                      </Badge>
+                      </span>
                     </td>
                   </tr>
                 );
@@ -181,8 +194,8 @@ export default function ClientTable({
               <tr>
                 <td colSpan={7} className="px-6 py-16 text-center">
                   <EmptyState
-                    title="Tidak ada klien yang cocok dengan filter aktif"
-                    description="Ubah pencarian atau filter untuk menampilkan kembali daftar portofolio."
+                    title="No results found"
+                    description="Adjust your search or filters to see more results."
                     className="mx-auto max-w-md"
                   />
                 </td>

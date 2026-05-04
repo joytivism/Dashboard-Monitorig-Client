@@ -8,6 +8,7 @@ interface PageIntroProps {
   actions?: React.ReactNode;
   meta?: React.ReactNode;
   className?: string;
+  isCard?: boolean;
 }
 
 export default function PageIntro({
@@ -17,19 +18,46 @@ export default function PageIntro({
   actions,
   meta,
   className,
+  isCard = false,
 }: PageIntroProps) {
   return (
-    <section className={cn('ds-card p-4 sm:p-5 md:p-6', className)}>
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0 max-w-3xl space-y-3">
-          {eyebrow ? <div className="ds-eyebrow">{eyebrow}</div> : null}
-          <div className="space-y-2">
-            <h1 className="text-h1">{title}</h1>
-            {description ? <p className="max-w-3xl text-body">{description}</p> : null}
-          </div>
-          {meta ? <div className="flex flex-wrap items-center gap-2.5">{meta}</div> : null}
+    <section 
+      className={cn(
+        'relative overflow-hidden',
+        isCard ? 'ds-card p-6 sm:p-8 md:p-10' : 'pb-6',
+        className
+      )}
+    >
+      {isCard && (
+        <div className="absolute right-0 top-0 -mr-20 -mt-20 h-64 w-64 opacity-[0.08] pointer-events-none">
+          <div className="h-full w-full rounded-full bg-gradient-to-br from-accent via-success to-danger blur-3xl animate-pulse-soft" />
         </div>
-        {actions ? <div className="flex w-full flex-wrap items-center gap-2.5 lg:w-auto lg:justify-end">{actions}</div> : null}
+      )}
+
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0 max-w-3xl space-y-4">
+          {eyebrow ? (
+            <div className="inline-flex rounded-md bg-panel-subtle px-2 py-1 text-[11px] font-bold text-text-tertiary uppercase tracking-wider">
+              {eyebrow}
+            </div>
+          ) : null}
+          <div className="space-y-3">
+            <h1 className={cn("tracking-tight font-bold", isCard ? "text-[2.5rem]" : "text-[2rem]")}>
+              {title}
+            </h1>
+            {description ? (
+              <p className="max-w-2xl text-[15px] font-medium text-text-secondary leading-relaxed">
+                {description}
+              </p>
+            ) : null}
+          </div>
+          {meta ? <div className="flex flex-wrap items-center gap-3">{meta}</div> : null}
+        </div>
+        {actions ? (
+          <div className="flex w-full flex-wrap items-center gap-3 lg:w-auto lg:justify-end">
+            {actions}
+          </div>
+        ) : null}
       </div>
     </section>
   );

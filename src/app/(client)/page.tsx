@@ -121,20 +121,20 @@ function OverviewContent() {
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-20 animate-fade-in">
+    <div className="mx-auto flex max-w-7xl flex-col gap-10 pb-20 animate-fade-in pt-4">
       <PageIntro
-        eyebrow="Client Overview"
-        title="Performa portofolio"
-        description="Ringkasan performa seluruh klien aktif untuk membaca revenue, efisiensi, dan akun yang perlu perhatian pada periode berjalan."
+        isCard
+        eyebrow="Portfolio Analytics"
+        title="Portfolio performance overview"
+        description="Monitor revenue trends, advertising efficiency, and account health across your entire portfolio in one unified workspace."
         meta={(
-          <>
-            <Badge tone="success" style="soft">Live period</Badge>
-            <Badge tone="neutral" style="soft">{CLIENTS.length} active clients</Badge>
-            <Badge tone="warning" style="soft">{risks.length} need review</Badge>
-          </>
+          <div className="flex items-center gap-2">
+            <Badge tone="success" style="soft" className="px-3 py-1 text-[11px] font-bold">Live</Badge>
+            <span className="text-[11px] font-bold text-text-quaternary uppercase tracking-widest ml-2">System Status: Stable</span>
+          </div>
         )}
         actions={(
-          <div className="w-full sm:w-[220px]">
+          <div className="w-full sm:w-[240px]">
             <SelectField
               aria-label="Pilih periode"
               icon={Calendar}
@@ -145,16 +145,22 @@ function OverviewContent() {
                 params.set('period', event.target.value);
                 router.push(`?${params.toString()}`);
               }}
+              className="bg-white/50 backdrop-blur-sm shadow-sm"
             />
           </div>
         )}
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard title="Total Klien" value={CLIENTS.length} icon={Users} caption={`Aktif: ${CLIENTS.length}`} />
-        <MetricCard title="Total Revenue" value={fRp(tRev)} icon={DollarSign} trend={getPct(tRev, pRev)} caption={`Lalu: ${fRp(pRev)}`} tone="accent" />
-        <MetricCard title="Blended ROAS" value={aRoas ? `${aRoas.toFixed(2)}x` : '—'} icon={TrendingUp} trend={paRoas && aRoas ? ((aRoas - paRoas) / paRoas) * 100 : null} caption={`Lalu: ${paRoas ? `${paRoas.toFixed(2)}x` : '—'}`} />
-        <MetricCard title="Total Ad Spend" value={fRp(tSp)} icon={CreditCard} trend={getPct(tSp, pSp)} caption={`Lalu: ${fRp(pSp)}`} />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[13px] font-bold text-text-tertiary uppercase tracking-widest">Key Performance Indicators</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <MetricCard title="Active Clients" value={CLIENTS.length} icon={Users} caption={`Current active portfolio`} />
+          <MetricCard title="Total Revenue" value={fRp(tRev)} icon={DollarSign} trend={getPct(tRev, pRev)} caption={`vs last period (${fRp(pRev)})`} tone="accent" />
+          <MetricCard title="Blended ROAS" value={aRoas ? `${aRoas.toFixed(2)}x` : '—'} icon={TrendingUp} trend={paRoas && aRoas ? ((aRoas - paRoas) / paRoas) * 100 : null} caption={`Portfolio efficiency`} tone="success" />
+          <MetricCard title="Total Ad Spend" value={fRp(tSp)} icon={CreditCard} trend={getPct(tSp, pSp)} caption={`Marketing investment`} />
+        </div>
       </div>
 
       <StatusBanners risks={risks} opportunities={topGrowth} onClientClick={onClientClick} />
