@@ -2,138 +2,172 @@
 
 import React, { useState } from 'react';
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  type ChartData,
+  type ChartOptions,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
-  ChartOptions,
-  ChartData
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { useDashboardData } from './DataProvider';
-import { totals, gd, isAware, fV } from '@/lib/utils';
+import { fV, gd, isAware, totals } from '@/lib/utils';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface TrendChartProps {
   clientKey: string;
 }
 
-const TM = [
-  { k: 'revenue', l: 'Revenue', f: 'rp', color: '#10B981', activeClass: 'bg-gg text-white border-gg' },
-  { k: 'roas', l: 'ROAS', f: 'x', color: '#F59E0B', activeClass: 'bg-or text-white border-or' },
-  { k: 'spend', l: 'Spend', f: 'rp', color: '#F43F5E', activeClass: 'bg-rr text-white border-rr' },
-  { k: 'reach', l: 'Reach', f: 'k', color: '#0EA5E9', activeClass: 'bg-gd text-white border-gd' },
-];
+const METRICS = [
+  {
+    k: 'revenue',
+    l: 'Revenue',
+    f: 'rp',
+    color: '#ff6301',
+    activeClass: 'border-accent bg-accent-light text-accent',
+  },
+  {
+    k: 'roas',
+    l: 'ROAS',
+    f: 'x',
+    color: '#000000',
+    activeClass: 'border-text bg-text text-white',
+  },
+  {
+    k: 'spend',
+    l: 'Spend',
+    f: 'rp',
+    color: '#676762',
+    activeClass: 'border-border-alt bg-surface2 text-text',
+  },
+  {
+    k: 'reach',
+    l: 'Reach',
+    f: 'k',
+    color: '#00a1a6',
+    activeClass: 'border-gd-border bg-gd-bg text-gd-text',
+  },
+] as const;
 
 export default function TrendChart({ clientKey }: TrendChartProps) {
   const { CLIENTS, PERIODS, PL, DATA, CH_DEF } = useDashboardData();
-  const [activeMetrics, setActiveMetrics] = useState<string[]>(['spend', 'revenue', 'roas']);
+  const [activeMetrics, setActiveMetrics] = useState<Array<(typeof METRICS)[number]['k']>>(['spend', 'revenue', 'roas']);
 
-  const toggleMetric = (k: string) => {
-    if (activeMetrics.includes(k)) {
-      if (activeMetrics.length > 1) {
-        setActiveMetrics(activeMetrics.filter(m => m !== k));
+  const toggleMetric = (key: (typeof METRICS)[number]['k']) => {
+    setActiveMetrics((current) => {
+      if (current.includes(key)) {
+        return current.length > 1 ? current.filter((item) => item !== key) : current;
       }
-    } else {
-      if (activeMetrics.length < 3) {
-        setActiveMetrics([...activeMetrics, k]);
-      }
-    }
+
+      return current.length < 3 ? [...current, key] : current;
+    });
   };
 
-  const client = CLIENTS.find(x => x.key === clientKey);
+  const client = CLIENTS.find((item) => item.key === clientKey);
   if (!client) return null;
 
-  const datasets = activeMetrics.map(mk => {
-    const tm = TM.find(x => x.k === mk)!;
-    const data = PERIODS.map(p => {
-      let v = 0;
-      if (mk === 'roas') {
-        const t = totals(CH_DEF, CLIENTS, DATA, clientKey, p); v = t.roas || 0;
-      } else if (mk === 'reach') {
-        client.chs.filter(ch => isAware(CH_DEF, ch)).forEach(ch => { const d = gd(DATA, clientKey, ch, p); if (d?.reach) v += d.reach; });
+  const datasets = activeMetrics.map((metricKey) => {
+    const metric = METRICS.find((item) => item.k === metricKey)!;
+    const data = PERIODS.map((period) => {
+      let value = 0;
+
+      if (metricKey === 'roas') {
+        const totalsForPeriod = totals(CH_DEF, CLIENTS, DATA, clientKey, period);
+        value = totalsForPeriod.roas || 0;
+      } else if (metricKey === 'reach') {
+        client.chs
+          .filter((channel) => isAware(CH_DEF, channel))
+          .forEach((channel) => {
+            const entry = gd(DATA, clientKey, channel, period);
+            if (entry?.reach) value += entry.reach;
+          });
       } else {
-        client.chs.forEach(ch => {
-          const d = gd(DATA, clientKey, ch, p); if (!d) return;
-          // @ts-ignore
-          if (mk === 'spend') { if (d.sp) v += d.sp; }
-          // @ts-ignore
-          else if (!isAware(CH_DEF, ch) && d[mk]) v += d[mk];
+        client.chs.forEach((channel) => {
+          const entry = gd(DATA, clientKey, channel, period);
+          if (!entry) return;
+
+          if (metricKey === 'spend') {
+            if (entry.sp) value += entry.sp;
+          } else if (metricKey === 'revenue' && !isAware(CH_DEF, channel) && entry.rev) {
+            value += entry.rev;
+          }
         });
       }
-      return Math.round(v * 100) / 100;
+
+      return Math.round(value * 100) / 100;
     });
 
     return {
-      label: tm.l,
+      label: metric.l,
       data,
-      borderColor: tm.color,
-      backgroundColor: tm.color,
-      borderWidth: 2.5,
-      tension: 0.4,
-      pointBackgroundColor: tm.color,
-      pointBorderColor: '#FFFFFF',
-      pointBorderWidth: 2,
-      pointRadius: 6,
-      pointHoverRadius: 8,
-      yAxisID: mk === 'roas' || mk === 'reach' ? `y-${mk}` : 'y-rp',
-      format: tm.f
+      borderColor: metric.color,
+      backgroundColor: metric.color,
+      borderWidth: 2.25,
+      tension: 0.34,
+      pointBackgroundColor: metric.color,
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 1.5,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      yAxisID: metricKey === 'roas' || metricKey === 'reach' ? `y-${metricKey}` : 'y-rp',
+      format: metric.f,
     };
   });
 
   const chartData: ChartData<'line'> = {
-    labels: PERIODS.map(p => PL[p]),
+    labels: PERIODS.map((period) => PL[period]),
     datasets,
   };
 
-  // Setup multiple Y axes
-  const scales: any = {
+  const scales: NonNullable<ChartOptions<'line'>['scales']> = {
     x: {
-      grid: { display: false, drawBorder: false },
-      ticks: { color: '#9CA3AF', font: { size: 12, family: 'Inter', weight: 'medium' } }
-    }
+      grid: { display: false },
+      border: { display: false },
+      ticks: {
+        color: '#676762',
+        font: { size: 11, family: 'Inter, sans-serif', weight: 500 },
+      },
+    },
   };
 
   if (activeMetrics.includes('revenue') || activeMetrics.includes('spend')) {
     scales['y-rp'] = {
       type: 'linear',
       position: 'left',
-      grid: { color: '#F3F4F6', drawBorder: false },
+      grid: { color: '#efefec' },
       border: { display: false },
-      ticks: { 
-        color: '#9CA3AF', 
-        font: { size: 11, family: 'Inter' },
-        callback: function(value: any) {
-          return value >= 1e9 ? (Number(value) / 1e9) + 'B' : value >= 1e6 ? (Number(value) / 1e6) + 'M' : value;
-        }
-      }
+      ticks: {
+        color: '#676762',
+        font: { size: 11, family: 'Inter, sans-serif' },
+        callback(value: number | string) {
+          return Number(value) >= 1e9
+            ? `${Number(value) / 1e9}B`
+            : Number(value) >= 1e6
+              ? `${Number(value) / 1e6}M`
+              : value;
+        },
+      },
     };
   }
-  
+
   if (activeMetrics.includes('roas')) {
     scales['y-roas'] = {
       type: 'linear',
       position: activeMetrics.includes('revenue') || activeMetrics.includes('spend') ? 'right' : 'left',
-      grid: { display: false, drawBorder: false },
+      grid: { display: false },
       border: { display: false },
-      ticks: { 
-        color: '#e50000', 
-        font: { size: 11, family: 'Inter' },
-        callback: function(value: any) { return value + 'x'; }
-      }
+      ticks: {
+        color: '#000000',
+        font: { size: 11, family: 'Inter, sans-serif' },
+        callback(value: number | string) {
+          return `${value}x`;
+        },
+      },
     };
   }
 
@@ -141,13 +175,15 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
     scales['y-reach'] = {
       type: 'linear',
       position: 'right',
-      grid: { display: false, drawBorder: false },
+      grid: { display: false },
       border: { display: false },
-      ticks: { 
-        color: '#9CA3AF', 
-        font: { size: 11, family: 'Inter' },
-        callback: function(value: any) { return (Number(value) / 1000) + 'k'; }
-      }
+      ticks: {
+        color: '#00a1a6',
+        font: { size: 11, family: 'Inter, sans-serif' },
+        callback(value: number | string) {
+          return `${Number(value) / 1000}k`;
+        },
+      },
     };
   }
 
@@ -158,81 +194,79 @@ export default function TrendChart({ clientKey }: TrendChartProps) {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#111827',
-        titleColor: '#fff',
-        bodyColor: 'rgba(255,255,255,.9)',
+        backgroundColor: '#111111',
+        titleColor: '#ffffff',
+        bodyColor: 'rgba(255,255,255,0.92)',
         padding: 12,
-        cornerRadius: 8,
-        titleFont: { family: 'Inter', size: 13, weight: 'bold' },
-        bodyFont: { family: 'Inter', size: 13 },
+        cornerRadius: 10,
+        titleFont: { family: 'Inter, sans-serif', size: 12, weight: 600 },
+        bodyFont: { family: 'Inter, sans-serif', size: 12 },
         displayColors: true,
         usePointStyle: true,
         callbacks: {
-          label: (ctx) => {
-            const format = (ctx.dataset as any).format;
-            return ` ${ctx.dataset.label}: ${fV(ctx.raw as number, format)}`;
-          }
-        }
-      }
+          label: (context) => {
+            const format = (context.dataset as (typeof datasets)[number]).format;
+            return ` ${context.dataset.label}: ${fV(context.raw as number, format)}`;
+          },
+        },
+      },
     },
-    scales
+    scales,
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-bold text-text flex items-center gap-2">
-          Tren Periode 
-          <span className="text-text3 font-medium opacity-60">· pilih maks. 3 metrik</span>
-        </h3>
-        <div className="text-[10px] font-bold text-text4  tracking-wider bg-surface2 px-2.5 py-1 rounded-lg border border-border-main/50">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <div className="text-sm font-semibold text-text">Tren periode</div>
+          <div className="text-xs text-text3">Pilih maksimum 3 metrik untuk dibandingkan pada grafik.</div>
+        </div>
+        <div className="inline-flex w-fit items-center rounded-full border border-border-main bg-surface2 px-3 py-1 text-[11px] font-semibold text-text3">
           {activeMetrics.length}/3 aktif
         </div>
       </div>
 
-      {/* Pill Selectors */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        {TM.map(m => {
-          const isActive = activeMetrics.includes(m.k);
+      <div className="flex flex-wrap items-center gap-2">
+        {METRICS.map((metric) => {
+          const isActive = activeMetrics.includes(metric.k);
           const isDisabled = !isActive && activeMetrics.length >= 3;
+
           return (
             <button
-              key={m.k}
-              onClick={() => toggleMetric(m.k)}
+              key={metric.k}
+              onClick={() => toggleMetric(metric.k)}
               disabled={isDisabled}
-              className={`
-                flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 border
-                ${isActive 
-                  ? m.activeClass 
-                  : isDisabled 
-                    ? 'border-border-main text-text3/50 bg-surface3 cursor-not-allowed' 
-                    : 'border-border-alt text-text2 bg-white hover:bg-surface2 hover:border-border-main'}
-              `}
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${
+                isActive
+                  ? metric.activeClass
+                  : isDisabled
+                    ? 'cursor-not-allowed border-border-main bg-surface3 text-text4'
+                    : 'border-border-main bg-white text-text2 hover:border-border-alt hover:bg-surface2'
+              }`}
             >
-              {!isActive && <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: m.color }}></div>}
-              {m.l}
+              {!isActive ? <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: metric.color }} /> : null}
+              {metric.l}
             </button>
           );
         })}
       </div>
 
-      {/* Custom Legend */}
-      <div className="flex flex-wrap items-center gap-4 mb-6 px-1">
-        {activeMetrics.map(mk => {
-          const tm = TM.find(x => x.k === mk)!;
+      <div className="flex flex-wrap items-center gap-4">
+        {activeMetrics.map((metricKey) => {
+          const metric = METRICS.find((item) => item.k === metricKey)!;
           return (
-            <div key={mk} className="flex items-center gap-2">
-              <div className="w-4 h-0.5" style={{ backgroundColor: tm.color }}></div>
-              <span className="text-[11px] font-bold text-text2  tracking-wider">{tm.l}</span>
+            <div key={metricKey} className="flex items-center gap-2">
+              <span className="h-[2px] w-5 rounded-full" style={{ backgroundColor: metric.color }} />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">{metric.l}</span>
             </div>
           );
         })}
       </div>
-      
-      {/* Chart Area */}
-      <div className="flex-1 relative min-h-[300px]">
-        <Line data={chartData} options={options} />
+
+      <div className="rounded-[var(--radius-md)] border border-border-main bg-surface2/20 p-4">
+        <div className="relative min-h-[320px]">
+          <Line data={chartData} options={options} />
+        </div>
       </div>
     </div>
   );

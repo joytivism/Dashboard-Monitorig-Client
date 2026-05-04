@@ -1,79 +1,87 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { 
-  Settings, Save, Key, 
-  Cpu, RotateCcw, LayoutGrid, ChevronRight,
-  Bot, Sparkles, MessageSquare, CheckCircle2, AlertCircle
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Bot, Cpu, Key, LayoutGrid, MessageSquare, RotateCcw, Save, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import PageIntro from '@/components/layout/PageIntro';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import InputField from '@/components/ui/InputField';
+import LoadingState from '@/components/ui/LoadingState';
+import SectionHeader from '@/components/ui/SectionHeader';
+import StateFrame from '@/components/ui/StateFrame';
+import Toast from '@/components/ui/Toast';
+import useTimedToast from '@/components/ui/useTimedToast';
+import { supabase } from '@/lib/supabase';
 
-interface Setting {
-  key: string;
-  value: string;
-  description: string;
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Gagal memproses pengaturan.';
 }
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [settings, setSettings] = useState<Setting[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const { toast, setToast, showToast } = useTimedToast();
 
   const [apiKey, setApiKey] = useState('');
   const [prompt, setPrompt] = useState('');
   const [currentModel, setCurrentModel] = useState('');
 
-  const fetchSettings = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.from('system_settings').select('*');
-      if (error) throw error;
-      
-      if (data) {
-        setSettings(data);
-        setApiKey(data.find(s => s.key === 'openrouter_key')?.value || '');
-        setPrompt(data.find(s => s.key === 'ai_prompt')?.value || '');
-        setCurrentModel(data.find(s => s.key === 'ai_model')?.value || 'Not set');
+  useEffect(() => {
+    let active = true;
+
+    async function loadSettings() {
+      try {
+        const { data, error } = await supabase.from('system_settings').select('*');
+        if (error) throw error;
+        if (!active || !data) return;
+
+        setApiKey(data.find((item) => item.key === 'openrouter_key')?.value || '');
+        setPrompt(data.find((item) => item.key === 'ai_prompt')?.value || '');
+        setCurrentModel(data.find((item) => item.key === 'ai_model')?.value || 'Not set');
+      } catch (error) {
+        if (active) {
+          setToast({ type: 'error', text: getErrorMessage(error) });
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal memuat pengaturan.' });
-    } finally {
-      setLoading(false);
     }
-  }, []);
 
-  useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+    void loadSettings();
 
-  useEffect(() => {
-    if (toast) {
-      const t = setTimeout(() => setToast(null), 4000);
-      return () => clearTimeout(t);
-    }
-  }, [toast]);
+    return () => {
+      active = false;
+    };
+  }, [setToast]);
 
   async function handleSave() {
     setSaving(true);
+
     try {
       const updates = [
         { key: 'openrouter_key', value: apiKey },
         { key: 'ai_prompt', value: prompt },
-        { key: 'ai_model', value: currentModel }
+        { key: 'ai_model', value: currentModel },
       ];
 
       for (const update of updates) {
         await supabase.from('system_settings').upsert(update, { onConflict: 'key' });
       }
 
-      setToast({ type: 'success', text: 'Pengaturan berhasil diperbarui!' });
+      showToast('success', 'Pengaturan berhasil diperbarui!');
       router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menyimpan pengaturan.' });
+    } catch (error) {
+      showToast('error', getErrorMessage(error));
     } finally {
       setSaving(false);
     }
@@ -81,154 +89,136 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
-        <Settings className="w-10 h-10 text-text4 mb-4" />
-        <p className="text-xs font-bold text-text3  tracking-wider">Memuat pengaturan...</p>
+      <div className="mx-auto max-w-7xl pb-20">
+        <LoadingState
+          title="Memuat pengaturan"
+          description="Konfigurasi AI dan API sedang diambil dari sistem."
+          className="min-h-[320px]"
+        />
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-10 animate-fade-in pb-20">
-      {/* Toast Notification */}
+    <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-20 animate-fade-in">
       <Toast toast={toast} />
 
-      {/* ── Header Section ── */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-        <div className="flex items-start gap-4">
-           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm shrink-0 mt-0.5">
-              <Cpu className="w-5 h-5" />
-           </div>
-           <div>
-              <h1 className="text-2xl font-bold text-text tracking-tight leading-tight">Pengaturan Sistem</h1>
-              <p className="text-sm font-medium text-text3 mt-0.5">Konfigurasi integrasi AI dan API Key dashboard.</p>
-           </div>
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex items-center justify-center gap-2 px-8 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 min-w-[200px]"
-        >
-          {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-          SIMPAN PERUBAHAN
-        </button>
-      </div>
+      <PageIntro
+        eyebrow="Admin Console"
+        title="Pengaturan Sistem"
+        description="Konfigurasi integrasi AI, model aktif, dan prompt strategi dashboard dari satu panel yang lebih konsisten."
+        meta={(
+          <>
+            <Badge tone="neutral" style="soft">AI configuration</Badge>
+            <Badge tone="accent" style="soft">{currentModel || 'Model belum diset'}</Badge>
+          </>
+        )}
+        actions={(
+          <Button variant="primary" size="lg" leadingIcon={Save} onClick={handleSave} loading={saving}>
+            Simpan perubahan
+          </Button>
+        )}
+      />
 
-      {/* ── Main Configuration ── */}
-      <div className="grid grid-cols-1 gap-8">
-        
-        {/* Channel Management Card */}
-        <Link 
-          href="/admin/settings/channels"
-          className="group bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md hover:border-accent/30 transition-all flex items-center justify-between p-8"
-        >
-          <div className="flex items-center gap-6">
-            <div className="w-12 h-12 rounded-2xl bg-surface2 text-text flex items-center justify-center group-hover:bg-accent group-hover:text-white transition-all">
-              <LayoutGrid className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-text group-hover:text-accent transition-colors">Manajemen Definisi Channel</h2>
-              <p className="text-sm font-medium text-text3 mt-0.5">Kelola tipe channel (Awareness/Conversion) dan tahap funnel TOFU/MOFU/BOFU.</p>
-            </div>
+      <Link
+        href="/admin/settings/channels"
+        className="flex items-center justify-between gap-4 rounded-[var(--radius-lg)] border border-border-main bg-white px-6 py-5 shadow-[var(--shadow-card)] transition-colors hover:border-border-alt hover:bg-surface2/35"
+      >
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-border-main bg-surface2 text-text2">
+            <LayoutGrid className="h-5 w-5" />
           </div>
-          <div className="w-10 h-10 rounded-full bg-surface2 flex items-center justify-center text-text4 group-hover:translate-x-1 transition-all">
-            <ChevronRight className="w-5 h-5" />
-          </div>
-        </Link>
-
-        {/* API Configuration Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div className="px-6 py-5 border-b border-border-main flex items-center gap-3 bg-surface2/50">
-            <Key className="w-4 h-4 text-text3" />
-            <h2 className="text-sm font-bold text-text">Konfigurasi API</h2>
-          </div>
-          <div className="p-8">
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3  tracking-wider px-1">OpenRouter API Key</label>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-or-v1-..."
-                className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent transition-all"
-              />
-            </div>
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-text">Manajemen Definisi Channel</div>
+            <div className="text-sm text-text3">Kelola stage funnel dan type setiap channel dari halaman konfigurasi khusus.</div>
           </div>
         </div>
+        <Badge tone="neutral" style="soft">Open</Badge>
+      </Link>
 
-        {/* AI Model Management Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface2/50">
-            <div className="flex items-center gap-3">
-              <Bot className="w-4 h-4 text-text3" />
-              <h2 className="text-sm font-bold text-text">Model AI (LLM)</h2>
-            </div>
-            <button onClick={() => setCurrentModel('')} className="text-xs font-bold text-text3 hover:text-text">
-              <RotateCcw className="w-3 h-3" />
-            </button>
-          </div>
-          <div className="p-8">
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3  tracking-wider px-1">Model ID (OpenRouter)</label>
-              <input
-                type="text"
-                value={currentModel}
-                onChange={(e) => setCurrentModel(e.target.value)}
-                placeholder="google/gemini-pro-1.5..."
-                className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-mono font-bold text-text focus:outline-none focus:border-accent transition-all"
-              />
-            </div>
-          </div>
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="grid gap-5">
+          <Card className="space-y-5">
+            <SectionHeader
+              eyebrow="API configuration"
+              title="OpenRouter access"
+              description="Masukkan API key yang dipakai dashboard untuk memanggil layanan model AI."
+              icon={Key}
+            />
+            <InputField
+              label="OpenRouter API Key"
+              type="password"
+              value={apiKey}
+              onChange={(event) => setApiKey(event.target.value)}
+              placeholder="sk-or-v1-..."
+              inputClassName="font-mono"
+            />
+          </Card>
+
+          <Card className="space-y-5">
+            <SectionHeader
+              eyebrow="Model management"
+              title="Model AI aktif"
+              description="Tentukan model OpenRouter yang dipakai untuk analisis AI pada dashboard."
+              icon={Bot}
+              action={
+                <button onClick={() => setCurrentModel('')} className="btn-icon h-9 w-9" aria-label="Reset model">
+                  <RotateCcw className="h-4 w-4" />
+                </button>
+              }
+            />
+            <InputField
+              label="Model ID"
+              type="text"
+              value={currentModel}
+              onChange={(event) => setCurrentModel(event.target.value)}
+              placeholder="google/gemini-pro-1.5..."
+              icon={Cpu}
+              inputClassName="font-mono"
+            />
+          </Card>
         </div>
 
-        {/* AI Prompt Card */}
-        <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface2/50">
-            <div className="flex items-center gap-3">
-              <MessageSquare className="w-4 h-4 text-text3" />
-              <h2 className="text-sm font-bold text-text">AI Strategy Prompt</h2>
-            </div>
-            <Sparkles className="w-4 h-4 text-gd-text" />
-          </div>
-          <div className="p-8 space-y-6">
-            <div className="p-4 rounded-xl bg-surface2 border border-border-main flex flex-wrap gap-2">
-              {['{clientName}', '{spend}', '{revenue}', '{roas}', '{growth}', '{status}'].map(tag => (
-                <code key={tag} className="text-[10px] bg-white px-2 py-1 rounded border border-border-main text-accent font-bold">
+        <Card className="space-y-5">
+          <SectionHeader
+            eyebrow="AI strategy prompt"
+            title="Prompt konfigurasi"
+            description="Prompt ini dipakai untuk membentuk ringkasan strategi dan rekomendasi tindakan AI."
+            icon={MessageSquare}
+            action={<Sparkles className="h-4 w-4 text-gd-text" />}
+          />
+
+          <div className="rounded-[var(--radius-md)] border border-border-main bg-surface2/70 p-4">
+            <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Available variables</div>
+            <div className="flex flex-wrap gap-2">
+              {['{clientName}', '{spend}', '{revenue}', '{roas}', '{growth}', '{status}'].map((tag) => (
+                <code key={tag} className="rounded-full border border-accent/15 bg-white px-2.5 py-1 text-[11px] font-semibold text-accent">
                   {tag}
                 </code>
               ))}
             </div>
+          </div>
 
+          <div className="space-y-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">Prompt</label>
             <textarea
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              onChange={(event) => setPrompt(event.target.value)}
               rows={12}
-              className="w-full p-5 rounded-xl border border-border-main bg-surface2 text-sm font-medium leading-relaxed text-text focus:outline-none focus:border-accent transition-all"
+              className="min-h-[280px] w-full rounded-[var(--radius-md)] border border-border-main bg-white px-4 py-3 text-sm font-medium leading-6 text-text outline-none transition-colors placeholder:text-text4 focus:border-accent focus:shadow-[var(--focus-ring)]"
               placeholder="Tulis prompt analisis di sini..."
             />
-            
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-rr-bg/30 border border-rr-border/50">
-              <AlertCircle className="w-4 h-4 text-rr-text shrink-0 mt-0.5" />
-              <p className="text-xs text-rr-text font-medium leading-relaxed">
-                PENTING: Pastikan instruksi format JSON tetap ada di dalam prompt agar analisis AI dapat diproses oleh sistem.
-              </p>
-            </div>
           </div>
-        </div>
 
+          <StateFrame
+            title="Pastikan format output tetap konsisten"
+            description="Pastikan instruksi format JSON tetap ada di dalam prompt agar analisis AI dapat diproses oleh sistem."
+            tone="danger"
+            align="left"
+            size="sm"
+          />
+        </Card>
       </div>
-    </div>
-  );
-}
-
-function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
-  if (!toast) return null;
-  return (
-    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
-      toast.type === 'success' ? 'bg-white border-green-200 text-green-700' : 'bg-white border-red-200 text-red-600'
-    }`}>
-      {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
-      {toast.text}
     </div>
   );
 }

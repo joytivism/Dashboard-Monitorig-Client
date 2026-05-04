@@ -3,9 +3,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AlertCircle, Minus, RefreshCw, Sparkles, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import { generateAISummary } from '@/app/actions/ai';
+import SectionHeader from '@/components/ui/SectionHeader';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
+import ErrorState from '@/components/ui/ErrorState';
+import LoadingState from '@/components/ui/LoadingState';
 import { cn } from '@/lib/utils';
 
 interface AISummaryProps {
@@ -100,70 +104,64 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
   return (
     <Card className="overflow-hidden p-0">
       <div className="border-b border-border-main px-6 py-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-text text-white">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="ds-eyebrow">AI Strategy Layer</div>
-              <h3 className="mt-1 text-h4">AI strategy insights</h3>
-              <p className="mt-2 text-sm text-text3">Ringkasan performa, konteks strategis, dan rekomendasi tindakan dari data periode aktif.</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {data && !loading ? (
-              <Badge tone={config.tone} style="soft">
-                <StatusIcon className="h-3.5 w-3.5" />
-                {config.label}
-              </Badge>
-            ) : null}
-            {data ? (
-              <button
-                onClick={() => fetchSummary(true)}
-                disabled={loading}
-                className="btn-icon disabled:opacity-50"
-                title="Re-analyze Data"
-              >
-                <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
-              </button>
-            ) : null}
-          </div>
-        </div>
+        <SectionHeader
+          eyebrow="AI strategy layer"
+          title="AI strategy insights"
+          description="Ringkasan performa, konteks strategis, dan rekomendasi tindakan dari data periode aktif."
+          icon={Sparkles}
+          tone="neutral"
+          action={
+            <>
+              {data && !loading ? (
+                <Badge tone={config.tone} style="soft">
+                  <StatusIcon className="h-3.5 w-3.5" />
+                  {config.label}
+                </Badge>
+              ) : null}
+              {data ? (
+                <button
+                  onClick={() => fetchSummary(true)}
+                  disabled={loading}
+                  className="btn-icon h-9 w-9 disabled:opacity-50"
+                  title="Re-analyze data"
+                >
+                  <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
+                </button>
+              ) : null}
+            </>
+          }
+        />
       </div>
 
       <div className="p-6">
         {loading ? (
-          <div className="space-y-5">
-            <div className="space-y-3">
-              <div className="ds-skeleton h-4 w-full" />
-              <div className="ds-skeleton h-4 w-[78%]" />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="ds-skeleton h-24" />
-              <div className="ds-skeleton h-24" />
-            </div>
-          </div>
+          <LoadingState
+            title="Menjalankan analisis AI"
+            description="Sistem sedang membaca metrik periode aktif dan menyusun ringkasan strategis."
+            className="py-10"
+          />
         ) : error ? (
-          <div className="flex items-center gap-4 rounded-[22px] border border-rr-border bg-rr-bg/70 p-4 text-sm font-medium text-rr-text">
-            <AlertCircle className="h-5 w-5 shrink-0" />
-            <span>{error}</span>
-            <Button variant="danger" size="sm" className="ml-auto" onClick={() => fetchSummary(true)}>
-              Coba lagi
-            </Button>
-          </div>
+          <ErrorState
+            title="Analisis AI gagal dimuat"
+            description={error}
+            action={(
+              <Button variant="danger" size="sm" onClick={() => fetchSummary(true)}>
+                Coba lagi
+              </Button>
+            )}
+            className="py-6"
+          />
         ) : data ? (
           <div className="space-y-6 animate-fade-in">
-            <div className="rounded-[24px] border border-border-main bg-surface2 p-5">
+            <div className="rounded-[var(--radius-md)] border border-border-main bg-surface2/70 p-5">
               <div className="ds-eyebrow mb-3">Summary</div>
               <p className="text-base font-medium leading-relaxed text-text">{data.summary}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               {data.actions.map((action, index) => (
-                <div key={index} className="rounded-[24px] border border-border-main bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-accent/20 hover:shadow-sm">
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-light text-accent">
+                <div key={index} className="rounded-[var(--radius-md)] border border-border-main bg-white p-5 transition-colors hover:border-border-alt hover:bg-surface2/30">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border border-accent/15 bg-accent-light text-accent">
                     <Zap className="h-4 w-4" />
                   </div>
                   <div className="text-micro">Action recommendation</div>
@@ -173,18 +171,17 @@ export default function AISummary({ clientName, metrics }: AISummaryProps) {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center py-10 text-center animate-fade-in">
-            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-[28px] bg-accent-light text-accent">
-              <Sparkles className="h-8 w-8" />
-            </div>
-            <h4 className="text-h4 mb-2">Buka wawasan strategis</h4>
-            <p className="mb-8 max-w-md text-body">
-              Jalankan analisis AI untuk mendapatkan ringkasan performa otomatis dan daftar tindakan prioritas.
-            </p>
-            <Button variant="primary" size="lg" leadingIcon={Zap} onClick={() => fetchSummary()}>
-              Mulai analisis AI
-            </Button>
-          </div>
+          <EmptyState
+            title="Buka wawasan strategis"
+            description="Jalankan analisis AI untuk mendapatkan ringkasan performa otomatis dan daftar tindakan prioritas."
+            action={(
+              <Button variant="primary" size="lg" leadingIcon={Zap} onClick={() => fetchSummary()}>
+                Mulai analisis AI
+              </Button>
+            )}
+            tone="accent"
+            className="py-10 animate-fade-in"
+          />
         )}
       </div>
     </Card>

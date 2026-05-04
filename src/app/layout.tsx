@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { DataProvider } from "@/components/DataProvider";
 import { getDashboardData } from "@/lib/fetch";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: "Real Advertise — Command Center",
@@ -26,7 +20,6 @@ export default async function RootLayout({
   return (
     <html
       lang="id"
-      className={inter.variable}
     >
       <body className="min-h-screen bg-bg text-text">
         <DataProvider value={dashboardData}>

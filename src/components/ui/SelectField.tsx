@@ -30,21 +30,22 @@ export default function SelectField({
   const selectId = id || props.name;
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('min-w-0 space-y-2', className)}>
       {label ? (
         <label htmlFor={selectId} className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text3">
           {label}
         </label>
       ) : null}
-      <div className="relative">
+      <div className="relative min-w-0">
         {Icon ? <Icon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text4" /> : null}
         <select
           id={selectId}
+          aria-invalid={Boolean(error)}
           className={cn(
             'ds-select appearance-none',
-            Icon ? 'pl-11' : 'pl-4',
+            Icon ? 'pl-11' : 'pl-3.5',
             'pr-11',
-            error && 'border-rr-border bg-rr-bg/40 text-rr-text',
+            error && 'border-rr-border bg-rr-bg/60 text-rr-text',
             selectClassName
           )}
           {...props}

@@ -7,15 +7,15 @@ type CardPadding = 'sm' | 'md' | 'lg';
 const toneClasses: Record<CardTone, string> = {
   default: 'bg-white border-border-main',
   muted: 'bg-surface2 border-border-main',
-  accent: 'bg-white border-accent/15',
-  danger: 'bg-rr-bg/55 border-rr-border/70',
-  success: 'bg-gg-bg/55 border-gg-border/70',
+  accent: 'bg-white border-accent/20',
+  danger: 'bg-rr-bg/60 border-rr-border/70',
+  success: 'bg-gd-bg/55 border-gd-border/75',
 };
 
 const paddingClasses: Record<CardPadding, string> = {
   sm: 'p-4',
-  md: 'p-6',
-  lg: 'p-8',
+  md: 'p-4 sm:p-5',
+  lg: 'p-5 sm:p-6',
 };
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {

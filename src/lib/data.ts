@@ -10,7 +10,7 @@ export const STATUS_BG: Record<string, string> = {
 };
 
 export const STATUS_DOT: Record<string, string> = {
-  rr: '#DC2626', or: '#EA580C', yy: '#D97706', nn: '#9CA3AF', gg: '#059669', gd: '#0284C7',
+  rr: '#e50000', or: '#ff6301', yy: '#ff6301', nn: '#7c7c76', gg: '#00a1a6', gd: '#00a1a6',
 };
 
 export const STATUS_LABEL: Record<string, string> = {

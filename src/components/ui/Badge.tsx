@@ -7,33 +7,33 @@ type BadgeStyle = 'solid' | 'soft' | 'outline';
 const toneClasses: Record<BadgeTone, Record<BadgeStyle, string>> = {
   neutral: {
     solid: 'bg-text text-white border border-text',
-    soft: 'bg-surface2 text-text2 border border-border-main/70',
-    outline: 'bg-transparent text-text2 border border-border-main',
+    soft: 'bg-surface2 text-text2 border border-border-main',
+    outline: 'bg-white text-text2 border border-border-main',
   },
   accent: {
     solid: 'bg-accent text-white border border-accent',
-    soft: 'bg-accent-light text-accent border border-accent/10',
-    outline: 'bg-transparent text-accent border border-accent/30',
+    soft: 'bg-accent-light text-accent border border-accent/15',
+    outline: 'bg-white text-accent border border-accent/20',
   },
   success: {
-    solid: 'bg-gg text-white border border-gg',
-    soft: 'bg-gg-bg text-gg-text border border-gg-border/70',
-    outline: 'bg-transparent text-gg-text border border-gg-border',
+    solid: 'bg-gd text-white border border-gd',
+    soft: 'bg-gd-bg text-gd-text border border-gd-border/70',
+    outline: 'bg-white text-gd-text border border-gd-border',
   },
   warning: {
-    solid: 'bg-yy text-white border border-yy',
-    soft: 'bg-yy-bg text-yy-text border border-yy-border/70',
-    outline: 'bg-transparent text-yy-text border border-yy-border',
+    solid: 'bg-accent text-white border border-accent',
+    soft: 'bg-or-bg text-or-text border border-or-border/70',
+    outline: 'bg-white text-or-text border border-or-border',
   },
   danger: {
     solid: 'bg-rr text-white border border-rr',
     soft: 'bg-rr-bg text-rr-text border border-rr-border/70',
-    outline: 'bg-transparent text-rr-text border border-rr-border',
+    outline: 'bg-white text-rr-text border border-rr-border',
   },
   info: {
     solid: 'bg-gd text-white border border-gd',
     soft: 'bg-gd-bg text-gd-text border border-gd-border/70',
-    outline: 'bg-transparent text-gd-text border border-gd-border',
+    outline: 'bg-white text-gd-text border border-gd-border',
   },
 };
 
@@ -51,7 +51,7 @@ export default function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold whitespace-nowrap',
+        'inline-flex max-w-full items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap',
         toneClasses[tone][style],
         className
       )}

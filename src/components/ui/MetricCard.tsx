@@ -21,15 +21,22 @@ type MetricCardTone = NonNullable<MetricCardProps['tone']>;
 
 const toneClasses: Record<MetricCardTone, string> = {
   default: 'bg-white border-border-main',
-  accent: 'bg-white border-accent/15',
-  success: 'bg-white border-gg-border/60',
+  accent: 'bg-white border-accent/20',
+  success: 'bg-white border-gd-border/70',
   danger: 'bg-white border-rr-border/60',
+};
+
+const hoverClasses: Record<MetricCardTone, string> = {
+  default: 'hover:border-border-alt',
+  accent: 'hover:border-accent/30',
+  success: 'hover:border-gd-border',
+  danger: 'hover:border-rr-border',
 };
 
 const iconToneClasses: Record<MetricCardTone, string> = {
   default: 'bg-surface2 text-text2 border border-border-main/70',
-  accent: 'bg-accent text-white border border-accent shadow-[0_12px_24px_rgba(255,106,26,0.18)]',
-  success: 'bg-gg-bg text-gg-text border border-gg-border/70',
+  accent: 'bg-accent-light text-accent border border-accent/15',
+  success: 'bg-gd-bg text-gd-text border border-gd-border/70',
   danger: 'bg-rr-bg text-rr-text border border-rr-border/70',
 };
 
@@ -61,28 +68,29 @@ export default function MetricCard({
   const content = (
     <div
       className={cn(
-        'group flex h-full flex-col justify-between rounded-[var(--radius-lg)] border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-popover)]',
+        'group flex h-full flex-col justify-between rounded-[var(--radius-lg)] border p-5 transition-colors duration-200',
         toneClasses[resolvedTone],
+        hoverClasses[resolvedTone],
         className
       )}
     >
-      <div className="mb-8 flex items-start justify-between gap-3">
+      <div className="mb-6 flex items-start justify-between gap-3">
         <div className="space-y-2">
           <div className="ds-eyebrow">{title}</div>
         </div>
-        <div className={cn('flex h-11 w-11 items-center justify-center rounded-2xl transition-transform group-hover:scale-105', iconToneClasses[resolvedTone])}>
+        <div className={cn('flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)]', iconToneClasses[resolvedTone])}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="ds-kpi">{value}</div>
           {resolvedTrend !== null ? (
             <div
               className={cn(
-                'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold',
-                isUp ? 'bg-gg-bg text-gg-text' : 'bg-rr-bg text-rr-text'
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold',
+                isUp ? 'border-gd-border/70 bg-gd-bg text-gd-text' : 'border-rr-border/70 bg-rr-bg text-rr-text'
               )}
             >
               {isUp ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}

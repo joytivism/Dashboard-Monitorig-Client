@@ -2,9 +2,10 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { useDashboardData } from '@/components/DataProvider';
 import Badge from '@/components/ui/Badge';
-import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 import InputField from '@/components/ui/InputField';
 import SelectField from '@/components/ui/SelectField';
+import TableShell from '@/components/ui/TableShell';
 import { STATUS_DOT, STATUS_LABEL, type Client, type DataEntry } from '@/lib/data';
 import { clientWorst, cn, fRp, totals } from '@/lib/utils';
 
@@ -57,18 +58,12 @@ export default function ClientTable({
   const { CH_DEF } = useDashboardData();
 
   return (
-    <Card className="overflow-hidden p-0">
-      <div className="flex flex-col gap-5 border-b border-border-main px-6 py-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="ds-eyebrow">Client Table</div>
-            <h2 className="mt-1 text-h4">Semua klien</h2>
-          </div>
-          <Badge tone="neutral" style="soft">
-            Total {clients.length} klien
-          </Badge>
-        </div>
-
+    <TableShell
+      eyebrow="Client table"
+      title="Semua klien"
+      description="Cari, filter, dan bandingkan performa portofolio aktif pada satu tabel yang ringkas."
+      action={<Badge tone="neutral" style="soft">Total {clients.length} klien</Badge>}
+      toolbar={(
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.7fr)_180px_220px_220px]">
           <InputField
             aria-label="Cari klien"
@@ -105,9 +100,9 @@ export default function ClientTable({
             ]}
           />
         </div>
-      </div>
-
-      <div className="overflow-x-auto">
+      )}
+      bodyClassName="overflow-x-auto"
+    >
         <table className="min-w-[1000px] w-full border-collapse text-left">
           <thead>
             <tr className="bg-surface2/70">
@@ -141,49 +136,60 @@ export default function ClientTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-border-main/60">
-            {clients.map((client) => {
-              const total = totals(CH_DEF, clients, data, client.key, currentPeriod);
-              const status = clientWorst(CH_DEF, clients, data, periods, client.key, currentPeriod);
-              const dotColor = STATUS_DOT[status] || STATUS_DOT.nn;
+            {clients.length > 0 ? (
+              clients.map((client) => {
+                const total = totals(CH_DEF, clients, data, client.key, currentPeriod);
+                const status = clientWorst(CH_DEF, clients, data, periods, client.key, currentPeriod);
+                const dotColor = STATUS_DOT[status] || STATUS_DOT.nn;
 
-              return (
-                <tr
-                  key={client.key}
-                  onClick={() => onClientClick(client.key)}
-                  className="cursor-pointer bg-white transition-colors hover:bg-surface2/70"
-                >
-                  <td className="pl-6 pr-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface2 text-xs font-semibold text-text2">
-                        {client.name.slice(0, 2).toUpperCase()}
+                return (
+                  <tr
+                    key={client.key}
+                    onClick={() => onClientClick(client.key)}
+                    className="cursor-pointer bg-white transition-colors hover:bg-surface2/55"
+                  >
+                    <td className="py-4 pl-6 pr-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border border-border-main bg-surface2 text-xs font-semibold text-text2">
+                          {client.name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-text">{client.name}</div>
+                          <div className="text-xs text-text3">PIC {client.as}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-sm font-semibold text-text">{client.name}</div>
-                        <div className="text-xs text-text3">PIC {client.as}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-text2">{client.ind}</td>
-                  <td className="px-4 py-4">
-                    <Badge tone={statusToneMap[status] || 'neutral'} style="soft">
-                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: dotColor }} />
-                      {STATUS_LABEL[status]}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-4 text-sm font-medium text-text tabular-nums">{fRp(total.rev)}</td>
-                  <td className="px-4 py-4 text-sm font-medium text-text3 tabular-nums">{fRp(total.sp)}</td>
-                  <td className="px-4 py-4 text-sm font-semibold text-text tabular-nums">{total.roas ? `${total.roas.toFixed(2)}x` : '—'}</td>
-                  <td className="pr-6 pl-4 py-4 text-right">
-                    <Badge tone="neutral" style="soft">
-                      {client.cg}
-                    </Badge>
-                  </td>
-                </tr>
-              );
-            })}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-text2">{client.ind}</td>
+                    <td className="px-4 py-4">
+                      <Badge tone={statusToneMap[status] || 'neutral'} style="soft">
+                        <span className="h-1.5 w-1.5 rounded-full" style={{ background: dotColor }} />
+                        {STATUS_LABEL[status]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-4 text-sm font-medium text-text tabular-nums">{fRp(total.rev)}</td>
+                    <td className="px-4 py-4 text-sm font-medium text-text3 tabular-nums">{fRp(total.sp)}</td>
+                    <td className="px-4 py-4 text-sm font-semibold text-text tabular-nums">{total.roas ? `${total.roas.toFixed(2)}x` : '—'}</td>
+                    <td className="py-4 pl-4 pr-6 text-right">
+                      <Badge tone="neutral" style="soft">
+                        {client.cg}
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={7} className="px-6 py-16 text-center">
+                  <EmptyState
+                    title="Tidak ada klien yang cocok dengan filter aktif"
+                    description="Ubah pencarian atau filter untuk menampilkan kembali daftar portofolio."
+                    className="mx-auto max-w-md"
+                  />
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-      </div>
-    </Card>
+    </TableShell>
   );
 }

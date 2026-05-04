@@ -9,12 +9,14 @@ import {
   CheckCheck,
   Clock,
   Info,
+  Menu,
   User,
 } from 'lucide-react';
+import { useAppShell } from '@/components/layout/AppShell';
 import TopBar from '@/components/layout/TopBar';
 import { supabase } from '@/lib/supabase';
 import { useDashboardData } from '@/components/DataProvider';
-import { clientWorst } from '@/lib/utils';
+import { cn, clientWorst } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Admin Hub' },
@@ -22,12 +24,12 @@ const NAV_ITEMS = [
   { href: '/admin/activity', label: 'Activity Log' },
   { href: '/admin/clients', label: 'Client Management' },
   { href: '/admin/settings', label: 'Settings' },
-  { href: '/admin/design-system', label: 'Design System' },
 ];
 
 export default function AdminHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const { openMobileNav } = useAppShell();
   const currentItem = NAV_ITEMS.find((item) => item.href === pathname || (item.href !== '/admin' && pathname.startsWith(item.href)));
 
   const [showNotifications, setShowNotifications] = React.useState(false);
@@ -115,11 +117,11 @@ export default function AdminHeader() {
 
   const statusSlots = (
     <>
-      <div className="rounded-full border border-border-main bg-white px-3 py-1 text-[11px] font-medium text-text3">
-        DB: <span className={dbStatus === 'online' ? 'text-gg-text' : dbStatus === 'error' ? 'text-rr-text' : 'text-yy-text'}>{dbStatus}</span>
+      <div className="rounded-full border border-border-main bg-white px-3 py-1 text-[11px] font-medium text-text3 shadow-[var(--shadow-card)]">
+        DB: <span className={dbStatus === 'online' ? 'text-gd-text' : dbStatus === 'error' ? 'text-rr-text' : 'text-accent'}>{dbStatus}</span>
       </div>
-      <div className="rounded-full border border-border-main bg-white px-3 py-1 text-[11px] font-medium text-text3">
-        AI: <span className={aiStatus === 'ready' ? 'text-gd-text' : aiStatus === 'error' ? 'text-rr-text' : 'text-yy-text'}>{aiStatus}</span>
+      <div className="rounded-full border border-border-main bg-white px-3 py-1 text-[11px] font-medium text-text3 shadow-[var(--shadow-card)]">
+        AI: <span className={aiStatus === 'ready' ? 'text-gd-text' : aiStatus === 'error' ? 'text-rr-text' : 'text-accent'}>{aiStatus}</span>
       </div>
     </>
   );
@@ -129,28 +131,37 @@ export default function AdminHeader() {
       <TopBar
         title={currentItem?.label || 'Admin Hub'}
         breadcrumbs={['Admin Console', currentItem?.label || 'Overview']}
+        leading={(
+          <button
+            type="button"
+            onClick={openMobileNav}
+            className="btn-icon h-10 w-10 lg:hidden"
+            aria-label="Buka navigasi admin"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+        )}
         statusSlots={statusSlots}
         actions={(
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3">
             <div className="relative">
               <button
                 onClick={() => setShowNotifications((value) => !value)}
-                className={`relative flex h-11 w-11 items-center justify-center rounded-2xl border transition-all ${
-                  showNotifications
-                    ? 'border-accent bg-accent text-white'
-                    : 'border-border-main bg-white text-text3 hover:border-accent/30 hover:text-accent'
-                }`}
+                className={cn(
+                  'ds-toolbar-icon-button relative',
+                  showNotifications && 'border-accent/20 bg-accent-light text-accent'
+                )}
               >
                 <Bell className="h-4 w-4" />
                 {unreadCount > 0 && !showNotifications ? (
-                  <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-rr ring-2 ring-white" />
+                  <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-accent ring-2 ring-white" />
                 ) : null}
               </button>
 
               {showNotifications ? (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)} />
-                  <div className="absolute right-0 z-20 mt-3 w-[360px] overflow-hidden rounded-[28px] border border-border-main bg-white shadow-[var(--shadow-popover)]">
+                  <div className="ds-overlay-panel absolute right-0 z-20 mt-3 w-[min(92vw,360px)]">
                     <div className="flex items-center justify-between border-b border-border-main bg-surface2 px-5 py-4">
                       <div>
                         <div className="text-sm font-semibold text-text">Alerts Center</div>
@@ -165,13 +176,17 @@ export default function AdminHeader() {
                           <button
                             key={notification.id}
                             onClick={() => handleNotificationClick(notification)}
-                            className={`flex w-full items-start gap-3 border-b border-border-main/70 px-5 py-4 text-left transition-colors hover:bg-surface2 ${
-                              !notification.unread ? 'opacity-45' : ''
-                            }`}
+                            className={cn(
+                              'flex w-full items-start gap-3 border-b border-border-main/70 px-5 py-4 text-left transition-colors hover:bg-surface2',
+                              !notification.unread && 'opacity-45'
+                            )}
                           >
-                            <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ${
-                              notification.type === 'critical' ? 'bg-rr-bg text-rr-text' : 'bg-or-bg text-or-text'
-                            }`}>
+                            <div
+                              className={cn(
+                                'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]',
+                                notification.type === 'critical' ? 'bg-rr-bg text-rr-text' : 'bg-or-bg text-or-text'
+                              )}
+                            >
                               {notification.type === 'critical' ? <AlertCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
                             </div>
                             <div className="min-w-0 flex-1">
@@ -201,7 +216,7 @@ export default function AdminHeader() {
                       <div className="border-t border-border-main bg-surface2 p-3">
                         <button
                           onClick={handleMarkAllRead}
-                          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border-main bg-white px-3 py-2.5 text-xs font-medium text-text2 transition-all hover:border-accent/30 hover:text-accent"
+                          className="ds-toolbar-control w-full justify-center"
                         >
                           <CheckCheck className="h-4 w-4" />
                           Mark all as read
@@ -213,12 +228,12 @@ export default function AdminHeader() {
               ) : null}
             </div>
 
-            <div className="flex h-11 items-center gap-3 rounded-2xl border border-border-main bg-white px-3.5">
+            <div className="ds-toolbar-avatar">
               <div className="hidden text-right sm:block">
                 <div className="text-xs font-semibold text-text">Admin User</div>
                 <div className="text-[11px] text-text3">Superuser</div>
               </div>
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-surface2 text-text2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-surface2 text-text2">
                 <User className="h-4 w-4" />
               </div>
             </div>

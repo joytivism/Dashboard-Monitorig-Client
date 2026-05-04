@@ -1,40 +1,57 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
+import { ArrowRight, Calendar, Database, Info, LayoutGrid, Layers, RotateCcw, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useDashboardData } from '@/components/DataProvider';
+import PageIntro from '@/components/layout/PageIntro';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import InputField from '@/components/ui/InputField';
+import MetricCard from '@/components/ui/MetricCard';
+import SectionHeader from '@/components/ui/SectionHeader';
+import SelectField from '@/components/ui/SelectField';
+import StateFrame from '@/components/ui/StateFrame';
+import Toast from '@/components/ui/Toast';
+import useTimedToast from '@/components/ui/useTimedToast';
 import { supabase } from '@/lib/supabase';
 import { isAware } from '@/lib/utils';
-import {
-  CheckCircle2, AlertCircle, ChevronRight, Save,
-  RotateCcw, TrendingUp, Database, ArrowRight, Info,
-  LayoutGrid, CalendarClock, Building2, Layers
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 type ChannelRow = {
   ch: string;
-  rev: string; sp: string; ord: string; vis: string;
-  reach: string; impr: string; results: string;
+  rev: string;
+  sp: string;
+  ord: string;
+  vis: string;
+  reach: string;
+  impr: string;
+  results: string;
 };
 
-const EMPTY_ROW = (): ChannelRow => ({ ch: '', rev: '', sp: '', ord: '', vis: '', reach: '', impr: '', results: '' });
+const EMPTY_ROW = (channel = ''): ChannelRow => ({
+  ch: channel,
+  rev: '',
+  sp: '',
+  ord: '',
+  vis: '',
+  reach: '',
+  impr: '',
+  results: '',
+});
 
-const STAGE_STYLE: Record<string, { header: string; badge: string; label: string }> = {
-  tofu: { header: 'bg-gd-bg/10 border-gd-border/20', badge: 'badge badge-gd', label: 'text-gd-text' },
-  mofu: { header: 'bg-or-bg/10 border-or-border/20',   badge: 'badge badge-or',  label: 'text-or-text' },
-  bofu: { header: 'bg-gg-bg/10 border-gg-border/20',     badge: 'badge badge-gg',    label: 'text-gg-text'  },
+const STAGE_META: Record<string, { label: string; tone: 'info' | 'warning' | 'success' }> = {
+  tofu: { label: 'TOFU', tone: 'info' },
+  mofu: { label: 'MOFU', tone: 'warning' },
+  bofu: { label: 'BOFU', tone: 'success' },
 };
 
-function Toast({ toast }: { toast: { type: 'success' | 'error'; text: string } | null }) {
-  if (!toast) return null;
-  return (
-    <div className={`fixed top-24 right-8 z-[10000] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-semibold animate-fade-in ${
-      toast.type === 'success' ? 'bg-white border-green-200 text-green-700' : 'bg-white border-red-200 text-red-600'
-    }`}>
-      {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
-      {toast.text}
-    </div>
-  );
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Gagal menyimpan data.';
 }
 
 export default function DataInputPage() {
@@ -45,21 +62,23 @@ export default function DataInputPage() {
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [newPeriod, setNewPeriod] = useState('');
   const [useNewPeriod, setUseNewPeriod] = useState(false);
-  const [rows, setRows] = useState<ChannelRow[]>([]);
+  const [rowDraft, setRowDraft] = useState<{ key: string; rows: ChannelRow[] }>({ key: '', rows: [] });
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const { toast, showToast } = useTimedToast();
 
-  const client = CLIENTS.find(c => c.key === selectedClient);
+  const client = CLIENTS.find((item) => item.key === selectedClient);
   const periodToUse = useNewPeriod ? newPeriod : selectedPeriod;
-  const canProceed = selectedClient && periodToUse.length === 7 && /^\d{4}-\d{2}$/.test(periodToUse);
-  const isUpdateMode = DATA.some(d => d.c === selectedClient && d.p === periodToUse);
+  const canProceed = Boolean(selectedClient && periodToUse.length === 7 && /^\d{4}-\d{2}$/.test(periodToUse));
+  const isUpdateMode = DATA.some((item) => item.c === selectedClient && item.p === periodToUse);
+  const draftKey = `${selectedClient}::${periodToUse}`;
 
-  useEffect(() => {
-    if (!client) { setRows([]); return; }
-    const prefilled = client.chs.map(ch => {
-      const existing = DATA.find(d => d.c === selectedClient && d.ch === ch && d.p === periodToUse);
+  const baseRows = useMemo<ChannelRow[]>(() => {
+    if (!client) return [];
+
+    return client.chs.map((channel) => {
+      const existing = DATA.find((item) => item.c === selectedClient && item.ch === channel && item.p === periodToUse);
       return {
-        ch,
+        ch: channel,
         rev: existing?.rev ? String(existing.rev) : '',
         sp: existing?.sp ? String(existing.sp) : '',
         ord: existing?.ord ? String(existing.ord) : '',
@@ -69,260 +88,304 @@ export default function DataInputPage() {
         results: existing?.results ? String(existing.results) : '',
       };
     });
-    setRows(prefilled);
-  }, [client, periodToUse]);
+  }, [DATA, client, periodToUse, selectedClient]);
 
-  useEffect(() => {
-    if (toast) { const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t); }
-  }, [toast]);
+  const rows = rowDraft.key === draftKey ? rowDraft.rows : baseRows;
 
-  const updateRow = (i: number, field: keyof ChannelRow, val: string) => {
-    setRows(prev => prev.map((r, idx) => idx === i ? { ...r, [field]: val } : r));
+  const updateRows = (updater: (current: ChannelRow[]) => ChannelRow[]) => {
+    setRowDraft((previous) => {
+      const currentRows = previous.key === draftKey ? previous.rows : baseRows;
+      return {
+        key: draftKey,
+        rows: updater(currentRows),
+      };
+    });
+  };
+
+  const updateRow = (index: number, field: keyof ChannelRow, value: string) => {
+    updateRows((current) => current.map((row, currentIndex) => (currentIndex === index ? { ...row, [field]: value } : row)));
   };
 
   const handleSubmit = async () => {
     if (!selectedClient || !periodToUse) return;
     setLoading(true);
+
     try {
       if (useNewPeriod && newPeriod) {
         await supabase.from('periods').upsert({
           period_key: newPeriod,
-          label: new Date(newPeriod + '-01').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
+          label: new Date(`${newPeriod}-01`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
         });
       }
-      const upsertData = rows.map(r => ({
-        client_key: selectedClient, channel_key: r.ch, period_key: periodToUse,
-        revenue: r.rev ? Number(r.rev) : null,
-        spend: r.sp ? Number(r.sp) : null,
-        orders: r.ord ? Number(r.ord) : null,
-        visitors: r.vis ? Number(r.vis) : null,
-        reach: r.reach ? Number(r.reach) : null,
-        impressions: r.impr ? Number(r.impr) : null,
-        results: r.results ? Number(r.results) : null,
+
+      const upsertData = rows.map((row) => ({
+        client_key: selectedClient,
+        channel_key: row.ch,
+        period_key: periodToUse,
+        revenue: row.rev ? Number(row.rev) : null,
+        spend: row.sp ? Number(row.sp) : null,
+        orders: row.ord ? Number(row.ord) : null,
+        visitors: row.vis ? Number(row.vis) : null,
+        reach: row.reach ? Number(row.reach) : null,
+        impressions: row.impr ? Number(row.impr) : null,
+        results: row.results ? Number(row.results) : null,
       }));
+
       const { error } = await supabase
         .from('channel_performance')
         .upsert(upsertData, { onConflict: 'client_key,channel_key,period_key' });
+
       if (error) throw error;
-      setToast({ type: 'success', text: `Data ${selectedClient} · ${periodToUse} berhasil disimpan!` });
+
+      showToast('success', `Data ${selectedClient} · ${periodToUse} berhasil disimpan!`);
+      setRowDraft({ key: '', rows: [] });
       router.refresh();
-    } catch (err: any) {
-      setToast({ type: 'error', text: err.message || 'Gagal menyimpan data.' });
-    } finally { setLoading(false); }
+    } catch (error) {
+      showToast('error', getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const awarenessCount = client?.chs.filter((channel) => isAware(CH_DEF, channel)).length || 0;
+  const performanceCount = (client?.chs.length || 0) - awarenessCount;
+
   return (
-    <div className="w-full space-y-10 animate-fade-in pb-20">
+    <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-20 animate-fade-in">
       <Toast toast={toast} />
 
-      {/* ── Header Area ── */}
-      <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-        <div className="flex items-start gap-4">
-           <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-white shadow-sm shrink-0 mt-0.5">
-              <Database className="w-5 h-5" />
-           </div>
-           <div>
-              <h1 className="text-2xl font-bold text-text tracking-tight leading-tight">Input Data Performa</h1>
-              <p className="text-sm font-medium text-text3 mt-0.5">Masukkan data metrik iklan harian atau bulanan ke database utama.</p>
-           </div>
-        </div>
-      </div>
+      <PageIntro
+        eyebrow="Admin Console"
+        title="Input Data Performa"
+        description="Masukkan data metrik iklan harian atau bulanan ke database utama dengan struktur yang lebih rapi dan konsisten."
+        meta={(
+          <>
+            <Badge tone="neutral" style="soft">{CLIENTS.length} clients</Badge>
+            <Badge tone="neutral" style="soft">{PERIODS.length} periods</Badge>
+            {canProceed ? (
+              <Badge tone={isUpdateMode ? 'success' : 'warning'} style="soft">
+                {isUpdateMode ? 'Update mode' : 'Data baru'}
+              </Badge>
+            ) : null}
+          </>
+        )}
+      />
 
-      {/* ── Step 1: Configuration ── */}
-      <div className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-        <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface2/50">
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center text-xs font-bold">1</div>
-             <h2 className="text-sm font-bold text-text">Pilih Klien & Periode</h2>
+      <Card className="space-y-5">
+        <SectionHeader
+          eyebrow="Langkah 1"
+          title="Pilih klien dan periode"
+          description="Tentukan kombinasi klien dan bulan pelaporan sebelum form input channel dibuka."
+          icon={Database}
+        />
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <SelectField
+            label="Pilih klien"
+            icon={Database}
+            value={selectedClient}
+            onChange={(event) => setSelectedClient(event.target.value)}
+            options={[
+              { label: '— Klik untuk memilih klien —', value: '' },
+              ...CLIENTS.map((item) => ({ label: item.key, value: item.key })),
+            ]}
+          />
+
+          <div className="space-y-4">
+            <SelectField
+              label="Periode laporan"
+              icon={Calendar}
+              value={useNewPeriod ? '__new__' : selectedPeriod}
+              onChange={(event) => {
+                if (event.target.value === '__new__') {
+                  setUseNewPeriod(true);
+                } else {
+                  setUseNewPeriod(false);
+                  setSelectedPeriod(event.target.value);
+                }
+              }}
+              options={[
+                { label: '— Pilih Bulan —', value: '' },
+                ...PERIODS.map((period) => ({ label: period, value: period })),
+                { label: '+ Tambah Periode Baru...', value: '__new__' },
+              ]}
+            />
+
+            {useNewPeriod ? (
+              <InputField
+                label="Periode baru"
+                type="month"
+                value={newPeriod}
+                onChange={(event) => setNewPeriod(event.target.value)}
+              />
+            ) : null}
           </div>
         </div>
 
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Client Selection */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3  tracking-wider px-1">Pilih Klien</label>
-              <div className="relative">
-                 <select
-                    value={selectedClient}
-                    onChange={e => setSelectedClient(e.target.value)}
-                    className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
-                 >
-                    <option value="">— Klik untuk memilih klien —</option>
-                    {CLIENTS.map(c => <option key={c.key} value={c.key}>{c.key}</option>)}
-                 </select>
-                 <ChevronRight className="w-4 h-4 text-text4 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none" />
-              </div>
+        {canProceed ? (
+          <div className="flex flex-col gap-4 border-t border-border-main pt-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone={isUpdateMode ? 'success' : 'warning'} style="soft">
+                {isUpdateMode ? 'Data ditemukan' : 'Data baru'}
+              </Badge>
+              <Badge tone="neutral" style="soft">
+                {selectedClient} · {periodToUse}
+              </Badge>
             </div>
-
-            {/* Period Selection */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-text3  tracking-wider px-1">Periode Laporan</label>
-              <div className="space-y-3">
-                <div className="relative">
-                   <select
-                      value={useNewPeriod ? '__new__' : selectedPeriod}
-                      onChange={e => {
-                        if (e.target.value === '__new__') { setUseNewPeriod(true); }
-                        else { setUseNewPeriod(false); setSelectedPeriod(e.target.value); }
-                      }}
-                      className="w-full h-11 px-4 rounded-xl border border-border-main bg-surface2 text-sm font-semibold text-text appearance-none focus:outline-none focus:border-accent transition-all"
-                   >
-                      <option value="">— Pilih Bulan —</option>
-                      {PERIODS.map(p => <option key={p} value={p}>{p}</option>)}
-                      <option value="__new__">+ Tambah Periode Baru...</option>
-                   </select>
-                   <ChevronRight className="w-4 h-4 text-text4 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none" />
-                </div>
-                {useNewPeriod && (
-                  <input
-                    type="month"
-                    value={newPeriod}
-                    onChange={e => setNewPeriod(e.target.value)}
-                    className="w-full h-11 px-4 rounded-xl border border-accent bg-accent-light text-sm font-bold text-accent focus:outline-none transition-all animate-fade-in"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {canProceed && (
-            <div className="mt-8 pt-6 border-t border-border-main flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in">
-              <div className="flex items-center gap-3">
-                {isUpdateMode ? (
-                  <span className="badge badge-gg">Data Ditemukan</span>
-                ) : (
-                  <span className="badge badge-or">Data Baru</span>
-                )}
-                <p className="text-sm font-medium text-text2">
-                   {selectedClient} · {periodToUse}
-                </p>
-              </div>
-              <button
-                onClick={() => document.getElementById('step2')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center gap-2 px-6 h-11 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent-hover transition-all"
-              >
-                Lanjutkan <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Step 2: Channel Inputs ── */}
-      {canProceed && client && rows.length > 0 && (
-        <div id="step2" className="bg-white rounded-2xl border border-border-main shadow-sm overflow-hidden animate-fade-in">
-          <div className="px-6 py-5 border-b border-border-main flex items-center justify-between bg-surface2/50">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center text-xs font-bold">2</div>
-              <h2 className="text-sm font-bold text-text">Input Data per Channel</h2>
-            </div>
-            <button
-              onClick={() => setRows(client.chs.map(() => EMPTY_ROW()))}
-              className="text-xs font-bold text-text3 hover:text-text transition-colors flex items-center gap-1.5"
+            <Button
+              variant="secondary"
+              size="lg"
+              trailingIcon={ArrowRight}
+              onClick={() => document.getElementById('step2')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              <RotateCcw className="w-3.5 h-3.5" /> Reset
-            </button>
+              Lanjutkan
+            </Button>
+          </div>
+        ) : null}
+      </Card>
+
+      {canProceed && client ? (
+        <>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <MetricCard title="Active channels" value={client.chs.length} icon={Layers} caption="Channel aktif pada klien terpilih" />
+            <MetricCard title="Awareness" value={awarenessCount} icon={LayoutGrid} caption="Channel reach / awareness" tone="success" />
+            <MetricCard title="Performance" value={performanceCount} icon={Database} caption="Channel revenue / conversion" tone="accent" />
           </div>
 
-          <div className="p-8 space-y-6">
-            {rows.map((row, i) => {
-              const aware = isAware(CH_DEF, row.ch);
-              const chDef = CH_DEF[row.ch];
-              const stage = chDef?.stage || 'bofu';
-              const s = STAGE_STYLE[stage] || STAGE_STYLE.bofu;
-              const roasVal = !aware && row.sp && row.rev ? Number(row.rev) / Number(row.sp) : null;
-              const targetRoas = client?.troas?.[row.ch] || null;
-              const roasOk = roasVal && targetRoas ? roasVal >= Number(targetRoas) : null;
+          <Card id="step2" className="space-y-5">
+            <SectionHeader
+              eyebrow="Langkah 2"
+              title="Input data per channel"
+              description="Isi metrik yang relevan untuk setiap channel aktif. Sistem akan meng-upsert data bila kombinasi yang sama sudah ada."
+              action={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  leadingIcon={RotateCcw}
+                  onClick={() => updateRows(() => client.chs.map((channel) => EMPTY_ROW(channel)))}
+                >
+                  Reset
+                </Button>
+              }
+            />
 
-              return (
-                <div key={row.ch} className="border border-border-main rounded-2xl overflow-hidden bg-white shadow-sm hover:border-border-alt transition-colors">
-                  {/* Channel Header */}
-                  <div className={`flex items-center gap-4 px-6 py-4 border-b ${s.header}`}>
-                    <span className={s.badge}>{stage}</span>
-                    <h3 className="text-sm font-bold text-text">{chDef?.l || row.ch}</h3>
-                    <div className="ml-auto hidden sm:block">
-                       <span className="text-[10px] font-bold text-text3  tracking-wider">
-                        {aware ? 'Awareness' : 'Performance'}
-                      </span>
+            <div className="space-y-4">
+              {rows.map((row, index) => {
+                const aware = isAware(CH_DEF, row.ch);
+                const channelDefinition = CH_DEF[row.ch];
+                const stage = channelDefinition?.stage || 'bofu';
+                const stageMeta = STAGE_META[stage] || STAGE_META.bofu;
+                const targetRoas = client.troas?.[row.ch];
+
+                return (
+                  <Card key={row.ch} className="space-y-5">
+                    <SectionHeader
+                      eyebrow="Channel"
+                      title={channelDefinition?.l || row.ch}
+                      description={aware ? 'Awareness metrics: spend, reach, impressions, dan results.' : 'Performance metrics: spend, revenue, orders, dan visitors/results.'}
+                      action={
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge tone={stageMeta.tone} style="soft">{stageMeta.label}</Badge>
+                          <Badge tone="neutral" style="soft">{aware ? 'Awareness' : 'Performance'}</Badge>
+                          {!aware && targetRoas ? <Badge tone="accent" style="soft">Target ROAS {targetRoas}x</Badge> : null}
+                        </div>
+                      }
+                    />
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                      <InputField
+                        label="Ad Spend (Rp)"
+                        type="number"
+                        value={row.sp}
+                        onChange={(event) => updateRow(index, 'sp', event.target.value)}
+                        placeholder="0"
+                        inputClassName="tabular-nums"
+                      />
+
+                      {!aware ? (
+                        <>
+                          <InputField
+                            label="Revenue (Rp)"
+                            type="number"
+                            value={row.rev}
+                            onChange={(event) => updateRow(index, 'rev', event.target.value)}
+                            placeholder="0"
+                            inputClassName="tabular-nums"
+                          />
+                          <InputField
+                            label="Orders"
+                            type="number"
+                            value={row.ord}
+                            onChange={(event) => updateRow(index, 'ord', event.target.value)}
+                            placeholder="0"
+                            inputClassName="tabular-nums"
+                          />
+                          <InputField
+                            label="Results / Visits"
+                            type="number"
+                            value={row.vis}
+                            onChange={(event) => updateRow(index, 'vis', event.target.value)}
+                            placeholder="0"
+                            inputClassName="tabular-nums"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <InputField
+                            label="Reach"
+                            type="number"
+                            value={row.reach}
+                            onChange={(event) => updateRow(index, 'reach', event.target.value)}
+                            placeholder="0"
+                            inputClassName="tabular-nums"
+                          />
+                          <InputField
+                            label="Impressions"
+                            type="number"
+                            value={row.impr}
+                            onChange={(event) => updateRow(index, 'impr', event.target.value)}
+                            placeholder="0"
+                            inputClassName="tabular-nums"
+                          />
+                          <InputField
+                            label="Results"
+                            type="number"
+                            value={row.results}
+                            onChange={(event) => updateRow(index, 'results', event.target.value)}
+                            placeholder="0"
+                            inputClassName="tabular-nums"
+                          />
+                        </>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Input Fields Grid */}
-                  <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6 bg-surface2/30">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Ad Spend (Rp)</label>
-                      <input type="number" value={row.sp} onChange={e => updateRow(i, 'sp', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                    </div>
-
-                    {!aware ? (
-                      <>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Revenue (Rp)</label>
-                          <input type="number" value={row.rev} onChange={e => updateRow(i, 'rev', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Orders</label>
-                          <input type="number" value={row.ord} onChange={e => updateRow(i, 'ord', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                        </div>
-                        <div className="space-y-1.5">
-                           <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Results/Visits</label>
-                           <input type="number" value={row.vis} onChange={e => updateRow(i, 'vis', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Reach</label>
-                          <input type="number" value={row.reach} onChange={e => updateRow(i, 'reach', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Impressions</label>
-                          <input type="number" value={row.impr} onChange={e => updateRow(i, 'impr', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-text3  tracking-wider block px-1">Results</label>
-                          <input type="number" value={row.results} onChange={e => updateRow(i, 'results', e.target.value)} placeholder="0" className="w-full h-10 px-4 rounded-xl border border-border-main bg-white text-sm font-semibold text-text focus:outline-none focus:border-accent transition-all" />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Submit Action Bar */}
-          <div className="px-8 py-6 border-t border-border-main bg-surface2/50 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-start gap-3 max-w-lg">
-              <div className="w-6 h-6 rounded-full bg-white border border-border-main flex items-center justify-center shrink-0">
-                 <Info className="w-3.5 h-3.5 text-text3" />
-              </div>
-              <p className="text-xs text-text3 font-medium leading-relaxed">
-                Sistem akan memperbarui data jika kombinasi klien, channel, dan periode sudah ada.
-              </p>
+                  </Card>
+                );
+              })}
             </div>
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="flex items-center justify-center gap-2 px-10 h-11 bg-text text-white rounded-xl font-bold text-sm hover:bg-accent transition-all disabled:opacity-50 min-w-[240px]"
-            >
-              {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-              Simpan Semua Data
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* ── Empty Initial State ── */}
-      {!canProceed && (
-        <div className="bg-white rounded-2xl border border-dashed border-border-alt p-20 text-center animate-fade-in shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-surface2 flex items-center justify-center mx-auto mb-6">
-            <LayoutGrid className="w-8 h-8 text-text4" />
-          </div>
-          <h3 className="text-base font-bold text-text mb-2">Klien & Periode Belum Ditentukan</h3>
-          <p className="text-sm text-text3 max-w-sm mx-auto font-medium">Pilih klien dan tentukan periode bulan di bagian atas untuk membuka form input data.</p>
-        </div>
+            <div className="flex flex-col gap-4 border-t border-border-main pt-5 lg:flex-row lg:items-start lg:justify-between">
+              <StateFrame
+                icon={Info}
+                title="Mode upsert aktif"
+                description="Sistem akan memperbarui data jika kombinasi klien, channel, dan periode sudah ada."
+                tone="info"
+                align="left"
+                size="sm"
+                className="max-w-xl"
+              />
+              <Button variant="primary" size="lg" leadingIcon={Save} onClick={handleSubmit} loading={loading}>
+                Simpan semua data
+              </Button>
+            </div>
+          </Card>
+        </>
+      ) : (
+        <StateFrame
+          icon={LayoutGrid}
+          title="Klien & periode belum ditentukan"
+          description="Pilih klien dan tentukan periode bulan di bagian atas untuk membuka form input data."
+          className="min-h-[240px] justify-center"
+        />
       )}
     </div>
   );

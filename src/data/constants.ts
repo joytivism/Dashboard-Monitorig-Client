@@ -8,7 +8,7 @@ export const CH_DEF: Record<string, { l: string; stage: 'tofu' | 'mofu' | 'bofu'
   meta_ads:      { l: 'Meta Ads',      stage: 'tofu', type: 'awareness' },
 };
 
-export const STAGE_COLOR = { tofu: '#2563EB', mofu: '#D97706', bofu: '#059669' };
+export const STAGE_COLOR = { tofu: '#000000', mofu: '#ff6301', bofu: '#00a1a6' };
 export const STAGE_LABEL = { tofu: 'Tofu · Awareness', mofu: 'Mofu · Consideration', bofu: 'Bofu · Conversion' };
 
 export interface Client {
@@ -42,7 +42,7 @@ export const CLIENTS: Client[] = [
 
 export const PERIODS = ['2026-02', '2026-03'];
 export const PL: Record<string, string> = { '2026-02': 'Feb 2026', '2026-03': 'Mar 2026' };
-export const TC = ['#2563EB', '#059669', '#DC2626', '#7C3AED'];
+export const TC = ['#000000', '#ff6301', '#00a1a6', '#e50000'];
 export const ORD = ['rr','or','yy','nn','gg','gd'];
 export const LM: Record<string, string> = { rr: 'Turun >20%', or: 'Turun 10–20%', yy: 'Turun <10%', nn: 'Stabil', gg: 'Naik <20%', gd: 'Naik >20%' };
 

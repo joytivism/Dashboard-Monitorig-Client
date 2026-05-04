@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { AlertCircle, RefreshCcw, Home } from 'lucide-react';
+import { RefreshCcw, Home } from 'lucide-react';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
+import ErrorState from '@/components/ui/ErrorState';
 
 export default function AdminError({
   error,
@@ -17,39 +19,34 @@ export default function AdminError({
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center animate-fade-in">
-      <div className="w-20 h-20 rounded-3xl bg-rr-bg flex items-center justify-center mb-8 shadow-lg shadow-rr/10">
-        <AlertCircle className="w-10 h-10 text-rr" />
+    <div className="flex min-h-[60vh] items-center justify-center px-6 animate-fade-in">
+      <div className="w-full max-w-2xl space-y-6">
+        <ErrorState
+          title="Sistem mengalami kendala"
+          description="Terjadi kesalahan saat memuat data Command Center. Silakan coba segarkan halaman atau kembali ke hub admin."
+          action={(
+            <>
+              <Button variant="primary" size="lg" leadingIcon={RefreshCcw} onClick={() => reset()}>
+                Coba lagi
+              </Button>
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-border-main bg-white px-5 py-3 text-sm font-semibold text-text shadow-[var(--shadow-card)] transition-colors hover:border-border-alt hover:bg-surface2"
+              >
+                <Home className="h-4 w-4" />
+                Kembali ke hub
+              </Link>
+            </>
+          )}
+          className="py-10"
+        />
+
+        {error.digest ? (
+          <p className="text-center text-[10px] font-mono text-text4 opacity-60">
+            Error ID: {error.digest}
+          </p>
+        ) : null}
       </div>
-      
-      <h1 className="text-2xl font-bold text-text mb-3 tracking-tight">Sistem Mengalami Kendala</h1>
-      <p className="text-text3 max-w-md mb-10 font-medium leading-relaxed">
-        Terjadi kesalahan saat memuat data Command Center. Silakan coba segarkan halaman atau kembali ke beranda.
-      </p>
-      
-      <div className="flex flex-col sm:flex-row items-center gap-4">
-        <button
-          onClick={() => reset()}
-          className="flex items-center gap-2.5 bg-text hover:bg-accent text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-text/10 hover:shadow-accent/20"
-        >
-          <RefreshCcw className="w-4 h-4" />
-          Coba Lagi
-        </button>
-        
-        <Link
-          href="/admin"
-          className="flex items-center gap-2.5 bg-surface2 hover:bg-surface3 text-text2 px-8 py-3.5 rounded-2xl font-bold text-sm transition-all border border-border-main"
-        >
-          <Home className="w-4 h-4" />
-          Kembali ke Hub
-        </Link>
-      </div>
-      
-      {error.digest && (
-        <p className="mt-12 text-[10px] font-mono text-text4 opacity-50">
-          Error ID: {error.digest}
-        </p>
-      )}
     </div>
   );
 }

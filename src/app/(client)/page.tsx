@@ -121,11 +121,11 @@ function OverviewContent() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-7 pb-20 animate-fade-in">
+    <div className="mx-auto flex max-w-7xl flex-col gap-8 pb-20 animate-fade-in">
       <PageIntro
         eyebrow="Client Overview"
         title="Performa portofolio"
-        description="Ringkasan performa seluruh klien aktif, lengkap dengan health signal, pertumbuhan, dan titik perhatian utama pada periode berjalan."
+        description="Ringkasan performa seluruh klien aktif untuk membaca revenue, efisiensi, dan akun yang perlu perhatian pada periode berjalan."
         meta={(
           <>
             <Badge tone="success" style="soft">Live period</Badge>
@@ -134,7 +134,7 @@ function OverviewContent() {
           </>
         )}
         actions={(
-          <div className="w-full min-w-[220px] sm:w-[220px]">
+          <div className="w-full sm:w-[220px]">
             <SelectField
               aria-label="Pilih periode"
               icon={Calendar}
@@ -150,7 +150,7 @@ function OverviewContent() {
         )}
       />
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard title="Total Klien" value={CLIENTS.length} icon={Users} caption={`Aktif: ${CLIENTS.length}`} />
         <MetricCard title="Total Revenue" value={fRp(tRev)} icon={DollarSign} trend={getPct(tRev, pRev)} caption={`Lalu: ${fRp(pRev)}`} tone="accent" />
         <MetricCard title="Blended ROAS" value={aRoas ? `${aRoas.toFixed(2)}x` : '—'} icon={TrendingUp} trend={paRoas && aRoas ? ((aRoas - paRoas) / paRoas) * 100 : null} caption={`Lalu: ${paRoas ? `${paRoas.toFixed(2)}x` : '—'}`} />

@@ -1,25 +1,69 @@
 'use server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function generateAISummary(clientName: string, metrics: any) {
+type MetricValue = string | number | null | undefined;
+
+interface SummaryMetrics {
+  roas: MetricValue;
+  growth: MetricValue;
+  spend: MetricValue;
+  revenue: MetricValue;
+}
+
+interface SystemSettingRow {
+  key: string;
+  value: string | null;
+}
+
+interface OpenRouterResponse {
+  error?: {
+    message?: string;
+  };
+  choices?: Array<{
+    message?: {
+      content?: string | null;
+    };
+  }>;
+  model?: string;
+  usage?: {
+    total_tokens?: number;
+  };
+}
+
+function toNumber(value: MetricValue): number {
+  const parsed = Number.parseFloat(String(value ?? 0));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'API Error';
+}
+
+export async function generateAISummary(clientName: string, metrics: SummaryMetrics) {
   const supabase = await createClient();
   // Fetch settings from DB
-  const { data: dbSettings } = await supabase.from('system_settings').select('*');
-  const settings = (dbSettings || []).reduce((acc, s) => ({ ...acc, [s.key]: s.value }), {} as any);
+  const { data: dbSettings } = await supabase.from('system_settings').select('key, value');
+  const settings = Object.fromEntries(
+    ((dbSettings ?? []) as SystemSettingRow[]).map((setting) => [setting.key, setting.value])
+  ) as Record<string, string | null>;
 
   const apiKey = settings.openrouter_key || process.env.OPENROUTER_API_KEY;
-  const model = settings.ai_model || "nvidia/nemotron-3-super-120b-a12b:free";
+  const model = settings.ai_model || 'nvidia/nemotron-3-super-120b-a12b:free';
 
   if (!apiKey || apiKey === 'your_openrouter_key_here') {
     return JSON.stringify({
-      status: "warning",
-      summary: "API Key OpenRouter tidak terdeteksi di server.",
-      actions: ["Cek Environment Variables di Dashboard Vercel."]
+      status: 'warning',
+      summary: 'API Key OpenRouter tidak terdeteksi di server.',
+      actions: ['Cek Environment Variables di Dashboard Vercel.']
     });
   }
 
-  const roas = parseFloat(metrics.roas) || 0;
-  const growth = parseFloat(metrics.growth) || 0;
+  const roas = toNumber(metrics.roas);
+  const growth = toNumber(metrics.growth);
 
   const dbPrompt = settings.ai_prompt || `Analisis data iklan klien "{clientName}":
     - Spend: {spend}, Revenue: {revenue}, ROAS: {roas}x, Trend: {growth}%
@@ -44,32 +88,32 @@ export async function generateAISummary(clientName: string, metrics: any) {
     .replace('{status}', status);
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://real-advertise.com", 
-        "X-Title": "Real Advertise Dashboard", 
-        "Content-Type": "application/json"
+        Authorization: `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://real-advertise.com',
+        'X-Title': 'Real Advertise Dashboard',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "model": model, 
-        "messages": [
-          { "role": "user", "content": prompt }
+        model,
+        messages: [
+          { role: 'user', content: prompt }
         ],
-        "temperature": 0.7
+        temperature: 0.7
         // Menghapus response_format karena sering menyebabkan error 400 di model tertentu
       })
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as OpenRouterResponse;
     
     // Cek jika API mengembalikan error (misal: Quota exceeded atau Invalid Key)
     if (data.error) {
-      throw new Error(data.error.message || "API Error");
+      throw new Error(data.error.message || 'API Error');
     }
 
-    let raw = data.choices?.[0]?.message?.content || "";
+    const raw = data.choices?.[0]?.message?.content || '';
     
     // Ekstraksi JSON yang lebih kuat
     const start = raw.indexOf('{');
@@ -78,7 +122,7 @@ export async function generateAISummary(clientName: string, metrics: any) {
     if (start !== -1 && end !== -1) {
       const jsonStr = raw.substring(start, end + 1);
       try {
-        const validated = JSON.parse(jsonStr);
+        const validated = JSON.parse(jsonStr) as { summary?: string };
         if (validated.summary) {
           // Log usage
           await supabase.from('ai_usage_logs').insert({
@@ -90,23 +134,24 @@ export async function generateAISummary(clientName: string, metrics: any) {
 
           return JSON.stringify(validated);
         }
-      } catch (e) {
-        console.error("JSON Parse Error:", e);
+      } catch (error) {
+        console.error('JSON Parse Error:', error);
       }
     }
     
-    throw new Error("Could not find valid JSON in response");
+    throw new Error('Could not find valid JSON in response');
 
-  } catch (error: any) {
-    console.error("AI Action Error:", error);
+  } catch (error: unknown) {
+    console.error('AI Action Error:', error);
+    const errorMessage = getErrorMessage(error);
     
     // Fallback yang tetap memberikan info tapi jujur kalau ada kendala
     return JSON.stringify({
-      status: roas >= 3 ? "positive" : "negative",
-      summary: `Analisis otomatis untuk ${clientName} sedang mengalami kendala teknis (${error.message || 'API Error'}). Namun berdasarkan data, ROAS saat ini berada di angka ${roas}x.`,
+      status: roas >= 3 ? 'positive' : 'negative',
+      summary: `Analisis otomatis untuk ${clientName} sedang mengalami kendala teknis (${errorMessage}). Namun berdasarkan data, ROAS saat ini berada di angka ${roas}x.`,
       actions: [
-        "Evaluasi efektivitas biaya iklan secara manual",
-        "Pastikan API Key di Vercel sudah benar dan memiliki kuota"
+        'Evaluasi efektivitas biaya iklan secara manual',
+        'Pastikan API Key di Vercel sudah benar dan memiliki kuota'
       ]
     });
   }
