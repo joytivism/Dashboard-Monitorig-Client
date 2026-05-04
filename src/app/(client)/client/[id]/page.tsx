@@ -30,7 +30,7 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import SelectField from '@/components/ui/SelectField';
 import { LM } from '@/lib/data';
 import { calculateEfficiency, calculateFunnelMetrics } from '@/lib/logic/calculations';
-import { chWorstKey, clientWorst, fK, fRp, gd, isAware, pct, prev } from '@/lib/utils';
+import { chWorstKey, clientWorst, cn, fK, fRp, gd, isAware, pct, prev } from '@/lib/utils';
 
 function ClientDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = use(params);
