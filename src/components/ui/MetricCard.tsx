@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowDownRight, ArrowUpRight, ChevronRight, type LucideIcon } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MetricCardProps {
@@ -20,24 +20,17 @@ interface MetricCardProps {
 type MetricCardTone = NonNullable<MetricCardProps['tone']>;
 
 const toneClasses: Record<MetricCardTone, string> = {
-  default: 'bg-white border-border-main',
-  accent: 'bg-white border-accent/20',
-  success: 'bg-white border-gd-border/70',
-  danger: 'bg-white border-rr-border/60',
-};
-
-const hoverClasses: Record<MetricCardTone, string> = {
-  default: 'hover:border-border-alt',
-  accent: 'hover:border-accent/30',
-  success: 'hover:border-gd-border',
-  danger: 'hover:border-rr-border',
+  default: 'from-white to-surface2',
+  accent: 'from-white to-accent-light/45',
+  success: 'from-white to-gd-bg/65',
+  danger: 'from-white to-rr-bg/65',
 };
 
 const iconToneClasses: Record<MetricCardTone, string> = {
-  default: 'bg-surface2 text-text2 border border-border-main/70',
-  accent: 'bg-accent-light text-accent border border-accent/15',
-  success: 'bg-gd-bg text-gd-text border border-gd-border/70',
-  danger: 'bg-rr-bg text-rr-text border border-rr-border/70',
+  default: 'bg-surface3 text-soft',
+  accent: 'bg-accent-light text-accent',
+  success: 'bg-gd-bg text-gd-text',
+  danger: 'bg-rr-bg text-rr-text',
 };
 
 function mapLegacyVariant(variant: MetricCardProps['variant']): MetricCardTone {
@@ -64,58 +57,44 @@ export default function MetricCard({
   const resolvedTrend = trend ?? growth ?? null;
   const resolvedCaption = caption ?? subtext;
   const isUp = resolvedTrend !== null && resolvedTrend >= 0;
+  const TrendIcon = isUp ? ArrowUpRight : ArrowDownRight;
 
   const content = (
     <div
       className={cn(
-        'group flex h-full flex-col justify-between rounded-[var(--radius-lg)] border bg-white p-5 transition-all duration-200 hover:shadow-md',
+        'group flex min-h-[128px] h-full flex-col justify-between rounded-[var(--radius-lg)] bg-gradient-to-b p-5 shadow-[var(--shadow-card)] transition-transform duration-200 hover:-translate-y-0.5',
+        toneClasses[resolvedTone],
         className
       )}
     >
-      <div className="flex items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="truncate text-[13px] font-medium text-text-secondary group-hover:text-text-primary transition-colors">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="truncate text-[12px] font-semibold uppercase tracking-[0.04em] text-muted">
             {title}
-          </span>
-          <ChevronRight className="h-3 w-3 text-text-quaternary group-hover:text-text-secondary transition-colors" />
+          </div>
+          <div className="mt-3 text-[clamp(1.55rem,2vw,1.9rem)] font-bold leading-none tracking-[-0.035em] text-text tabular-nums">
+            {value}
+          </div>
+        </div>
+
+        <div className={cn('grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)]', iconToneClasses[resolvedTone])}>
+          <Icon className="h-4.5 w-4.5" />
         </div>
       </div>
 
-      <div className="flex-1 space-y-4">
-        <div className="text-[2rem] font-semibold tracking-tight text-text-primary tabular-nums">
-          {value}
-        </div>
-        
-        {/* Decorative Status Line */}
-        <div className="relative h-1 w-full rounded-full bg-panel-subtle overflow-hidden">
-          <div 
+      <div className="mt-4 flex min-w-0 items-center gap-2 text-[13px] text-muted">
+        {resolvedTrend !== null ? (
+          <span
             className={cn(
-              "absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out",
-              resolvedTone === 'accent' ? "bg-accent w-2/3" : 
-              resolvedTone === 'success' ? "bg-success w-full" :
-              resolvedTone === 'danger' ? "bg-danger w-1/3" : "bg-text-quaternary w-1/2"
+              'inline-flex h-6 shrink-0 items-center gap-1 rounded-[7px] px-2 text-[12px] font-semibold tabular-nums',
+              isUp ? 'bg-gd-bg text-gd-text' : 'bg-or-bg text-or-text'
             )}
-          />
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
-          {resolvedCaption ? (
-            <div className="text-[11px] font-medium text-text-tertiary truncate">
-              {resolvedCaption}
-            </div>
-          ) : <div />}
-          
-          {resolvedTrend !== null ? (
-            <div
-              className={cn(
-                'flex items-center gap-0.5 text-[11px] font-bold tabular-nums',
-                isUp ? 'text-success' : 'text-danger'
-              )}
-            >
-              {isUp ? '+' : '-'}{Math.abs(resolvedTrend).toFixed(1)}%
-            </div>
-          ) : null}
-        </div>
+          >
+            <TrendIcon className="h-3.5 w-3.5" />
+            {isUp ? '+' : '-'}{Math.abs(resolvedTrend).toFixed(1)}%
+          </span>
+        ) : null}
+        {resolvedCaption ? <span className="min-w-0 truncate">{resolvedCaption}</span> : null}
       </div>
     </div>
   );

@@ -15,17 +15,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'border border-text bg-text text-white shadow-[var(--shadow-card)] hover:border-text2 hover:bg-text2',
-  secondary: 'border border-border-main bg-white text-text shadow-[var(--shadow-card)] hover:border-border-alt hover:bg-surface2',
+  primary: 'border border-text bg-text text-white shadow-none hover:border-text2 hover:bg-text2',
+  secondary: 'border border-transparent bg-white text-text shadow-[var(--shadow-sm)] hover:bg-surface2',
   ghost: 'bg-transparent text-text2 border border-transparent hover:bg-surface2 hover:text-text',
-  danger: 'border border-rr bg-rr text-white shadow-[var(--shadow-card)] hover:border-rr-text hover:bg-rr-text',
-  tonal: 'border border-accent/15 bg-accent-light text-accent shadow-[var(--shadow-card)] hover:border-accent hover:bg-accent hover:text-white',
+  danger: 'border border-rr bg-rr text-white shadow-none hover:border-rr-text hover:bg-rr-text',
+  tonal: 'border border-transparent bg-accent-light text-accent shadow-[var(--shadow-sm)] hover:bg-accent hover:text-white',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-9 rounded-[var(--radius-sm)] px-3.5 text-xs',
-  md: 'h-10 rounded-[var(--radius-md)] px-4 text-sm',
-  lg: 'h-11 rounded-[var(--radius-md)] px-5 text-sm',
+  sm: 'h-9 rounded-full px-3.5 text-xs',
+  md: 'h-10 rounded-full px-4 text-sm',
+  lg: 'h-11 rounded-full px-5 text-sm',
 };
 
 export default function Button({

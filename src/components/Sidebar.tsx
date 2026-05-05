@@ -2,7 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Hexagon, LayoutDashboard, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut } from 'lucide-react';
 import { logout } from '@/app/actions/auth';
 import MobileNavDrawer from '@/components/layout/MobileNavDrawer';
 import NavRail from '@/components/layout/NavRail';
@@ -69,19 +69,26 @@ function SidebarContent() {
   ];
 
   const brand = (
-    <div className="flex items-center gap-3 px-1 py-1">
-      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-text text-white">
-        <Hexagon className="h-4 w-4 fill-white" />
+    <div className="flex items-center gap-3 rounded-[var(--radius-md)] px-1 py-1">
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-text text-[13px] font-bold tracking-[-0.04em] text-white">
+        RA
       </div>
       <div className="min-w-0">
-        <div className="truncate text-[15px] font-bold tracking-tight text-text">Joytivism</div>
+        <div className="truncate text-[15px] font-bold tracking-[-0.02em] text-text">Real Advertise</div>
+        <div className="mt-0.5 truncate text-[11px] font-medium text-soft">Command Center</div>
       </div>
+    </div>
+  );
+
+  const collapsedBrand = (
+    <div className="grid h-10 w-10 place-items-center rounded-[12px] bg-text text-[13px] font-bold tracking-[-0.04em] text-white">
+      RA
     </div>
   );
 
   const footer = (
     <div className="space-y-2 p-1">
-      <div className="rounded-lg border border-border-main bg-surface bg-white p-3 shadow-sm">
+      <div className="rounded-[16px] bg-white/58 p-3 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]">
         <div className="text-[13px] font-semibold text-text">Real Advertise</div>
         <div className="mt-0.5 text-[11px] text-text3 leading-normal">Unified portfolio and performance workspace.</div>
       </div>
@@ -100,7 +107,7 @@ function SidebarContent() {
 
   return (
     <>
-      <NavRail brand={brand} sections={sections} footer={footer} />
+      <NavRail brand={brand} collapsedBrand={collapsedBrand} sections={sections} footer={footer} />
       <MobileNavDrawer
         open={isMobileNavOpen}
         onClose={closeMobileNav}

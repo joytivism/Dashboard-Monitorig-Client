@@ -5,11 +5,11 @@ type CardTone = 'default' | 'muted' | 'accent' | 'danger' | 'success';
 type CardPadding = 'sm' | 'md' | 'lg';
 
 const toneClasses: Record<CardTone, string> = {
-  default: 'bg-white border-border-main',
-  muted: 'bg-surface2 border-border-main',
-  accent: 'bg-white border-accent/20',
-  danger: 'bg-rr-bg/60 border-rr-border/70',
-  success: 'bg-gd-bg/55 border-gd-border/75',
+  default: 'bg-white border-transparent',
+  muted: 'bg-surface2 border-transparent',
+  accent: 'bg-white border-transparent shadow-[0_1px_2px_rgba(15,23,42,0.03),0_14px_34px_rgba(255,99,1,0.08)]',
+  danger: 'bg-rr-bg/70 border-transparent',
+  success: 'bg-gd-bg/60 border-transparent',
 };
 
 const paddingClasses: Record<CardPadding, string> = {

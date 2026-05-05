@@ -65,18 +65,18 @@ export default function MobileNavDrawer({
     <div className="fixed inset-0 z-[120] lg:hidden" role="dialog" aria-modal="true" aria-label="Menu navigasi">
       <button
         type="button"
-        className="absolute inset-0 bg-black/28"
+        className="absolute inset-0 bg-black/28 backdrop-blur-[2px]"
         onClick={onClose}
         aria-label="Tutup menu navigasi"
       />
 
-      <aside className="absolute inset-y-0 left-0 flex w-[min(88vw,22rem)] flex-col border-r border-border-main bg-white shadow-[var(--shadow-popover)]">
-        <div className="flex items-start justify-between gap-3 border-b border-border-main px-4 py-4">
+      <aside className="absolute inset-y-0 left-0 flex w-[min(88vw,22rem)] flex-col bg-sidebar shadow-[var(--shadow-popover)]">
+        <div className="flex items-start justify-between gap-3 px-4 py-4">
           <div className="min-w-0 flex-1">{brand}</div>
           <button
             type="button"
             onClick={onClose}
-            className="btn-icon h-10 w-10 shrink-0"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] bg-white/70 text-text2 transition-colors hover:bg-white hover:text-text"
             aria-label="Tutup menu"
           >
             <X className="h-4 w-4" />
@@ -113,7 +113,7 @@ export default function MobileNavDrawer({
           ))}
         </div>
 
-        {footer ? <div className="border-t border-border-main bg-surface2/55 p-3">{footer}</div> : null}
+        {footer ? <div className="bg-white/35 p-3">{footer}</div> : null}
       </aside>
     </div>
   );

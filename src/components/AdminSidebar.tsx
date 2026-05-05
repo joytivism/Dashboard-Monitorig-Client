@@ -7,7 +7,6 @@ import {
   Activity,
   Database,
   ExternalLink,
-  Hexagon,
   LayoutDashboard,
   LogOut,
   Settings2,
@@ -37,14 +36,20 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
   const { isMobileNavOpen, closeMobileNav } = useAppShell();
 
   const brand = (
-    <Link href="/admin" className="flex items-center gap-3 rounded-[14px] px-3 py-2.5">
-      <div className="flex h-9 w-9 items-center justify-center rounded-[14px] bg-text text-white">
-        <Hexagon className="h-5 w-5 fill-white" />
+    <Link href="/admin" className="flex items-center gap-3 rounded-[var(--radius-md)] px-1 py-1">
+      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-text text-[13px] font-bold tracking-[-0.04em] text-white">
+        RA
       </div>
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold text-text">Real Advertise</div>
-        <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-text4">Admin Console</div>
+        <div className="truncate text-[15px] font-bold tracking-[-0.02em] text-text">Real Advertise</div>
+        <div className="mt-0.5 text-[11px] font-medium text-soft">Admin Console</div>
       </div>
+    </Link>
+  );
+
+  const collapsedBrand = (
+    <Link href="/admin" className="grid h-10 w-10 place-items-center rounded-[12px] bg-text text-[13px] font-bold tracking-[-0.04em] text-white">
+      RA
     </Link>
   );
 
@@ -90,7 +95,7 @@ export default function AdminSidebar({ onLogout }: AdminSidebarProps) {
 
   return (
     <>
-      <NavRail brand={brand} sections={sections} footer={footer} />
+      <NavRail brand={brand} collapsedBrand={collapsedBrand} sections={sections} footer={footer} />
       <MobileNavDrawer
         open={isMobileNavOpen}
         onClose={closeMobileNav}

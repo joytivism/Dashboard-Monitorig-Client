@@ -40,12 +40,15 @@ const toneClasses: Record<BadgeTone, Record<BadgeStyle, string>> = {
 export interface BadgeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'style'> {
   tone?: BadgeTone;
   style?: BadgeStyle;
+  withDot?: boolean;
 }
 
 export default function Badge({
   className,
   tone = 'neutral',
   style = 'soft',
+  withDot = false,
+  children,
   ...props
 }: BadgeProps) {
   return (
@@ -56,6 +59,9 @@ export default function Badge({
         className
       )}
       {...props}
-    />
+    >
+      {withDot ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" /> : null}
+      {children}
+    </span>
   );
 }
